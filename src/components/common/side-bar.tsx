@@ -5,34 +5,46 @@ import {
   SettingOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-const SidebarComponent = () => (
-  <Layout.Sider theme="light" className="shadow-lg" style={{ height: "100vh" }}>
-    <div className="text-center py-4 font-bold text-orange-500 text-xl">
-      Dinh Long
-    </div>
-    <Menu
-      mode="inline"
-      defaultSelectedKeys={["dashboard"]}
-      items={[
-        {
-          key: "dashboard",
-          icon: <DashboardOutlined />,
-          label: <Link href="/">Dashboard</Link>,
-        },
-        {
-          key: "admin",
-          icon: <UserOutlined />,
-          label: <Link href="/leave">Leave</Link>,
-        },
-        {
-          key: "settings",
-          icon: <SettingOutlined />,
-          label: <Link href="/pim">Pim</Link>,
-        },
-      ]}
-    />
-  </Layout.Sider>
-);
+const SidebarComponent = () => {
+  const pathname = usePathname();
+
+  const getSelectedKey = () => {
+    if (pathname === "/") return "dashboard";
+    if (pathname.startsWith("/leave")) return "leave";
+    if (pathname.startsWith("/pim")) return "pim";
+    return "dashboard"; // Fallback
+  };
+
+  return (
+    <Layout.Sider theme="light" className="shadow-lg" style={{ height: "100vh" }}>
+      <div className="py-4 text-xl font-bold text-center text-orange-500">
+        Dinh Long
+      </div>
+      <Menu
+        mode="inline"
+        selectedKeys={[getSelectedKey()]}
+        items={[
+          {
+            key: "dashboard",
+            icon: <DashboardOutlined />,
+            label: <Link href="/">Dashboard</Link>,
+          },
+          {
+            key: "leave",
+            icon: <UserOutlined />,
+            label: <Link href="/leave">Leave</Link>,
+          },
+          {
+            key: "pim",
+            icon: <SettingOutlined />,
+            label: <Link href="/pim">Pim</Link>,
+          },
+        ]}
+      />
+    </Layout.Sider>
+  );
+};
 
 export default SidebarComponent;

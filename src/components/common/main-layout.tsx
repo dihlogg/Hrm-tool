@@ -17,7 +17,7 @@ export default function MainLayout({
       <Layout style={{ height: "100%" }}>
         <HeaderComponent />
         <Layout.Content
-          className="p-3 bg-gray-50"
+          className="p-3 bg-[#F1F5F9]"
           style={{ height: "calc(100% - 64px - 40px)", overflow: "auto" }}
         >
           {children}
