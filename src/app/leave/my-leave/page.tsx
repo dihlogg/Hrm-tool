@@ -34,7 +34,7 @@ export default function MyRequestPage() {
         <a className="inline-block mb-2 text-sm text-blue-600 cursor-pointer hover:underline">
           Time Off (Leave) Requests and Balances
         </a>
-        <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <label className="block mb-1 text-sm font-medium">From Date</label>
             <DatePicker className="w-full" placeholder="Select date" />
@@ -68,7 +68,7 @@ export default function MyRequestPage() {
           <Button
             type="primary"
             shape="round"
-            size="large"
+            size="middle"
             ghost
             className="text-blue-500"
           >
@@ -77,7 +77,7 @@ export default function MyRequestPage() {
           <Button
             type="primary"
             shape="round"
-            size="large"
+            size="middle"
             className="text-white bg-blue-500 hover:bg-blue-600"
           >
             + Apply
@@ -97,6 +97,7 @@ export default function MyRequestPage() {
           dataSource={paginatedData}
           pagination={false}
           rowKey="No"
+          scroll={{ x: "max-content" }}
         />
         <div className="flex items-center justify-end mt-4">
           <Pagination
