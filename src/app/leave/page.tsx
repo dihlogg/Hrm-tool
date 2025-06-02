@@ -55,7 +55,7 @@ export default function LeavePage() {
       {/* Filter Section */}
       <div className="flex-col px-8 py-6 bg-white border-gray-200 rounded-lg shadow-sm sm:flex-row">
         <h2 className="text-xl font-semibold">Working Time</h2>
-        <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-4">
           {cardData.map((item, index) => (
             <Card
               key={index}
@@ -86,7 +86,8 @@ export default function LeavePage() {
           columns={columns}
           dataSource={paginatedData}
           pagination={false}
-          rowKey="No"
+          rowKey={"AbnormalType"}
+          scroll={{ x: 'max-content' }}
         />
         <div className="flex items-center justify-end mt-4">
           <Pagination

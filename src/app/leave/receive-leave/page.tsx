@@ -31,7 +31,7 @@ export default function ReceiveRequestPage() {
       {/* Filter Section */}
       <div className="flex-col px-8 py-4 bg-white border-gray-200 rounded-lg shadow-sm sm:flex-row">
         <h2 className="text-xl font-semibold">Receive Request List</h2>
-        <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <label className="block mb-1 text-sm font-medium">From Date</label>
             <DatePicker className="w-full" placeholder="Select date" />
@@ -61,9 +61,7 @@ export default function ReceiveRequestPage() {
             </Select>
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium">
-              Requester
-            </label>
+            <label className="block mb-1 text-sm font-medium">Requester</label>
             <Select defaultValue="--Select--" className="w-full">
               <Option value="--Select--">--Select--</Option>
               <Option value="Annual">RequesterA</Option>
@@ -71,9 +69,7 @@ export default function ReceiveRequestPage() {
             </Select>
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium">
-              Supervisor
-            </label>
+            <label className="block mb-1 text-sm font-medium">Supervisor</label>
             <Select defaultValue="--Select--" className="w-full">
               <Option value="--Select--">--Select--</Option>
               <Option value="Annual">SupervisorA</Option>
@@ -85,7 +81,7 @@ export default function ReceiveRequestPage() {
           <Button
             type="primary"
             shape="round"
-            size="large"
+            size="middle"
             ghost
             className="text-blue-500"
           >
@@ -94,7 +90,7 @@ export default function ReceiveRequestPage() {
           <Button
             type="primary"
             shape="round"
-            size="large"
+            size="middle"
             className="text-white bg-blue-500 hover:bg-blue-600"
           >
             + Apply
@@ -114,6 +110,7 @@ export default function ReceiveRequestPage() {
           dataSource={paginatedData}
           pagination={false}
           rowKey="id"
+          scroll={{ x: "max-content" }}
         />
         <div className="flex items-center justify-end mt-4">
           <Pagination
