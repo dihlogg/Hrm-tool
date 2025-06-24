@@ -3,6 +3,8 @@ import {
   DashboardOutlined,
   UserOutlined,
   SettingOutlined,
+  AuditOutlined,
+  WechatWorkOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -14,6 +16,7 @@ const SidebarComponent = () => {
     if (pathname === "/") return "dashboard";
     if (pathname.startsWith("/leave")) return "leave";
     if (pathname.startsWith("/pim")) return "pim";
+    if (pathname.startsWith("/buzz")) return "buzz";
     return "dashboard"; // Fallback
   };
 
@@ -33,13 +36,18 @@ const SidebarComponent = () => {
           },
           {
             key: "leave",
-            icon: <UserOutlined />,
+            icon: <AuditOutlined />,
             label: <Link href="/leave">Leave</Link>,
           },
           {
             key: "pim",
-            icon: <SettingOutlined />,
+            icon: <UserOutlined />,
             label: <Link href="/pim">Pim</Link>,
+          },
+          {
+            key: "buzz",
+            icon: <WechatWorkOutlined />,
+            label: <Link href="/buzz">Buzz</Link>,
           },
         ]}
       />
