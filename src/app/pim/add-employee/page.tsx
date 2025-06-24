@@ -10,7 +10,7 @@ export default function AddEmployee() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   return (
-    <div className="flex-1 w-full p-4 space-y-6">
+    <div className="flex-1 w-full p-4 mt-6 space-y-6">
       <div className="flex-col px-8 py-4 bg-white border-gray-200 rounded-lg shadow-sm sm:flex-row">
         <h2 className="pb-2 mb-6 text-xl font-semibold border-b">
           Add Employee
