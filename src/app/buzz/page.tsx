@@ -42,7 +42,7 @@ export default function BuzzPage() {
       <h2 className="text-xl font-semibold">Buzz Newsfeed</h2>
       {/* Post Editor Section */}
       <Card className="p-4 bg-white shadow-sm rounded-2xl">
-        <div className="flex items-start gap-4">
+        <div className="flex flex-col items-start gap-4 sm:flex-row">
           <Avatar src={mockMyRequests[0].user.avatarUrl} size={64} />
           <div className="flex-1">
             <TextArea
@@ -51,7 +51,7 @@ export default function BuzzPage() {
               placeholder="What's on your mind?"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              className="px-4 py-2 bg-gray-100 border-none rounded-full focus:ring-0"
+              className="w-full px-4 py-2 bg-gray-100 border-none rounded-2xl sm:rounded-full focus:ring-0"
             />
             <div className="flex items-center justify-between mt-4">
               <div className="flex gap-4">

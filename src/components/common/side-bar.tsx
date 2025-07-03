@@ -5,6 +5,7 @@ import {
   SettingOutlined,
   AuditOutlined,
   WechatWorkOutlined,
+  FieldTimeOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -16,6 +17,7 @@ const SidebarComponent = () => {
     if (pathname === "/") return "dashboard";
     if (pathname.startsWith("/leave")) return "leave";
     if (pathname.startsWith("/pim")) return "pim";
+    if (pathname.startsWith("/time")) return "time";
     if (pathname.startsWith("/buzz")) return "buzz";
     return "dashboard"; // Fallback
   };
@@ -43,6 +45,11 @@ const SidebarComponent = () => {
             key: "pim",
             icon: <UserOutlined />,
             label: <Link href="/pim">Pim</Link>,
+          },
+          {
+            key: "time",
+            icon: <FieldTimeOutlined />,
+            label: <Link href="/time">Time</Link>,
           },
           {
             key: "buzz",

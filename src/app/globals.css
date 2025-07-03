@@ -28,3 +28,7 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+/* text-gray-500 */
+.custom-ant-select .ant-select-item-option-content {
+  color: #6B7280 !important;
+}

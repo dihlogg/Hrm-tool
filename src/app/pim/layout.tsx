@@ -9,7 +9,7 @@ const navItems = [
   { href: '/pim/add-employee', label: 'Add Employee' },
 ]
 
-export default function LeaveLayout({ children }: { children: React.ReactNode }) {
+export default function PimLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   return (

@@ -4,15 +4,15 @@ import React, { useState } from "react";
 import { Form, Input, Button, Switch, Radio, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 
-export default function AddEmployee() {
+export default function AddEmployeePage() {
   const [form] = Form.useForm();
   const [loginEnabled, setLoginEnabled] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   return (
-    <div className="flex-1 w-full p-4 mt-6 space-y-6">
+    <div className="flex-1 w-full p-4 mt-2 space-y-6">
       <div className="flex-col px-8 py-4 bg-white border-gray-200 rounded-lg shadow-sm sm:flex-row">
-        <h2 className="pb-2 mb-6 text-xl font-semibold border-b">
+        <h2 className="pb-2 text-xl font-semibold text-gray-500 border-b border-b-gray-400">
           Add Employee
         </h2>
         <div className="flex flex-col gap-6 md:flex-row">
@@ -38,7 +38,7 @@ export default function AddEmployee() {
                   setAvatarUrl(e.target?.result as string);
                 };
                 reader.readAsDataURL(file);
-                return false; // ngăn không upload lên server
+                return false;
               }}
             >
               <Button
@@ -64,15 +64,23 @@ export default function AddEmployee() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Form.Item
                 name="firstName"
-                label="First Name"
                 rules={[{ required: true, message: "Required" }]}
+                label={
+                  <label className="text-sm text-gray-500 font-small">
+                    First Name
+                  </label>
+                }
               >
                 <Input />
               </Form.Item>
               <Form.Item
                 name="lastName"
-                label="Last Name"
                 rules={[{ required: true, message: "Required" }]}
+                label={
+                  <label className="text-sm text-gray-500 font-small">
+                    Last Name
+                  </label>
+                }
               >
                 <Input />
               </Form.Item>
@@ -80,22 +88,32 @@ export default function AddEmployee() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Form.Item
                 name="employeeJob"
-                label="Employee Job"
                 rules={[{ required: true, message: "Required" }]}
+                label={
+                  <label className="text-sm text-gray-500 font-small">
+                    Employee Job
+                  </label>
+                }
               >
                 <Input />
               </Form.Item>
               <Form.Item
-                name="employeeStatus"
-                label="Status"
+                name="EmployeeStatus"
                 rules={[{ required: true, message: "Required" }]}
+                label={
+                  <label className="text-sm text-gray-500 font-small">
+                    Status
+                  </label>
+                }
               >
                 <Input />
               </Form.Item>
             </div>
 
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium">Create Login Details</span>
+              <span className="text-lg font-semibold text-gray-500">
+                Create Login Details
+              </span>
               <Switch
                 checked={loginEnabled}
                 onChange={(val) => setLoginEnabled(val)}
@@ -107,22 +125,34 @@ export default function AddEmployee() {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <Form.Item
                     name="userName"
-                    label="User name"
                     rules={[{ required: true, message: "Required" }]}
+                    label={
+                      <label className="text-sm text-gray-500 font-small">
+                        User Name
+                      </label>
+                    }
                   >
                     <Input />
                   </Form.Item>
 
                   <div className="flex items-center gap-6 mb-4">
                     <Form.Item
-                      label="Status"
+                      label={
+                        <label className="text-sm text-gray-500 font-small">
+                          Status
+                        </label>
+                      }
                       name="status"
                       className="mb-4"
                       labelCol={{ span: 24 }}
                     >
                       <Radio.Group className="flex gap-6">
-                        <Radio value="Enabled">Enabled</Radio>
-                        <Radio value="Disabled">Disabled</Radio>
+                        <Radio style={{ color: "#6B7280" }} value="Enabled">
+                          Enabled
+                        </Radio>
+                        <Radio style={{ color: "#6B7280" }} value="Disabled">
+                          Disabled
+                        </Radio>
                       </Radio.Group>
                     </Form.Item>
                   </div>
@@ -131,14 +161,22 @@ export default function AddEmployee() {
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <Form.Item
                     name="password"
-                    label="Password"
+                    label={
+                      <label className="text-sm text-gray-500 font-small">
+                        Password
+                      </label>
+                    }
                     rules={[{ required: true, message: "Required" }]}
                   >
                     <Input.Password />
                   </Form.Item>
                   <Form.Item
                     name="confirmPassword"
-                    label="Confirm Password"
+                    label={
+                      <label className="text-sm text-gray-500 font-small">
+                        Confirm Password
+                      </label>
+                    }
                     rules={[{ required: true, message: "Required" }]}
                   >
                     <Input.Password />
