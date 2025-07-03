@@ -27,7 +27,7 @@ export default function MyRequestPage() {
   );
 
   return (
-    <div className="flex-1 w-full p-4 mb-8 space-y-6">
+    <div className="flex-1 w-full p-4 mt-2 space-y-6">
       {/* Filter Section */}
       <div className="flex-col px-8 py-4 bg-white border-gray-200 rounded-lg shadow-sm sm:flex-row">
         <h2 className="text-xl font-semibold">My Request</h2>

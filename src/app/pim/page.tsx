@@ -7,16 +7,62 @@ import { useState } from "react";
 const { Option } = Select;
 
 const columns = [
-  { title: "First Name", dataIndex: "FirstName", key: "FirstName" },
-  { title: "Last Name", dataIndex: "LastName", key: "LastName" },
-  { title: "Job Title", dataIndex: "JobTitle", key: "JobTitle" },
   {
-    title: "Employee Status",
-    dataIndex: "EmployeeStatus",
-    key: "EmployeeStatus",
+    title: (
+      <span className="text-sm font-semibold text-gray-600">First Name</span>
+    ),
+    dataIndex: "FirstName",
+    render: (text: string) => (
+      <span className="text-sm text-gray-500 font-small">{text}</span>
+    ),
   },
-  { title: "Sub Unit", dataIndex: "SubUnit", key: "SubUnit" },
-  { title: "Supervisor", dataIndex: "Supervisor", key: "Supervisor" },
+  {
+    title: (
+      <span className="text-sm font-semibold text-gray-600">Last Name</span>
+    ),
+    dataIndex: "LastName",
+    render: (text: string) => (
+      <span className="text-sm text-gray-500 font-small">{text}</span>
+    ),
+  },
+  {
+    title: (
+      <span className="text-sm font-semibold text-gray-600">Job Title</span>
+    ),
+    dataIndex: "JobTitle",
+    render: (text: string) => (
+      <span className="text-sm text-gray-500 font-small">{text}</span>
+    ),
+  },
+  {
+    title: (
+      <span className="text-sm font-semibold text-gray-600">
+        Employee Status
+      </span>
+    ),
+    dataIndex: "EmployeeStatus",
+    render: (text: string) => (
+      <span className="text-sm text-gray-500 font-small">{text}</span>
+    ),
+  },
+  {
+    title: (
+      <span className="text-sm font-semibold text-gray-600">Sub Unit</span>
+    ),
+    dataIndex: "SubUnit",
+    render: (text: string) => (
+      <span className="text-sm text-gray-500 font-small">{text}</span>
+    ),
+  },
+  {
+    title: (
+      <span className="text-sm font-semibold text-gray-600">Supervisor</span>
+    ),
+    dataIndex: "Supervisor",
+    render: (text: string) => (
+      <span className="text-sm text-gray-500 font-small">{text}</span>
+    ),
+  },
 ];
 
 export default function EmployeeListPage() {
@@ -29,43 +75,52 @@ export default function EmployeeListPage() {
   );
 
   return (
-    <div className="flex-1 w-full p-4 mt-6 space-y-6">
+    <div className="flex-1 w-full p-4 mt-2 space-y-6">
       {/* Filter Section */}
       <div className="flex-col px-8 py-4 bg-white border-gray-200 rounded-lg shadow-sm sm:flex-row">
-        <h2 className="text-xl font-semibold">Employee List</h2>
+        <h2 className="pb-2 text-xl font-semibold text-gray-500 border-b border-b-gray-400">
+          Employee List
+        </h2>
         <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-4">
           <div className="flex flex-col items-start">
-            <label className="w-full mb-1 text-sm font-medium">
+            <label className="w-full mb-1 text-sm text-gray-500 font-small">
               Employee Name
             </label>
             <input
-              className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-200"
+              className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
               type="text"
               placeholder="Type for hints..."
             />
           </div>
 
           <div className="flex flex-col items-start">
-            <label className="w-full mb-1 text-sm font-medium">
+            <label className="w-full mb-1 text-sm text-gray-500 font-small">
               Employee Id
             </label>
             <input
-              className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-200"
+              className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
               type="text"
               placeholder="Type for hints..."
             />
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium">Status</label>
-            <Select defaultValue="--Select--" className="w-full">
+            <label className="w-full text-sm text-gray-500 font-small">
+              Status
+            </label>
+            <Select
+              defaultValue="--Select--"
+              className="w-full !mt-1 custom-ant-select"
+            >
               <Option value="--Select--">--Select--</Option>
               <Option value="full-time">Full Time</Option>
               <Option value="part-time">Part Time</Option>
             </Select>
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium">Include</label>
-            <Select defaultValue="--Select--" className="w-full">
+            <label className="w-full mb-2 text-sm text-gray-500 font-small">
+              Include
+            </label>
+            <Select defaultValue="--Select--" className="w-full !mt-1">
               <Option value="--Select--">--Select--</Option>
               <Option value="current">Current Employees Only</Option>
               <Option value="past">Past Employees Only</Option>
@@ -75,24 +130,30 @@ export default function EmployeeListPage() {
             </Select>
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium">Supervisor</label>
-            <Select defaultValue="--Select--" className="w-full">
+            <label className="w-full mb-2 text-sm text-gray-500 font-small">
+              Supervisor
+            </label>
+            <Select defaultValue="--Select--" className="w-full !mt-1">
               <Option value="--Select--">--Select--</Option>
               <Option value="supervisor-a">SupervisorA</Option>
               <Option value="supervisor-b">SupervisorB</Option>
             </Select>
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium">Job Title</label>
-            <Select defaultValue="--Select--" className="w-full">
+            <label className="w-full mb-2 text-sm text-gray-500 font-small">
+              Job Title
+            </label>
+            <Select defaultValue="--Select--" className="w-full !mt-1">
               <Option value="--Select--">--Select--</Option>
               <Option value="tester">Tester</Option>
               <Option value="development">DEV</Option>
             </Select>
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium">Sub Unit</label>
-            <Select defaultValue="--Select--" className="w-full">
+            <label className="w-full mb-2 text-sm text-gray-500 font-small">
+              Sub Unit
+            </label>
+            <Select defaultValue="--Select--" className="w-full !mt-1">
               <Option value="--Select--">--Select--</Option>
               <Option value="sub-unit-a">Sub Unit A</Option>
               <Option value="sub-unit-b">Sub Unit B</Option>
@@ -122,7 +183,7 @@ export default function EmployeeListPage() {
       {/* Table Section */}
       <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Employee List</h2>
+          <h2 className="text-xl font-semibold text-gray-500">Employee List</h2>
           <a className="text-sm text-blue-600 cursor-pointer hover:underline">
             View All
           </a>

@@ -34,7 +34,7 @@ export default function LeaveLayout({ children }: { children: React.ReactNode })
           )
         })}
       </div>
-      <div className="flex items-center justify-center flex-1">
+      <div className="flex flex-1 w-full">
         {children}
       </div>
     </div>
