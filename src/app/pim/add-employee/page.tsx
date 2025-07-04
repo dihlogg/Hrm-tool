@@ -1,8 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { Form, Input, Button, Switch, Radio, Upload } from "antd";
+import { Form, Input, Button, Radio, Upload, Select } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+import { Switch } from "@headlessui/react";
+
+const { Option } = Select;
 
 export default function AddEmployeePage() {
   const [form] = Form.useForm();
@@ -53,152 +56,129 @@ export default function AddEmployeePage() {
               <br />
             </p>
           </div>
-
           {/* Right: Form */}
-          <Form
-            form={form}
-            layout="vertical"
-            className="flex-1"
-            onFinish={(values) => console.log(values)}
-          >
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Form.Item
-                name="firstName"
-                rules={[{ required: true, message: "Required" }]}
-                label={
-                  <label className="text-sm text-gray-500 font-small">
-                    First Name
-                  </label>
-                }
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                name="lastName"
-                rules={[{ required: true, message: "Required" }]}
-                label={
-                  <label className="text-sm text-gray-500 font-small">
-                    Last Name
-                  </label>
-                }
-              >
-                <Input />
-              </Form.Item>
-            </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Form.Item
-                name="employeeJob"
-                rules={[{ required: true, message: "Required" }]}
-                label={
-                  <label className="text-sm text-gray-500 font-small">
-                    Employee Job
-                  </label>
-                }
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                name="EmployeeStatus"
-                rules={[{ required: true, message: "Required" }]}
-                label={
-                  <label className="text-sm text-gray-500 font-small">
-                    Status
-                  </label>
-                }
-              >
-                <Input />
-              </Form.Item>
+          <div className="flex-col w-full px-8 py-4 border-gray-200 rounded-lg sm:flex-row">
+            <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-2">
+              <div className="flex flex-col items-start">
+                <label className="w-full mb-1 text-sm text-gray-500 font-small">
+                  First Name
+                </label>
+                <input
+                  className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                  type="text"
+                  placeholder="Type for hints..."
+                />
+              </div>
+
+              <div className="flex flex-col items-start">
+                <label className="w-full mb-1 text-sm text-gray-500 font-small">
+                  Last Name
+                </label>
+                <input
+                  className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                  type="text"
+                  placeholder="Type for hints..."
+                />
+              </div>
+              <div>
+                <label className="w-full text-sm text-gray-500 font-small">
+                  Status
+                </label>
+                <Select
+                  defaultValue="--Select--"
+                  className="w-full !mt-1 custom-ant-select"
+                >
+                  <Option value="--Select--">--Select--</Option>
+                  <Option value="full-time">Enabled</Option>
+                  <Option value="part-time">Disabled</Option>
+                </Select>
+              </div>
+              <div>
+                <label className="w-full mb-2 text-sm text-gray-500 font-small">
+                  Employee Job
+                </label>
+                <Select defaultValue="--Select--" className="w-full !mt-1">
+                  <Option value="--Select--">--Select--</Option>
+                  <Option value="current">Admin</Option>
+                  <Option value="past">ESS</Option>
+                </Select>
+              </div>
             </div>
 
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-lg font-semibold text-gray-500">
+            <div className="flex items-center w-full space-x-4 justify-stretch">
+              <label className="text-sm font-medium text-gray-500">
                 Create Login Details
-              </span>
+              </label>
               <Switch
                 checked={loginEnabled}
-                onChange={(val) => setLoginEnabled(val)}
-                className="bg-orange-500"
-              />
+                onChange={setLoginEnabled}
+                className={`${
+                  loginEnabled ? "bg-orange-500" : "bg-gray-300"
+                } relative inline-flex h-[20px] w-[44px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none`}
+              >
+                <span
+                  className={`${
+                    loginEnabled ? "translate-x-6" : "translate-x-0"
+                  } inline-block h-[16px] w-[16px] transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}
+                />
+              </Switch>
             </div>
             {loginEnabled && (
-              <>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <Form.Item
-                    name="userName"
-                    rules={[{ required: true, message: "Required" }]}
-                    label={
-                      <label className="text-sm text-gray-500 font-small">
-                        User Name
-                      </label>
-                    }
-                  >
-                    <Input />
-                  </Form.Item>
-
-                  <div className="flex items-center gap-6 mb-4">
-                    <Form.Item
-                      label={
-                        <label className="text-sm text-gray-500 font-small">
-                          Status
-                        </label>
-                      }
-                      name="status"
-                      className="mb-4"
-                      labelCol={{ span: 24 }}
-                    >
-                      <Radio.Group className="flex gap-6">
-                        <Radio style={{ color: "#6B7280" }} value="Enabled">
-                          Enabled
-                        </Radio>
-                        <Radio style={{ color: "#6B7280" }} value="Disabled">
-                          Disabled
-                        </Radio>
-                      </Radio.Group>
-                    </Form.Item>
-                  </div>
+              <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 bg-[#F1F5F9] mt-4 px-4 py-2 rounded-xl">
+                <div className="flex flex-col items-start">
+                  <label className="w-full mb-1 text-sm text-gray-500 font-small">
+                    User Name
+                  </label>
+                  <input
+                    className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                    type="text"
+                    placeholder="Type for hints..."
+                  />
                 </div>
-
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <Form.Item
-                    name="password"
-                    label={
-                      <label className="text-sm text-gray-500 font-small">
-                        Password
-                      </label>
-                    }
-                    rules={[{ required: true, message: "Required" }]}
-                  >
-                    <Input.Password />
-                  </Form.Item>
-                  <Form.Item
-                    name="confirmPassword"
-                    label={
-                      <label className="text-sm text-gray-500 font-small">
-                        Confirm Password
-                      </label>
-                    }
-                    rules={[{ required: true, message: "Required" }]}
-                  >
-                    <Input.Password />
-                  </Form.Item>
+                <div className="flex flex-col items-start">
+                  <label className="w-full mb-1 text-sm text-gray-500 font-small">
+                    Status
+                  </label>
+                  <Radio.Group className="flex gap-6">
+                    <Radio style={{ color: "#6B7280" }} value="Enabled">
+                      Enabled
+                    </Radio>
+                    <Radio style={{ color: "#6B7280" }} value="Disabled">
+                      Disabled
+                    </Radio>
+                  </Radio.Group>
                 </div>
-                <p className="text-xs text-gray-500">
-                  For a strong password, please use a hard to guess combination
-                  with upper and lower case characters, symbols, and numbers
-                </p>
-              </>
+                <div className="flex flex-col">
+                  <label className="mt-4 text-sm text-gray-500">
+                    Password*
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="Enter new password"
+                    className="w-full px-3 py-2 !mt-1 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                  />
+                  <p className="!mt-2 text-sm text-gray-500">
+                    For a strong password, please use a hard to guess
+                    combination with upper and lower case characters, symbols,
+                    and numbers
+                  </p>
+                </div>
+                <div className="flex flex-col">
+                  <label className="mt-4 text-sm text-gray-500">
+                    Confirm Password*
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="Confirm new password"
+                    className="w-full !mt-1 px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                  />
+                </div>
+              </div>
             )}
-
-            <div className="grid justify-end grid-flow-col gap-1 mt-6">
-              <Button
-                type="primary"
-                shape="round"
-                size="middle"
-                ghost
-                className="text-blue-500"
-              >
-                Cancel
-              </Button>
+            <div className="flex items-center justify-between mt-6">
+              <span className="text-sm italic font-medium text-gray-500">
+                * Required
+              </span>
               <Button
                 type="primary"
                 shape="round"
@@ -208,7 +188,7 @@ export default function AddEmployeePage() {
                 + Apply
               </Button>
             </div>
-          </Form>
+          </div>
         </div>
       </div>
     </div>

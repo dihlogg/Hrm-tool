@@ -6,6 +6,7 @@ import {
   AuditOutlined,
   WechatWorkOutlined,
   FieldTimeOutlined,
+  ReconciliationOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -15,6 +16,7 @@ const SidebarComponent = () => {
 
   const getSelectedKey = () => {
     if (pathname === "/") return "dashboard";
+    if (pathname.startsWith("/admin")) return "admin";
     if (pathname.startsWith("/leave")) return "leave";
     if (pathname.startsWith("/pim")) return "pim";
     if (pathname.startsWith("/time")) return "time";
@@ -37,8 +39,13 @@ const SidebarComponent = () => {
             label: <Link href="/">Dashboard</Link>,
           },
           {
-            key: "leave",
+            key: "admin",
             icon: <AuditOutlined />,
+            label: <Link href="/admin">Admin</Link>,
+          },
+          {
+            key: "leave",
+            icon: <ReconciliationOutlined />,
             label: <Link href="/leave">Leave</Link>,
           },
           {

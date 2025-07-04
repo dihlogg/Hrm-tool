@@ -34,11 +34,51 @@ const cardData = [
 ];
 
 const columns = [
-  { title: "Date", dataIndex: "Date", key: "Date" },
-  { title: "Abnormal Type", dataIndex: "AbnormalType", key: "AbnormalType" },
-  { title: "Request Type", dataIndex: "RequestType", key: "RequestType" },
-  { title: "Request Status", dataIndex: "Status", key: "Status" },
-  { title: "Partial Days", dataIndex: "PartialDays", key: "PartialDays" },
+  {
+    title: <span className="text-sm font-semibold text-gray-600">Date</span>,
+    dataIndex: "Date",
+    render: (text: string) => (
+      <span className="text-sm text-gray-500 font-small">{text}</span>
+    ),
+  },
+  {
+    title: (
+      <span className="text-sm font-semibold text-gray-600">Abnormal Type</span>
+    ),
+    dataIndex: "AbnormalType",
+    render: (text: string) => (
+      <span className="text-sm text-gray-500 font-small">{text}</span>
+    ),
+  },
+  {
+    title: (
+      <span className="text-sm font-semibold text-gray-600">Request Type</span>
+    ),
+    dataIndex: "RequestType",
+    render: (text: string) => (
+      <span className="text-sm text-gray-500 font-small">{text}</span>
+    ),
+  },
+  {
+    title: (
+      <span className="text-sm font-semibold text-gray-600">
+        Request Status
+      </span>
+    ),
+    dataIndex: "Status",
+    render: (text: string) => (
+      <span className="text-sm text-gray-500 font-small">{text}</span>
+    ),
+  },
+  {
+    title: (
+      <span className="text-sm font-semibold text-gray-600">Partial Days</span>
+    ),
+    dataIndex: "PartialDays",
+    render: (text: string) => (
+      <span className="text-sm text-gray-500 font-small">{text}</span>
+    ),
+  },
 ];
 
 export default function LeavePage() {
@@ -54,7 +94,9 @@ export default function LeavePage() {
     <div className="flex-1 w-full p-4 mt-2 space-y-6">
       {/* Filter Section */}
       <div className="flex-col px-8 py-6 bg-white border-gray-200 rounded-lg shadow-sm sm:flex-row">
-        <h2 className="text-xl font-semibold">Working Time</h2>
+        <h2 className="pb-2 text-xl font-semibold text-gray-500 border-b border-b-gray-400">
+          Working Time
+        </h2>
         <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-4">
           {cardData.map((item, index) => (
             <Card
@@ -77,7 +119,9 @@ export default function LeavePage() {
       {/* Table Section */}
       <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">My Abnormal Cases</h2>
+          <h2 className="text-xl font-semibold text-gray-500">
+            My Abnormal Cases
+          </h2>
           <a className="text-sm text-blue-600 cursor-pointer hover:underline">
             View All
           </a>
@@ -87,7 +131,7 @@ export default function LeavePage() {
           dataSource={paginatedData}
           pagination={false}
           rowKey={"AbnormalType"}
-          scroll={{ x: 'max-content' }}
+          scroll={{ x: "max-content" }}
         />
         <div className="flex items-center justify-end mt-4">
           <Pagination

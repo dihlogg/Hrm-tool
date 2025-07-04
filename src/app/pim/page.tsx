@@ -79,11 +79,11 @@ export default function EmployeeListPage() {
       {/* Filter Section */}
       <div className="flex-col px-8 py-4 bg-white border-gray-200 rounded-lg shadow-sm sm:flex-row">
         <h2 className="pb-2 text-xl font-semibold text-gray-500 border-b border-b-gray-400">
-          Employee List
+          Employee Information
         </h2>
         <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-4">
           <div className="flex flex-col items-start">
-            <label className="w-full mb-1 text-sm text-gray-500 font-small">
+            <label className="w-full mb-2 text-sm text-gray-500 font-small">
               Employee Name
             </label>
             <input
@@ -94,7 +94,7 @@ export default function EmployeeListPage() {
           </div>
 
           <div className="flex flex-col items-start">
-            <label className="w-full mb-1 text-sm text-gray-500 font-small">
+            <label className="w-full mb-2 text-sm text-gray-500 font-small">
               Employee Id
             </label>
             <input
@@ -109,7 +109,7 @@ export default function EmployeeListPage() {
             </label>
             <Select
               defaultValue="--Select--"
-              className="w-full !mt-1 custom-ant-select"
+              className="w-full !mt-2 custom-ant-select"
             >
               <Option value="--Select--">--Select--</Option>
               <Option value="full-time">Full Time</Option>
@@ -117,10 +117,10 @@ export default function EmployeeListPage() {
             </Select>
           </div>
           <div>
-            <label className="w-full mb-2 text-sm text-gray-500 font-small">
+            <label className="w-full text-sm text-gray-500 font-small">
               Include
             </label>
-            <Select defaultValue="--Select--" className="w-full !mt-1">
+            <Select defaultValue="--Select--" className="w-full !mt-2">
               <Option value="--Select--">--Select--</Option>
               <Option value="current">Current Employees Only</Option>
               <Option value="past">Past Employees Only</Option>
@@ -130,30 +130,30 @@ export default function EmployeeListPage() {
             </Select>
           </div>
           <div>
-            <label className="w-full mb-2 text-sm text-gray-500 font-small">
+            <label className="w-full text-sm text-gray-500 font-small">
               Supervisor
             </label>
-            <Select defaultValue="--Select--" className="w-full !mt-1">
+            <Select defaultValue="--Select--" className="w-full !mt-2">
               <Option value="--Select--">--Select--</Option>
               <Option value="supervisor-a">SupervisorA</Option>
               <Option value="supervisor-b">SupervisorB</Option>
             </Select>
           </div>
           <div>
-            <label className="w-full mb-2 text-sm text-gray-500 font-small">
+            <label className="w-full text-sm text-gray-500 font-small">
               Job Title
             </label>
-            <Select defaultValue="--Select--" className="w-full !mt-1">
+            <Select defaultValue="--Select--" className="w-full !mt-2">
               <Option value="--Select--">--Select--</Option>
               <Option value="tester">Tester</Option>
               <Option value="development">DEV</Option>
             </Select>
           </div>
           <div>
-            <label className="w-full mb-2 text-sm text-gray-500 font-small">
+            <label className="w-full text-sm text-gray-500 font-small">
               Sub Unit
             </label>
-            <Select defaultValue="--Select--" className="w-full !mt-1">
+            <Select defaultValue="--Select--" className="w-full !mt-2">
               <Option value="--Select--">--Select--</Option>
               <Option value="sub-unit-a">Sub Unit A</Option>
               <Option value="sub-unit-b">Sub Unit B</Option>
