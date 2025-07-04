@@ -9,34 +9,32 @@ export default function CreateNewRequestPage() {
     <div className="flex-1 w-full p-4 mt-2 space-y-6">
       {/* Filter Section */}
       <div className="flex-col px-8 py-4 bg-white border-gray-200 rounded-lg shadow-sm sm:flex-row">
-        <h2 className="mb-4 text-xl font-semibold md:text-2xl">Create New Request</h2>
+        <h2 className="pb-2 text-xl font-semibold text-gray-500 border-b border-b-gray-400">
+          Create New Request
+        </h2>
         <a className="inline-block mb-4 text-sm text-blue-600 hover:underline">
           Time Off (Leave) Requests and Balances
         </a>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {/* Request Type */}
           <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-center">
-            <label className="w-full text-sm font-medium sm:w-24 shrink-0">
+            <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
               Request Type*:
             </label>
-            <Select
-              defaultValue="--Select--"
-              className="w-full sm:flex-1"
-              size="large"
-            >
+            <Select defaultValue="--Select--" className="w-full sm:flex-1">
               <Option value="--Select--">--Select--</Option>
-              <Option value="Pending">My Abnormal Case</Option>
-              <Option value="Approved">My Late Coming</Option>
+              <Option value="Annual">My Abnormal Case</Option>
+              <Option value="Sick">My Late Coming</Option>
             </Select>
           </div>
 
           {/* Duration */}
           <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-center">
-            <label className="w-full text-sm font-medium sm:w-24 shrink-0">
+            <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
               Duration:
             </label>
             <input
-              className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded sm:flex-1 focus:outline-none focus:ring focus:ring-blue-200"
+              className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
               type="text"
               placeholder="Type for hints..."
             />
@@ -44,82 +42,67 @@ export default function CreateNewRequestPage() {
 
           {/* From Date */}
           <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-center">
-            <label className="w-full text-sm font-medium sm:w-24 shrink-0">
+            <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
               From Date:
             </label>
             <DatePicker
               className="w-full sm:flex-1"
               placeholder="Select date"
-              size="large"
             />
           </div>
 
           {/* Approver */}
           <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-center">
-            <label className="w-full text-sm font-medium sm:w-24 shrink-0">
+            <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
               Approver*:
             </label>
-            <Select
-              defaultValue="--Select--"
-              className="w-full sm:flex-1"
-              size="large"
-            >
+            <Select defaultValue="--Select--" className="w-full sm:flex-1">
               <Option value="--Select--">--Select--</Option>
-              <Option value="Pending">Leader</Option>
-              <Option value="Approved">Project Manager</Option>
+              <Option value="Leader">Leader</Option>
+              <Option value="PM">Project Manager</Option>
             </Select>
           </div>
 
           {/* To Date */}
           <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-center">
-            <label className="w-full text-sm font-medium sm:w-24 shrink-0">
+            <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
               To Date:
             </label>
             <DatePicker
               className="w-full sm:flex-1"
               placeholder="Select date"
-              size="large"
             />
           </div>
 
           {/* Expected Approve */}
           <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-center">
-            <label className="w-full text-sm font-medium sm:w-24 shrink-0">
+            <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
               Excepted Approve:
             </label>
             <DatePicker
               className="w-full sm:flex-1"
               placeholder="Select date"
-              size="large"
             />
           </div>
 
           {/* Partial Days */}
           <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-center">
-            <label className="w-full text-sm font-medium sm:w-24 shrink-0">
+            <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
               Partial Days*:
             </label>
-            <Select
-              defaultValue="--Select--"
-              className="w-full sm:flex-1"
-              size="large"
-            >
+            <Select defaultValue="--Select--" className="w-full sm:flex-1">
               <Option value="--Select--">--Select--</Option>
-              <Option value="Pending">Full Day</Option>
-              <Option value="Approved">Half Day</Option>
+              <Option value="FullDay">Full Day</Option>
+              <Option value="HalfDay">Half Day</Option>
             </Select>
           </div>
 
           {/* Supervisor */}
           <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-center">
-            <label className="w-full text-sm font-medium sm:w-24 shrink-0">
+            <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
               Supervisor*:
             </label>
-            <Select
-              defaultValue="--Select--"
-              className="w-full sm:flex-1"
-              size="large"
-            >
+            <Select defaultValue="--Select--" className="w-full sm:flex-1">
               <Option value="--Select--">--Select--</Option>
               <Option value="Pending">UserA</Option>
               <Option value="Approved">UserB</Option>
@@ -128,14 +111,10 @@ export default function CreateNewRequestPage() {
 
           {/* Reason */}
           <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-center">
-            <label className="w-full text-sm font-medium sm:w-24 shrink-0">
+            <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
               Reason*:
             </label>
-            <Select
-              defaultValue="--Select--"
-              className="w-full sm:flex-1"
-              size="large"
-            >
+            <Select defaultValue="--Select--" className="w-full sm:flex-1">
               <Option value="--Select--">--Select--</Option>
               <Option value="Pending">Nghỉ Phép</Option>
               <Option value="Approved">Others.</Option>
@@ -144,53 +123,54 @@ export default function CreateNewRequestPage() {
 
           {/* Inform To */}
           <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-center">
-            <label className="w-full text-sm font-medium sm:w-24 shrink-0">
+            <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
               Inform To:
             </label>
-            <Select
-              defaultValue="--Select--"
-              className="w-full sm:flex-1"
-              size="large"
-            >
+            <Select defaultValue="--Select--" className="w-full sm:flex-1">
               <Option value="--Select--">--Select--</Option>
-              <Option value="Pending">UserA</Option>
-              <Option value="Approved">UserB</Option>
+              <Option value="UserA">UserA</Option>
+              <Option value="UserB">UserB</Option>
             </Select>
           </div>
 
           {/* Reason Details */}
           <div className="sm:col-span-2">
-            <label className="block mb-2 text-sm font-medium">
+            <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
               Reason Details:
             </label>
             <textarea
               id="message"
               rows={4}
-              className="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-200"
+              className="w-full px-3 py-2 !mt-2 text-sm text-gray-900 bg-white border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-200"
               placeholder="Write your reason details here..."
             ></textarea>
           </div>
         </div>
 
         {/* Buttons */}
-        <div className="flex justify-end gap-3 mt-6">
-          <Button
-            type="primary"
-            shape="round"
-            size="middle"
-            ghost
-            className="text-blue-500 border-blue-500 hover:bg-blue-50"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="primary"
-            shape="round"
-            size="middle"
-            className="text-white bg-blue-500 hover:bg-blue-600"
-          >
-            + Apply
-          </Button>
+        <div className="flex items-center justify-between mt-6">
+          <span className="text-sm italic font-medium text-gray-500">
+            * Required
+          </span>
+          <div className="flex justify-end gap-3">
+            <Button
+              type="primary"
+              shape="round"
+              size="middle"
+              ghost
+              className="text-blue-500 border-blue-500 hover:bg-blue-50"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="primary"
+              shape="round"
+              size="middle"
+              className="text-white bg-blue-500 hover:bg-blue-600"
+            >
+              + Apply
+            </Button>
+          </div>
         </div>
       </div>
     </div>

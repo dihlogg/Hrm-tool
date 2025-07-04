@@ -7,7 +7,7 @@ import React from 'react'
 const navItems = [
 ]
 
-export default function PimLayout({ children }: { children: React.ReactNode }) {
+export default function BuzzLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   return (
