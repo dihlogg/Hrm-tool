@@ -2,7 +2,6 @@ import { Layout, Menu } from "antd";
 import {
   DashboardOutlined,
   UserOutlined,
-  SettingOutlined,
   AuditOutlined,
   WechatWorkOutlined,
   FieldTimeOutlined,
@@ -13,6 +12,8 @@ import { usePathname } from "next/navigation";
 
 const SidebarComponent = () => {
   const pathname = usePathname();
+  const iconStyle = { fontSize: 20, fontWeight: 500, color: "#6B7280" };
+  const labelStyle = { fontSize: 14, fontWeight: 500, color: "#6B7280" };
 
   const getSelectedKey = () => {
     if (pathname === "/") return "dashboard";
@@ -25,8 +26,15 @@ const SidebarComponent = () => {
   };
 
   return (
-    <Layout.Sider theme="light" className="shadow-lg" style={{ height: "100vh" }}>
-      <div className="py-4 text-xl font-bold text-center text-orange-500">
+    <Layout.Sider
+      theme="light"
+      collapsible={true}
+      breakpoint="md"
+      className="shadow-lg"
+      width={240}
+      style={{ height: "100vh" }}
+    >
+      <div className="py-6 text-xl font-bold text-center text-orange-500">
         Dinh Long
       </div>
       <Menu
@@ -35,33 +43,33 @@ const SidebarComponent = () => {
         items={[
           {
             key: "dashboard",
-            icon: <DashboardOutlined />,
-            label: <Link href="/">Dashboard</Link>,
+            icon: <DashboardOutlined style={iconStyle} />,
+            label: <Link href="/" style={labelStyle}>Dashboard</Link>,
           },
           {
             key: "admin",
-            icon: <AuditOutlined />,
-            label: <Link href="/admin">Admin</Link>,
+            icon: <AuditOutlined style={iconStyle}/>,
+            label: <Link href="/admin" style={labelStyle}>Admin</Link>,
           },
           {
             key: "leave",
-            icon: <ReconciliationOutlined />,
-            label: <Link href="/leave">Leave</Link>,
+            icon: <ReconciliationOutlined style={iconStyle}/>,
+            label: <Link href="/leave" style={labelStyle}>Leave</Link>,
           },
           {
             key: "pim",
-            icon: <UserOutlined />,
-            label: <Link href="/pim">Pim</Link>,
+            icon: <UserOutlined style={iconStyle}/>,
+            label: <Link href="/pim" style={labelStyle}>Pim</Link>,
           },
           {
             key: "time",
-            icon: <FieldTimeOutlined />,
-            label: <Link href="/time">Time</Link>,
+            icon: <FieldTimeOutlined style={iconStyle}/>,
+            label: <Link href="/time" style={labelStyle}>Time</Link>,
           },
           {
             key: "buzz",
-            icon: <WechatWorkOutlined />,
-            label: <Link href="/buzz">Buzz</Link>,
+            icon: <WechatWorkOutlined style={iconStyle}/>,
+            label: <Link href="/buzz" style={labelStyle}>Buzz</Link>,
           },
         ]}
       />

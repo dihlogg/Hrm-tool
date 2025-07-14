@@ -46,7 +46,7 @@ export default function EmployeeTimesheetPage() {
               Employee Name*
             </label>
             <input
-              className="px-2 py-3 text-sm bg-white border border-gray-200 rounded-lg w-[580px] focus:outline-none focus:ring focus:ring-blue-200"
+              className="w-full max-w-md px-2 py-3 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring focus:ring-blue-400"
               type="text"
               placeholder="Type for hints..."
             />

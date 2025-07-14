@@ -3,8 +3,9 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import React from "react";
-import { Dropdown, Button } from "antd";
+import { Dropdown } from "antd";
 import { DownOutlined } from "@ant-design/icons";
+import MainLayout from "@/components/common/main-layout";
 
 const navGroups = [
   {
@@ -38,50 +39,58 @@ export default function TimeLayout({
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Nav bar */}
-      <div className="flex gap-2 ml-3">
-        {navGroups.map((group) => {
-          const menuItems = group.items.map((item) => {
-            const isActive = pathname === item.href;
+    <MainLayout>
+      <div className="flex flex-col h-full">
+        <div className="flex gap-2 ml-3">
+          {navGroups.map((group) => {
+            const isGroupActive = group.items.some((item) =>
+              pathname.startsWith(item.href)
+            );
 
-            return {
-              key: item.href,
-              label: (
-                <Link href={item.href}>
-                  <div
-                    className={`px-4 py-1 ${
-                      isActive ? "font-semibold text-[#f66c13]" : ""
-                    }`}
-                  >
-                    {item.label}
-                  </div>
-                </Link>
-              ),
-            };
-          });
+            const menuItems = group.items.map((item) => {
+              const isActive = pathname === item.href;
 
-          return (
-            <Dropdown
-              key={group.label}
-              menu={{ items: menuItems }}
-              trigger={["click"]}
-            >
-              <button
-                className={`px-5 py-2 text-xs font-medium rounded-full border transition-colors 
-                bg-[#F9FAFB] !text-[#155DFB] border-gray-200 hover:bg-[#FFF2E8] hover:text-[#F66C13] cursor-pointer`}
+              return {
+                key: item.href,
+                label: (
+                  <Link href={item.href}>
+                    <div
+                      className={`px-3 py-1 ${
+                        isActive
+                          ? "text-xs font-medium text-[#4096FF]"
+                          : "text-xs font-small text-gray-600"
+                      }`}
+                    >
+                      {item.label}
+                    </div>
+                  </Link>
+                ),
+              };
+            });
+
+            return (
+              <Dropdown
+                key={group.label}
+                menu={{ items: menuItems }}
+                trigger={["click"]}
               >
-                {group.label} <DownOutlined className="ml-1" />
-              </button>
-            </Dropdown>
-          );
-        })}
-      </div>
+                <button
+                  className={`px-4 py-2 text-xs font-medium rounded-full border text-blue-600 transition-colors 
+                ${
+                  isGroupActive
+                    ? "!bg-[#FFF2E8] !border-[#F9FAFB] !text-blue-600 text-xs font-medium"
+                    : "bg-[#F9FAFB] !text-blue-600 border-gray-200 hover:text-[#F66C13] transition-all hover:opacity-65"
+                } cursor-pointer`}
+                >
+                  {group.label} <DownOutlined className="ml-1" />
+                </button>
+              </Dropdown>
+            );
+          })}
+        </div>
 
-      {/* Page content */}
-      <div className="flex flex-1 w-full">
-        {children}
+        <div className="flex flex-1 w-full">{children}</div>
       </div>
-    </div>
+    </MainLayout>
   );
 }

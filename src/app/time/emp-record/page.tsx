@@ -47,10 +47,10 @@ export default function EmployeeListPage() {
             <div className="flex flex-row items-center w-full space-x-4">
               <div className="flex flex-col w-full">
                 <label className="w-full mb-2 text-sm text-gray-500 font-small">
-                  Employee Name*
+                  Emp Name*
                 </label>
                 <input
-                  className="w-full px-2 py-3 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring focus:ring-blue-400"
+                  className="w-full max-w-md px-2 py-3 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring focus:ring-blue-200"
                   type="text"
                   placeholder="Type for hints..."
                 />
