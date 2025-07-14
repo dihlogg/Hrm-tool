@@ -99,7 +99,7 @@ export default function MyRecordPage() {
               Date*
             </label>
             <DatePicker
-              className="h-[40px] w-sm rounded-lg"
+              className="w-full max-w-md px-2 py-3 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring focus:ring-blue-200"
               placeholder="Select date"
             />
           </div>
