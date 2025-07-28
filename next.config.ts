@@ -1,14 +1,7 @@
 import type { NextConfig } from "next";
-const nextConfig = {
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/pim',
-        permanent: false,
-      },
-    ];
-  },
+
+const nextConfig: NextConfig = {
+  /* config options here */
 };
 
-module.exports = nextConfig;
+export default nextConfig;

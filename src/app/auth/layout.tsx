@@ -2,7 +2,7 @@ export const metadata = {
   title: "Login | HRM App",
 };
 
-export default function LoginLayout({
+export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
