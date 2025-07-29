@@ -1,13 +1,20 @@
 "use client";
 
+import { useLogin } from "@/hooks/auth/useLogin";
+import { API_ENDPOINTS } from "@/services/apiService";
+import { setAuthCookies } from "@/utils/auth";
 import { UserOutlined, KeyOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function LoginPage() {
-  const router = useRouter();
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    router.push("/");
+  const { login, error } = useLogin();
+
+  const handleLogin = async () => {
+    await login(userName, password);
   };
 
   return (
@@ -23,7 +30,7 @@ export default function LoginPage() {
                 Username
               </span>
               <span className="text-sm font-medium text-gray-700 sm:text-base lg:text-lg">
-                Admin
+                LongAuthen
               </span>
             </div>
             <div className="text-center sm:text-left">
@@ -31,7 +38,7 @@ export default function LoginPage() {
                 Password
               </span>
               <span className="text-sm font-medium text-gray-700 sm:text-base lg:text-lg">
-                admin123
+                171204
               </span>
             </div>
           </div>
@@ -46,6 +53,8 @@ export default function LoginPage() {
                 className="w-full px-3 py-3 text-base !text-gray-600 placeholder-gray-400 transition-all duration-300 bg-white border-2 border-gray-200 sm:text-base rounded-2xl focus:outline-none focus:ring-1 focus:ring-blue-100 focus:border-blue-400 placeholder:text-sm hover:border-gray-300"
                 type="text"
                 placeholder="Enter your username"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
               />
             </div>
 
@@ -58,6 +67,8 @@ export default function LoginPage() {
                 className="w-full px-3 py-3 text-base !text-gray-600 placeholder-gray-400 transition-all duration-300 bg-white border-2 border-gray-200 sm:text-base rounded-2xl focus:outline-none focus:ring-1 focus:ring-blue-100 focus:border-blue-400 placeholder:text-sm hover:border-gray-300"
                 type="password"
                 placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
@@ -67,6 +78,8 @@ export default function LoginPage() {
             >
               Login
             </button>
+
+            {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
           </div>
 
           <a className="px-2 py-1 text-base text-orange-500 transition-all duration-200 rounded-md cursor-pointer hover:underline hover:text-orange-600">
