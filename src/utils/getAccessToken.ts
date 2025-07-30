@@ -9,7 +9,7 @@ export const setAuthCookies = (
 ): void => {
   Cookies.set(ACCESS_TOKEN_KEY, accessToken, {
     path: "/",
-    expires: 1,
+    expires: 15 / 1440, //15m
     sameSite: "Lax",
   });
 

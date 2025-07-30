@@ -1,78 +1,110 @@
 "use client";
 
-import { mockMyRequests } from "@/utils/pim/mock-data-employee-list";
-import { Button, DatePicker, Pagination, Select, Table } from "antd";
+import { useJobTitles } from "@/hooks/job-titles/useJobTitles";
+import { useSubUnits } from "@/hooks/sub-units/useSubUnits";
+import { useUserStatuses } from "@/hooks/user-statuses/useUserStatuses";
+import { Button, Pagination, Select, Table } from "antd";
 import { useState } from "react";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { useRouter } from "next/navigation";
+import { useEmployee } from "@/hooks/employees/useEmployees";
 
 const { Option } = Select;
 
-const columns = [
-  {
-    title: (
-      <span className="text-sm font-semibold text-gray-600">First Name</span>
-    ),
-    dataIndex: "FirstName",
-    render: (text: string) => (
-      <span className="text-sm text-gray-500 font-small">{text}</span>
-    ),
-  },
-  {
-    title: (
-      <span className="text-sm font-semibold text-gray-600">Last Name</span>
-    ),
-    dataIndex: "LastName",
-    render: (text: string) => (
-      <span className="text-sm text-gray-500 font-small">{text}</span>
-    ),
-  },
-  {
-    title: (
-      <span className="text-sm font-semibold text-gray-600">Job Title</span>
-    ),
-    dataIndex: "JobTitle",
-    render: (text: string) => (
-      <span className="text-sm text-gray-500 font-small">{text}</span>
-    ),
-  },
-  {
-    title: (
-      <span className="text-sm font-semibold text-gray-600">
-        Employee Status
-      </span>
-    ),
-    dataIndex: "EmployeeStatus",
-    render: (text: string) => (
-      <span className="text-sm text-gray-500 font-small">{text}</span>
-    ),
-  },
-  {
-    title: (
-      <span className="text-sm font-semibold text-gray-600">Sub Unit</span>
-    ),
-    dataIndex: "SubUnit",
-    render: (text: string) => (
-      <span className="text-sm text-gray-500 font-small">{text}</span>
-    ),
-  },
-  {
-    title: (
-      <span className="text-sm font-semibold text-gray-600">Supervisor</span>
-    ),
-    dataIndex: "Supervisor",
-    render: (text: string) => (
-      <span className="text-sm text-gray-500 font-small">{text}</span>
-    ),
-  },
-];
-
 export default function EmployeeListPage() {
   const [currentPage, setCurrentPage] = useState(1);
+  const { jobTitles, error: jobTitleError } = useJobTitles();
+  const { subUnits, error: subUnitError } = useSubUnits();
+  const { userStatuses, error: userStatusError } = useUserStatuses();
+  const { employee, error: employeeError } = useEmployee();
   const pageSize = 3;
+  const router = useRouter();
 
-  const paginatedData = mockMyRequests.slice(
+  const paginatedData = employee.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+
+  const jobTitleMap = Object.fromEntries(
+    jobTitles.map((job) => [job.id, job.name])
+  );
+
+  const subUnitMap = Object.fromEntries(
+    subUnits.map((sub) => [sub.id, sub.name])
+  );
+
+  const columns = [
+    {
+      title: (
+        <span className="text-sm font-semibold text-gray-600">First Name</span>
+      ),
+      dataIndex: "firstName",
+      render: (text: string) => (
+        <span className="text-sm text-gray-500">{text}</span>
+      ),
+    },
+    {
+      title: (
+        <span className="text-sm font-semibold text-gray-600">Last Name</span>
+      ),
+      dataIndex: "lastName",
+      render: (text: string) => (
+        <span className="text-sm text-gray-500">{text}</span>
+      ),
+    },
+    {
+      title: (
+        <span className="text-sm font-semibold text-gray-600">Job Title</span>
+      ),
+      dataIndex: "jobTitleId",
+      render: (id: string) => (
+        <span className="text-sm text-gray-500">
+          {jobTitleMap[id] || "Unknown"}
+        </span>
+      ),
+    },
+    {
+      title: (
+        <span className="text-sm font-semibold text-gray-600">
+          Employee Type
+        </span>
+      ),
+      dataIndex: "employmentType",
+      render: (text: string) => (
+        <span className="text-sm text-gray-500">{text}</span>
+      ),
+    },
+    {
+      title: (
+        <span className="text-sm font-semibold text-gray-600">Sub Unit</span>
+      ),
+      dataIndex: "subUnitId",
+      render: (id: string) => (
+        <span className="text-sm text-gray-500">
+          {subUnitMap[id] || "Unknown"}
+        </span>
+      ),
+    },
+    {
+      title: (
+        <span className="text-sm font-semibold text-gray-600">Actions</span>
+      ),
+      key: "actions",
+      render: () => (
+        <div className="flex gap-4">
+          <button
+            onClick={() => router.push("/admin/edit-user")}
+            className="p-2 text-blue-600 cursor-pointer hover:text-blue-800"
+          >
+            <EditOutlined />
+          </button>
+          <button className="p-2 text-red-600 cursor-pointer hover:text-red-800">
+            <DeleteOutlined />
+          </button>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="flex-1 w-full p-4 mt-2 space-y-6">
@@ -107,14 +139,19 @@ export default function EmployeeListPage() {
             <label className="w-full text-sm text-gray-500 font-small">
               Status
             </label>
-            <Select
-              defaultValue="--Select--"
-              className="w-full !mt-2 custom-ant-select"
-            >
+            <Select defaultValue="--Select--" className="w-full !mt-2">
               <Option value="--Select--">--Select--</Option>
-              <Option value="full-time">Full Time</Option>
-              <Option value="part-time">Part Time</Option>
+
+              {userStatuses.map((status) => (
+                <Option key={status.id} value={status.name}>
+                  {status.name}
+                </Option>
+              ))}
             </Select>
+
+            {userStatusError && (
+              <p className="mt-1 text-sm text-red-500">{userStatusError}</p>
+            )}
           </div>
           <div>
             <label className="w-full text-sm text-gray-500 font-small">
@@ -145,9 +182,17 @@ export default function EmployeeListPage() {
             </label>
             <Select defaultValue="--Select--" className="w-full !mt-2">
               <Option value="--Select--">--Select--</Option>
-              <Option value="tester">Tester</Option>
-              <Option value="development">DEV</Option>
+
+              {jobTitles.map((job) => (
+                <Option key={job.id} value={job.name}>
+                  {job.name}
+                </Option>
+              ))}
             </Select>
+
+            {jobTitleError && (
+              <p className="mt-1 text-sm text-red-500">{jobTitleError}</p>
+            )}
           </div>
           <div>
             <label className="w-full text-sm text-gray-500 font-small">
@@ -155,9 +200,17 @@ export default function EmployeeListPage() {
             </label>
             <Select defaultValue="--Select--" className="w-full !mt-2">
               <Option value="--Select--">--Select--</Option>
-              <Option value="sub-unit-a">Sub Unit A</Option>
-              <Option value="sub-unit-b">Sub Unit B</Option>
+
+              {subUnits.map((sub) => (
+                <Option key={sub.id} value={sub.name}>
+                  {sub.name}
+                </Option>
+              ))}
             </Select>
+
+            {subUnitError && (
+              <p className="mt-1 text-sm text-red-500">{subUnitError}</p>
+            )}
           </div>
         </div>
         <div className="grid justify-end grid-flow-col gap-2 mt-4">
@@ -199,7 +252,7 @@ export default function EmployeeListPage() {
           <Pagination
             current={currentPage}
             pageSize={pageSize}
-            total={mockMyRequests.length}
+            total={employee.length}
             onChange={(page) => setCurrentPage(page)}
           />
         </div>
