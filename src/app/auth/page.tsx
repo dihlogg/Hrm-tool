@@ -1,10 +1,7 @@
 "use client";
 
 import { useLogin } from "@/hooks/auth/useLogin";
-import { API_ENDPOINTS } from "@/services/apiService";
-import { setAuthCookies } from "@/utils/auth";
 import { UserOutlined, KeyOutlined } from "@ant-design/icons";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPage() {
