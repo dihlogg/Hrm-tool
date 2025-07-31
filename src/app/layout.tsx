@@ -1,3 +1,5 @@
+import '@ant-design/v5-patch-for-react-19';
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "./globals.css";
 
 export const metadata = {
@@ -11,7 +13,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AntdRegistry>
+          {children}
+        </AntdRegistry>
+      </body>
     </html>
   );
 }

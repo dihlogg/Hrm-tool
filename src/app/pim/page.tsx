@@ -7,7 +7,7 @@ import { Button, Pagination, Select, Table } from "antd";
 import { useState } from "react";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
-import { useEmployee } from "@/hooks/employees/useEmployees";
+import { useEmployee } from "@/hooks/employees/useGetEmployees";
 
 const { Option } = Select;
 

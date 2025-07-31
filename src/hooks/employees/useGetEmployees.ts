@@ -2,26 +2,10 @@
 import { useEffect, useState } from "react";
 import { API_ENDPOINTS } from "@/services/apiService";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
-
-export interface Employees {
-  id: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  email: string;
-  address: string;
-  gender: string;
-  dayOfBirth: Date;
-  nationality: string;
-  imageUrl: string;
-  employmentType: string // 'official' | 'temporary'
-  jobTitleId: string;
-  subUnitId: string;
-  userId: string;
-}
+import { CreateEmployeeDto } from "./CreateEmployeeDto";
 
 export function useEmployee() {
-  const [employee, setEmployee] = useState<Employees[]>([]);
+  const [employee, setEmployee] = useState<CreateEmployeeDto[]>([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
