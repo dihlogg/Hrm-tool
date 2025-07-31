@@ -156,7 +156,7 @@ export default function UserManagementPage() {
       {/* Table Section */}
       <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-500">Employee List</h2>
+          <h2 className="text-xl font-semibold text-gray-500">Users List</h2>
           <a className="text-sm text-blue-600 cursor-pointer hover:underline">
             View All
           </a>

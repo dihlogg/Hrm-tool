@@ -1,8 +1,11 @@
 @import "tailwindcss";
-@import 'antd/dist/reset.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ant design v5 patch for React 19 */
+@import 'antd/dist/reset.css';
+
 
 :root {
   --background: #ffffff;
@@ -31,5 +34,12 @@ body {
 /* text-gray-500 */
 .custom-ant-select .ant-select-item-option-content {
   color: #6B7280 !important;
+}
+/* globals.css */
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  height: 100%;
 }
 

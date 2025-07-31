@@ -1,21 +1,82 @@
 "use client";
 
 import React, { useState } from "react";
-import { Form, Input, Button, Radio, Upload, Select } from "antd";
+import { Button, Upload, Select } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { Switch } from "@headlessui/react";
+import { useAddEmployee } from "@/hooks/employees/useAddEmployee";
+import { CreateEmployeeDto } from "@/hooks/employees/CreateEmployeeDto";
+import { useJobTitles } from "@/hooks/job-titles/useJobTitles";
+import { useSubUnits } from "@/hooks/sub-units/useSubUnits";
+import { useUserStatuses } from "@/hooks/user-statuses/useUserStatuses";
 
 const { Option } = Select;
 
 export default function AddEmployeePage() {
-  const [form] = Form.useForm();
+  const { addEmployee } = useAddEmployee();
+  const { jobTitles, error: jobTitleError } = useJobTitles();
+  const { subUnits, error: subUnitError } = useSubUnits();
+  const { userStatuses, error: userStatusError } = useUserStatuses();
+  const [fieldErrors, setFieldErrors] = useState<{ confirmPassword?: string }>(
+    {}
+  );
   const [loginEnabled, setLoginEnabled] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [userStatus, setUserStatus] = useState<"Active" | "Inactive">("Active");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [jobTitleId, setJobTitleId] = useState("");
+  const [subUnitId, setSubUnitId] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const resetForm = () => {
+    setFirstName("");
+    setLastName("");
+    setJobTitleId("");
+    setSubUnitId("");
+    setLoginEnabled(false);
+    setUsername("");
+    setPassword("");
+    setConfirmPassword("");
+    setUserStatus("Active");
+    setAvatarUrl(null);
+    setFieldErrors({});
+  };
+
+  const handleSubmit = async () => {
+    const selectedStatus = userStatuses.find((s) => s.name === userStatus);
+    try {
+      const payload: CreateEmployeeDto = {
+        firstName,
+        lastName,
+        imageUrl: avatarUrl ?? undefined,
+        jobTitleId,
+        subUnitId,
+        createLogin: loginEnabled,
+        employmentType: loginEnabled ? "Official" : "Temporary",
+        ...(loginEnabled && {
+          user: {
+            userName: username,
+            password,
+            userStatusId: selectedStatus?.id ?? "",
+          },
+        }),
+      };
+
+      await addEmployee(payload);
+      console.log("Employee created successfully!");
+      resetForm();
+    } catch (err: any) {
+      console.log(err.message);
+    }
+  };
 
   return (
     <div className="flex-1 w-full p-4 mt-2 space-y-6">
       <div className="flex-col px-8 py-4 bg-white border-gray-200 rounded-lg shadow-sm sm:flex-row">
-        <h2 className="pb-2 text-xl font-semibold text-gray-500 border-b border-b-gray-400">
+        <h2 className="pb-2 text-xl font-semibold text-gray-500 border-b border-gray-400">
           Add Employee
         </h2>
         <div className="flex flex-col gap-6 md:flex-row">
@@ -67,6 +128,8 @@ export default function AddEmployeePage() {
                   className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                   type="text"
                   placeholder="Type for hints..."
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
                 />
               </div>
 
@@ -78,30 +141,51 @@ export default function AddEmployeePage() {
                   className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                   type="text"
                   placeholder="Type for hints..."
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
                 />
               </div>
               <div>
                 <label className="w-full text-sm text-gray-500 font-small">
-                  Status
+                  Sub Unit
                 </label>
                 <Select
-                  defaultValue="--Select--"
-                  className="w-full !mt-1 custom-ant-select"
+                  value={subUnitId}
+                  onChange={(value) => setSubUnitId(value)}
+                  className="w-full !mt-2"
                 >
-                  <Option value="--Select--">--Select--</Option>
-                  <Option value="full-time">Enabled</Option>
-                  <Option value="part-time">Disabled</Option>
+                  <Option value="">--Select--</Option>
+                  {subUnits.map((sub) => (
+                    <Option key={sub.id} value={sub.id}>
+                      {sub.name}
+                    </Option>
+                  ))}
                 </Select>
+
+                {subUnitError && (
+                  <p className="mt-1 text-sm text-red-500">{subUnitError}</p>
+                )}
               </div>
               <div>
                 <label className="w-full mb-2 text-sm text-gray-500 font-small">
                   Employee Job
                 </label>
-                <Select defaultValue="--Select--" className="w-full !mt-1">
-                  <Option value="--Select--">--Select--</Option>
-                  <Option value="current">Admin</Option>
-                  <Option value="past">ESS</Option>
+                <Select
+                  value={jobTitleId}
+                  onChange={(value) => setJobTitleId(value)}
+                  className="w-full !mt-2"
+                >
+                  <Option value="">--Select--</Option>
+                  {jobTitles.map((job) => (
+                    <Option key={job.id} value={job.id}>
+                      {job.name}
+                    </Option>
+                  ))}
                 </Select>
+
+                {jobTitleError && (
+                  <p className="mt-1 text-sm text-red-500">{jobTitleError}</p>
+                )}
               </div>
             </div>
 
@@ -133,29 +217,51 @@ export default function AddEmployeePage() {
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
                     placeholder="Type for hints..."
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                   />
                 </div>
-                <div className="flex flex-col items-start">
-                  <label className="w-full mb-1 text-sm text-gray-500 font-small">
-                    Status
-                  </label>
-                  <Radio.Group className="flex gap-6">
-                    <Radio style={{ color: "#6B7280" }} value="Enabled">
-                      Enabled
-                    </Radio>
-                    <Radio style={{ color: "#6B7280" }} value="Disabled">
-                      Disabled
-                    </Radio>
-                  </Radio.Group>
+                <div>
+                  <label className="text-sm text-gray-500">Status</label>
+                  <div className="flex flex-wrap gap-4 mt-2">
+                    {userStatuses.map((status) => (
+                      <label
+                        key={status.id}
+                        className="inline-flex items-center gap-1 text-sm text-gray-700"
+                      >
+                        <input
+                          type="radio"
+                          name="userStatus"
+                          value={status.name}
+                          checked={userStatus === status.name}
+                          onChange={(e) =>
+                            setUserStatus(
+                              e.target.value as "Active" | "Inactive"
+                            )
+                          }
+                          className="w-4 h-4"
+                        />
+                        {status.name}
+                      </label>
+                    ))}
+                  </div>
+                  {userStatusError && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {userStatusError}
+                    </p>
+                  )}
                 </div>
+
                 <div className="flex flex-col">
                   <label className="mt-4 text-sm text-gray-500">
                     Password*
                   </label>
                   <input
+                    className="w-full px-3 py-2 !mt-1 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="password"
                     placeholder="Enter new password"
-                    className="w-full px-3 py-2 !mt-1 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                   <p className="!mt-2 text-sm text-gray-500">
                     For a strong password, please use a hard to guess
@@ -170,8 +276,35 @@ export default function AddEmployeePage() {
                   <input
                     type="password"
                     placeholder="Confirm new password"
-                    className="w-full !mt-1 px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                    className={`w-full px-3 py-2 !mt-1 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400 ${
+                      fieldErrors.confirmPassword
+                        ? "border-red-400 focus:ring focus:ring-red-200"
+                        : "border-gray-200"
+                    }`}
+                    value={confirmPassword}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setConfirmPassword(value);
+
+                      if (value !== password) {
+                        setFieldErrors((prev) => ({
+                          ...prev,
+                          confirmPassword: "Passwords do not match",
+                        }));
+                      } else {
+                        setFieldErrors((prev) => ({
+                          ...prev,
+                          confirmPassword: undefined,
+                        }));
+                      }
+                    }}
                   />
+
+                  {fieldErrors.confirmPassword && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {fieldErrors.confirmPassword}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -184,6 +317,7 @@ export default function AddEmployeePage() {
                 shape="round"
                 size="middle"
                 className="text-white bg-blue-500 hover:bg-blue-600"
+                onClick={handleSubmit}
               >
                 + Apply
               </Button>
