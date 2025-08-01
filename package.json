@@ -13,6 +13,8 @@
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@headlessui/react": "^2.2.4",
     "antd": "^5.26.6",
+    "axios": "^1.11.0",
+    "dayjs": "^1.11.13",
     "js-cookie": "^3.0.5",
     "next": "15.3.2",
     "react": "^19.0.0",

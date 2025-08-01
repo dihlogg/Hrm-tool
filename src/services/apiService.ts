@@ -11,5 +11,7 @@ export const API_ENDPOINTS = {
   GET_ALL_USER_STAUSES: `${API_URL}/UserStatuses/GetAllUserStatuses`,
   //employee
   GET_ALL_EMPLOYEES: `${API_URL}/Employees/GetAllEmployees`,
+  GET_EMPLOYEE_BY_ID: `${API_URL}/Employees/GetEmployeeById`,
   POST_EMPLOYEE: `${API_URL}/Employees/PostEmployee`,
+  PUT_EMPLOYEE: `${API_URL}/Employees/PutEmployee`,
 };
