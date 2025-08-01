@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CreateEmployeeDto } from "./CreateEmployeeDto";
-import { fetchWithAuth } from "@/utils/fetchWithAuth";
 import { API_ENDPOINTS } from "@/services/apiService";
+import axiosInstance from "@/utils/axiosInstance";
 
 export function useUpdateEmployee() {
   const [loading, setLoading] = useState(false);
@@ -9,12 +9,11 @@ export function useUpdateEmployee() {
   const updateEmployee = async (id: string, data: CreateEmployeeDto) => {
     setLoading(true);
     try {
-      const response = await fetchWithAuth(`${API_ENDPOINTS.PUT_EMPLOYEE}/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-      });
-
-      return response;
+      const response = await axiosInstance.put(
+        `${API_ENDPOINTS.PUT_EMPLOYEE}/${id}`,
+        data
+      );
+      return response.data;
     } finally {
       setLoading(false);
     }

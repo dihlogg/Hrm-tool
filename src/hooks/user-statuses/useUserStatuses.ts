@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { API_ENDPOINTS } from "@/services/apiService";
-import { fetchWithAuth } from "@/utils/fetchWithAuth";
+import axiosInstance from "@/utils/axiosInstance";
 
 export interface UserStatuses {
   id: string;
@@ -17,8 +17,10 @@ export function useUserStatuses() {
   useEffect(() => {
     async function loadUserStatuses() {
       try {
-        const data = await fetchWithAuth(API_ENDPOINTS.GET_ALL_USER_STAUSES);
-        setUserStatuses(data);
+        const response = await axiosInstance.get(
+          API_ENDPOINTS.GET_ALL_USER_STAUSES
+        );
+        setUserStatuses(response.data);
       } catch (err: any) {
         setError(err.message || "Failed to load user statuses");
       }

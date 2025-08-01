@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { API_ENDPOINTS } from "@/services/apiService";
-import { fetchWithAuth } from "@/utils/fetchWithAuth";
 import { CreateEmployeeDto } from "./CreateEmployeeDto";
+import axiosInstance from "@/utils/axiosInstance";
 
 export function useGetEmployeeById(id: string | undefined) {
   const [employee, setEmployee] = useState<CreateEmployeeDto | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!id) return;
@@ -16,11 +16,12 @@ export function useGetEmployeeById(id: string | undefined) {
     const fetchEmployee = async () => {
       setLoading(true);
       try {
-        const data = await fetchWithAuth(`${API_ENDPOINTS.GET_EMPLOYEE_BY_ID}/${id}`);
-        console.log("Fetched employee:", data);
-        setEmployee(data);
+        const response = await axiosInstance.get(
+          `${API_ENDPOINTS.GET_EMPLOYEE_BY_ID}/${id}`
+        );
+        setEmployee(response.data);
       } catch (err: any) {
-        setError(err.message || "Failed to fetch employee");
+        setError(err.response?.data?.message || "Failed to fetch employee");
       } finally {
         setLoading(false);
       }

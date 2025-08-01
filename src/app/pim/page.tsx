@@ -7,8 +7,8 @@ import { Button, Pagination, Select, Table } from "antd";
 import { useState } from "react";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
-import { useEmployee } from "@/hooks/employees/useGetEmployees";
 import { CreateEmployeeDto } from "@/hooks/employees/CreateEmployeeDto";
+import { useGetEmployees } from "@/hooks/employees/useGetEmployees";
 
 const { Option } = Select;
 
@@ -17,7 +17,7 @@ export default function EmployeeListPage() {
   const { jobTitles, error: jobTitleError } = useJobTitles();
   const { subUnits, error: subUnitError } = useSubUnits();
   const { userStatuses, error: userStatusError } = useUserStatuses();
-  const { employee, error: employeeError } = useEmployee();
+  const { employee, error: employeeError } = useGetEmployees();
   const pageSize = 3;
   const router = useRouter();
 
