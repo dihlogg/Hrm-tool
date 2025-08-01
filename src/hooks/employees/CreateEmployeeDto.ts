@@ -2,17 +2,17 @@ export interface CreateEmployeeDto {
   id?: string;
   firstName?: string;
   lastName?: string;
-  phoneNumber?: string;
-  email?: string;
-  address?: string;
-  gender?: string;
-  dayOfBirth?: Date;
-  nationality?: string;
-  imageUrl?: string;
-  employmentType?: string // 'official' | 'temporary'
-  jobTitleId?: string;
-  subUnitId?: string;
-  userId?: string;
+  phoneNumber?: string | null;
+  email?: string | null;
+  address?: string | null;
+  gender?: string | null;
+  dayOfBirth?: string | null;
+  nationality?: string | null;
+  imageUrl?: string | null;
+  employmentType?: string | null // 'official' | 'temporary'
+  jobTitleId?: string | null;
+  subUnitId?: string | null;
+  userId?: string | null;
   createLogin?: boolean;
   user?: {
     userName: string;

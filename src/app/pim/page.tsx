@@ -8,6 +8,7 @@ import { useState } from "react";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { useEmployee } from "@/hooks/employees/useGetEmployees";
+import { CreateEmployeeDto } from "@/hooks/employees/CreateEmployeeDto";
 
 const { Option } = Select;
 
@@ -90,10 +91,10 @@ export default function EmployeeListPage() {
         <span className="text-sm font-semibold text-gray-600">Actions</span>
       ),
       key: "actions",
-      render: () => (
+      render: (_: any, record: CreateEmployeeDto) => (
         <div className="flex gap-4">
           <button
-            onClick={() => router.push("/admin/edit-user")}
+            onClick={() => router.push(`/profile?id=${record.id}`)}
             className="p-2 text-blue-600 cursor-pointer hover:text-blue-800"
           >
             <EditOutlined />
