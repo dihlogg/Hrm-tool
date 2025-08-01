@@ -2,6 +2,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { API_ENDPOINTS } from "@/services/apiService";
 import { setAuthCookies } from "@/utils/getAccessToken";
+import axiosInstance from "@/utils/axiosInstance";
 
 export function useLogin() {
   const router = useRouter();
@@ -9,31 +10,21 @@ export function useLogin() {
 
   const login = async (userName: string, password: string) => {
     try {
-      const response = await fetch(API_ENDPOINTS.LOGIN, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userName, password }),
-        credentials: "include",
+      const response = await axiosInstance.post(API_ENDPOINTS.LOGIN, {
+        userName,
+        password,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.message || "Login failed");
-        return false;
-      }
+      const { access_token, refresh_token } = response.data;
 
-      const data = await response.json();
-
-      console.log("Login response:", data);
-      setAuthCookies(data.access_token, data.refresh_token);
+      setAuthCookies(access_token, refresh_token);
 
       router.push("/pim");
       return true;
-    } catch (err) {
+    } catch (err: any) {
       console.error("Login error:", err);
-      setError("Something wrong during login.");
+      const message = err.response?.data?.message || "Login failed";
+      setError(message);
       return false;
     }
   };

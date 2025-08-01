@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { API_ENDPOINTS } from "@/services/apiService";
-import { fetchWithAuth } from "@/utils/fetchWithAuth";
+import axiosInstance from "@/utils/axiosInstance";
 
 export interface SubUnits {
   id: string;
@@ -17,8 +17,10 @@ export function useSubUnits() {
   useEffect(() => {
     async function loadSubUnits() {
       try {
-        const data = await fetchWithAuth(API_ENDPOINTS.GET_ALL_SUB_UNITS);
-        setSubUnits(data);
+        const response = await axiosInstance.get(
+          API_ENDPOINTS.GET_ALL_SUB_UNITS
+        );
+        setSubUnits(response.data);
       } catch (err: any) {
         setError(err.message || "Failed to load sub units");
       }
