@@ -12,36 +12,36 @@ import {
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { CreateEmployeeDto } from "@/hooks/employees/CreateEmployeeDto";
-import { useGetEmployees } from "@/hooks/employees/useGetEmployees";
-import { useEmployeeList } from "@/hooks/employees/useEmployeeList";
 import type { ColumnsType, SortOrder } from "antd/es/table/interface";
+import { useEmployees } from "@/hooks/employees/useEmployees";
 
 const { Option } = Select;
 
 export default function EmployeeListPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 5;
-  const [sortBy, setSortBy] = useState<string>("");
+  const [sortBy, setSortBy] = useState<string | undefined>(undefined);
   const [sortOrder, setSortOrder] = useState<SortOrder | undefined>(undefined);
   const { jobTitles, error: jobTitleError } = useJobTitles();
   const { subUnits, error: subUnitError } = useSubUnits();
   const { userStatuses, error: userStatusError } = useUserStatuses();
-  const { employee, total, error } = useGetEmployees(currentPage, pageSize);
-  const { sortedEmployees, sortedTotal, loading } = useEmployeeList(
+  const { employees, total, loading, error } = useEmployees(
     currentPage,
     pageSize,
     sortBy,
-    antdSortOrderToApiOrder(sortOrder)
+    sortOrder ? antdSortOrderToApiOrder(sortOrder) : undefined
   );
-  const isSortedOrFiltered = sortBy !== "" && sortOrder !== undefined;
+
   const router = useRouter();
+
   function antdSortOrderToApiOrder(
-    order: SortOrder | null | undefined
+    order: SortOrder | undefined
   ): "ASC" | "DESC" | undefined {
     if (order === "ascend") return "ASC";
     if (order === "descend") return "DESC";
     return undefined;
   }
+
   const jobTitleMap = Object.fromEntries(
     jobTitles.map((job) => [job.id, job.name])
   );
@@ -118,6 +118,12 @@ export default function EmployeeListPage() {
     },
   ];
 
+  const handleResetSort = () => {
+    setSortBy(undefined);
+    setSortOrder(undefined);
+    setCurrentPage(1); // Reset to first page for consistency
+  };
+
   return (
     <div className="flex-1 w-full p-4 mt-2 space-y-6">
       {/* Filter Section */}
@@ -136,7 +142,6 @@ export default function EmployeeListPage() {
               placeholder="Type for hints..."
             />
           </div>
-
           <div className="flex flex-col items-start">
             <label className="w-full mb-2 text-sm text-gray-500 font-small">
               Last Name
@@ -147,7 +152,6 @@ export default function EmployeeListPage() {
               placeholder="Type for hints..."
             />
           </div>
-
           <div className="flex flex-col items-start">
             <label className="w-full mb-2 text-sm text-gray-500 font-small">
               Employee Id
@@ -164,14 +168,12 @@ export default function EmployeeListPage() {
             </label>
             <Select defaultValue="--Select--" className="w-full !mt-2">
               <Option value="--Select--">--Select--</Option>
-
               {userStatuses.map((status) => (
                 <Option key={status.id} value={status.name}>
                   {status.name}
                 </Option>
               ))}
             </Select>
-
             {userStatusError && (
               <p className="mt-1 text-sm text-red-500">{userStatusError}</p>
             )}
@@ -182,14 +184,12 @@ export default function EmployeeListPage() {
             </label>
             <Select defaultValue="--Select--" className="w-full !mt-2">
               <Option value="--Select--">--Select--</Option>
-
               {jobTitles.map((job) => (
                 <Option key={job.id} value={job.name}>
                   {job.name}
                 </Option>
               ))}
             </Select>
-
             {jobTitleError && (
               <p className="mt-1 text-sm text-red-500">{jobTitleError}</p>
             )}
@@ -200,14 +200,12 @@ export default function EmployeeListPage() {
             </label>
             <Select defaultValue="--Select--" className="w-full !mt-2">
               <Option value="--Select--">--Select--</Option>
-
               {subUnits.map((sub) => (
                 <Option key={sub.id} value={sub.name}>
                   {sub.name}
                 </Option>
               ))}
             </Select>
-
             {subUnitError && (
               <p className="mt-1 text-sm text-red-500">{subUnitError}</p>
             )}
@@ -220,8 +218,9 @@ export default function EmployeeListPage() {
             size="middle"
             ghost
             className="text-blue-500"
+            onClick={handleResetSort}
           >
-            Cancel
+            Reset
           </Button>
           <Button
             type="primary"
@@ -239,21 +238,25 @@ export default function EmployeeListPage() {
           <h2 className="text-xl font-semibold text-gray-500">
             ({total ?? 0}) Records Found
           </h2>
+          <a className="text-sm text-blue-600 cursor-pointer hover:underline">
+            Export
+          </a>
         </div>
         <Table
           columns={columns}
-          dataSource={isSortedOrFiltered ? sortedEmployees : employee}
+          dataSource={employees}
           pagination={false}
           rowKey="id"
           loading={loading}
           onChange={(pagination, filters, sorter) => {
-            if (!Array.isArray(sorter) && typeof sorter.field === "string") {
-              if (sorter.order === undefined) {
-                setSortBy("");
-                setSortOrder(undefined);
-              } else {
-                setSortBy(sorter.field);
-                setSortOrder(sorter.order as SortOrder);
+            if (!Array.isArray(sorter)) {
+              const field = typeof sorter.field === "string" ? sorter.field : undefined;
+              const order = sorter.order as SortOrder | undefined;
+
+              // Only update states if there’s an actual change
+              if (field !== sortBy || order !== sortOrder) {
+                setSortBy(field);
+                setSortOrder(order);
               }
             }
           }}
