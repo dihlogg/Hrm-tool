@@ -14,4 +14,5 @@ export const API_ENDPOINTS = {
   GET_EMPLOYEE_BY_ID: `${API_URL}/Employees/GetEmployeeById`,
   POST_EMPLOYEE: `${API_URL}/Employees/PostEmployee`,
   PUT_EMPLOYEE: `${API_URL}/Employees/PutEmployee`,
+  GET_EMPLOYEE_LIST: `${API_URL}/Employees/GetEmployeeList`,
 };
