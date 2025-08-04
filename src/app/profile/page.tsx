@@ -67,12 +67,16 @@ export default function ProfilePage() {
         message: "Employee Update Successfully!",
         description: `Employee information has been updated.`,
         placement: "bottomLeft",
+        duration: 3,
+        pauseOnHover: true,
       });
     } catch (err: any) {
       api.error({
         message: "Update failed!",
         description: err?.message || "An unknown error occurred.",
         placement: "bottomLeft",
+        duration: 3,
+        pauseOnHover: true,
       });
     }
   };
@@ -158,7 +162,8 @@ export default function ProfilePage() {
                     Employee Id
                   </label>
                   <input
-                    value={empId}
+                    value={`#${empId.slice(0, 8)}`}
+                    readOnly
                     onChange={(e) => setEmpId(e.target.value)}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
@@ -213,10 +218,11 @@ export default function ProfilePage() {
                     value={employmentType}
                     onChange={(value) => setEmploymentType(value)}
                     className="w-full !mt-1 custom-ant-select"
+                    placeholder="--Select--"
                   >
-                    <Option value="--Select--">--Select--</Option>
-                    <Option value="full-time">Official</Option>
-                    <Option value="part-time">Temporary</Option>
+                    <Option value="Official">Official</Option>
+                    <Option value="Temporary">Temporary</Option>
+                    <Option value="On Leave">On Leave</Option>
                   </Select>
                 </div>
 
@@ -240,8 +246,8 @@ export default function ProfilePage() {
                     value={gender}
                     onChange={(value) => setGender(value)}
                     className="w-full !mt-1 custom-ant-select"
+                    placeholder="--Select--"
                   >
-                    <Option value="--Select--">--Select--</Option>
                     <Option value="full-time">Male</Option>
                     <Option value="part-time">Female</Option>
                   </Select>
@@ -255,8 +261,8 @@ export default function ProfilePage() {
                     value={nationality}
                     onChange={(value) => setNationality(value)}
                     className="w-full !mt-1 custom-ant-select"
+                    placeholder="--Select--"
                   >
-                    <Option value="--Select--">--Select--</Option>
                     <Option value="full-time">VietNam</Option>
                     <Option value="part-time">China</Option>
                   </Select>
