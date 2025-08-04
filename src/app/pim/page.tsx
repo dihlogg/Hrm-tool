@@ -5,27 +5,43 @@ import { useSubUnits } from "@/hooks/sub-units/useSubUnits";
 import { useUserStatuses } from "@/hooks/user-statuses/useUserStatuses";
 import { Button, Pagination, Select, Table } from "antd";
 import { useState } from "react";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  IssuesCloseOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { CreateEmployeeDto } from "@/hooks/employees/CreateEmployeeDto";
 import { useGetEmployees } from "@/hooks/employees/useGetEmployees";
+import { useEmployeeList } from "@/hooks/employees/useEmployeeList";
+import type { ColumnsType, SortOrder } from "antd/es/table/interface";
 
 const { Option } = Select;
 
 export default function EmployeeListPage() {
   const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
+  const [sortBy, setSortBy] = useState<string>("");
+  const [sortOrder, setSortOrder] = useState<SortOrder | undefined>(undefined);
   const { jobTitles, error: jobTitleError } = useJobTitles();
   const { subUnits, error: subUnitError } = useSubUnits();
   const { userStatuses, error: userStatusError } = useUserStatuses();
-  const { employee, error: employeeError } = useGetEmployees();
-  const pageSize = 3;
-  const router = useRouter();
-
-  const paginatedData = employee.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
+  const { employee, total, error } = useGetEmployees(currentPage, pageSize);
+  const { sortedEmployees, sortedTotal, loading } = useEmployeeList(
+    currentPage,
+    pageSize,
+    sortBy,
+    antdSortOrderToApiOrder(sortOrder)
   );
-
+  const isSortedOrFiltered = sortBy !== "" && sortOrder !== undefined;
+  const router = useRouter();
+  function antdSortOrderToApiOrder(
+    order: SortOrder | null | undefined
+  ): "ASC" | "DESC" | undefined {
+    if (order === "ascend") return "ASC";
+    if (order === "descend") return "DESC";
+    return undefined;
+  }
   const jobTitleMap = Object.fromEntries(
     jobTitles.map((job) => [job.id, job.name])
   );
@@ -34,53 +50,45 @@ export default function EmployeeListPage() {
     subUnits.map((sub) => [sub.id, sub.name])
   );
 
-  const columns = [
+  const columns: ColumnsType<CreateEmployeeDto> = [
     {
-      title: (
-        <span className="text-sm font-semibold text-gray-600">First Name</span>
-      ),
+      title: "First Name",
       dataIndex: "firstName",
-      render: (text: string) => (
-        <span className="text-sm text-gray-500">{text}</span>
-      ),
+      sorter: true,
+      sortOrder: sortBy === "firstName" ? sortOrder : undefined,
+      render: (text) => <span className="text-sm text-gray-500">{text}</span>,
     },
     {
-      title: (
-        <span className="text-sm font-semibold text-gray-600">Last Name</span>
-      ),
+      title: "Last Name",
       dataIndex: "lastName",
-      render: (text: string) => (
-        <span className="text-sm text-gray-500">{text}</span>
-      ),
+      sorter: true,
+      sortOrder: sortBy === "lastName" ? sortOrder : undefined,
+      render: (text) => <span className="text-sm text-gray-500">{text}</span>,
     },
     {
-      title: (
-        <span className="text-sm font-semibold text-gray-600">Job Title</span>
-      ),
+      title: "Job Title",
       dataIndex: "jobTitleId",
-      render: (id: string) => (
+      sorter: true,
+      sortOrder: sortBy === "jobTitleId" ? sortOrder : undefined,
+      render: (id) => (
         <span className="text-sm text-gray-500">
           {jobTitleMap[id] || "Unknown"}
         </span>
       ),
     },
     {
-      title: (
-        <span className="text-sm font-semibold text-gray-600">
-          Employee Type
-        </span>
-      ),
+      title: "Employee Type",
       dataIndex: "employmentType",
-      render: (text: string) => (
-        <span className="text-sm text-gray-500">{text}</span>
-      ),
+      sorter: true,
+      sortOrder: sortBy === "employmentType" ? sortOrder : undefined,
+      render: (text) => <span className="text-sm text-gray-500">{text}</span>,
     },
     {
-      title: (
-        <span className="text-sm font-semibold text-gray-600">Sub Unit</span>
-      ),
+      title: "Sub Unit",
       dataIndex: "subUnitId",
-      render: (id: string) => (
+      sorter: true,
+      sortOrder: sortBy === "subUnitId" ? sortOrder : undefined,
+      render: (id) => (
         <span className="text-sm text-gray-500">
           {subUnitMap[id] || "Unknown"}
         </span>
@@ -99,8 +107,11 @@ export default function EmployeeListPage() {
           >
             <EditOutlined />
           </button>
-          <button className="p-2 text-red-600 cursor-pointer hover:text-red-800">
-            <DeleteOutlined />
+          <button className="p-2 text-red-600 cursor-pointer hover:text-blue-800">
+            <IssuesCloseOutlined />
+          </button>
+          <button className="p-2 text-red-600 cursor-pointer hover:text-blue-800">
+            <EyeOutlined />
           </button>
         </div>
       ),
@@ -117,7 +128,18 @@ export default function EmployeeListPage() {
         <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-4">
           <div className="flex flex-col items-start">
             <label className="w-full mb-2 text-sm text-gray-500 font-small">
-              Employee Name
+              First Name
+            </label>
+            <input
+              className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+              type="text"
+              placeholder="Type for hints..."
+            />
+          </div>
+
+          <div className="flex flex-col items-start">
+            <label className="w-full mb-2 text-sm text-gray-500 font-small">
+              Last Name
             </label>
             <input
               className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
@@ -153,29 +175,6 @@ export default function EmployeeListPage() {
             {userStatusError && (
               <p className="mt-1 text-sm text-red-500">{userStatusError}</p>
             )}
-          </div>
-          <div>
-            <label className="w-full text-sm text-gray-500 font-small">
-              Include
-            </label>
-            <Select defaultValue="--Select--" className="w-full !mt-2">
-              <Option value="--Select--">--Select--</Option>
-              <Option value="current">Current Employees Only</Option>
-              <Option value="past">Past Employees Only</Option>
-              <Option value="current-past">
-                Current and Past Employees Only
-              </Option>
-            </Select>
-          </div>
-          <div>
-            <label className="w-full text-sm text-gray-500 font-small">
-              Supervisor
-            </label>
-            <Select defaultValue="--Select--" className="w-full !mt-2">
-              <Option value="--Select--">--Select--</Option>
-              <Option value="supervisor-a">SupervisorA</Option>
-              <Option value="supervisor-b">SupervisorB</Option>
-            </Select>
           </div>
           <div>
             <label className="w-full text-sm text-gray-500 font-small">
@@ -237,23 +236,33 @@ export default function EmployeeListPage() {
       {/* Table Section */}
       <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-500">Employee List</h2>
-          <a className="text-sm text-blue-600 cursor-pointer hover:underline">
-            View All
-          </a>
+          <h2 className="text-xl font-semibold text-gray-500">
+            ({total ?? 0}) Records Found
+          </h2>
         </div>
         <Table
           columns={columns}
-          dataSource={paginatedData}
+          dataSource={isSortedOrFiltered ? sortedEmployees : employee}
           pagination={false}
           rowKey="id"
-          scroll={{ x: "max-content" }}
+          loading={loading}
+          onChange={(pagination, filters, sorter) => {
+            if (!Array.isArray(sorter) && typeof sorter.field === "string") {
+              if (sorter.order === undefined) {
+                setSortBy("");
+                setSortOrder(undefined);
+              } else {
+                setSortBy(sorter.field);
+                setSortOrder(sorter.order as SortOrder);
+              }
+            }
+          }}
         />
         <div className="flex items-center justify-end mt-4">
           <Pagination
             current={currentPage}
             pageSize={pageSize}
-            total={employee.length}
+            total={total}
             onChange={(page) => setCurrentPage(page)}
           />
         </div>
