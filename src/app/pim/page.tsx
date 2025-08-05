@@ -1,8 +1,7 @@
 "use client";
 
-import { useJobTitles } from "@/hooks/job-titles/useJobTitles";
-import { useSubUnits } from "@/hooks/sub-units/useSubUnits";
-import { useUserStatuses } from "@/hooks/user-statuses/useUserStatuses";
+import { useJobTitles } from "@/hooks/employees/job-titles/useJobTitles";
+import { useSubUnits } from "@/hooks/employees/sub-units/useSubUnits";
 import { Button, Pagination, Select, Table } from "antd";
 import { useState } from "react";
 import {
@@ -14,6 +13,9 @@ import { useRouter } from "next/navigation";
 import { CreateEmployeeDto } from "@/hooks/employees/CreateEmployeeDto";
 import type { ColumnsType, SortOrder } from "antd/es/table/interface";
 import { useEmployees } from "@/hooks/employees/useEmployees";
+import { useGetEmployeeStatus } from "@/hooks/employees/employee-statuses/useGetEmployeeStatus";
+import { antdSortOrderToApiOrder } from "@/utils/tableSorting";
+import { useResetSort } from "@/hooks/useResetSort";
 
 const { Option } = Select;
 
@@ -24,31 +26,33 @@ export default function EmployeeListPage() {
   const [sortOrder, setSortOrder] = useState<SortOrder | undefined>(undefined);
   const { jobTitles, error: jobTitleError } = useJobTitles();
   const { subUnits, error: subUnitError } = useSubUnits();
-  const { userStatuses, error: userStatusError } = useUserStatuses();
-  const { employees, total, loading, error } = useEmployees(
+  const { employeeStatuses, error: employeeStatusError } =
+    useGetEmployeeStatus();
+  const { employees, total, loading } = useEmployees(
     currentPage,
     pageSize,
     sortBy,
     sortOrder ? antdSortOrderToApiOrder(sortOrder) : undefined
   );
+  const handleResetSort = useResetSort(setSortBy, setSortOrder, setCurrentPage);
 
   const router = useRouter();
 
-  function antdSortOrderToApiOrder(
-    order: SortOrder | undefined
-  ): "ASC" | "DESC" | undefined {
-    if (order === "ascend") return "ASC";
-    if (order === "descend") return "DESC";
-    return undefined;
+  function mapSorterFieldToApiField(
+    field: string | undefined
+  ): string | undefined {
+    if (!field) return undefined;
+    switch (field) {
+      case "jobTitleId":
+        return "jobTitle";
+      case "employeeStatusId":
+        return "employeeStatus";
+      case "subUnitId":
+        return "subUnit";
+      default:
+        return field;
+    }
   }
-
-  const jobTitleMap = Object.fromEntries(
-    jobTitles.map((job) => [job.id, job.name])
-  );
-
-  const subUnitMap = Object.fromEntries(
-    subUnits.map((sub) => [sub.id, sub.name])
-  );
 
   const columns: ColumnsType<CreateEmployeeDto> = [
     {
@@ -69,30 +73,22 @@ export default function EmployeeListPage() {
       title: "Job Title",
       dataIndex: "jobTitleId",
       sorter: true,
-      sortOrder: sortBy === "jobTitleId" ? sortOrder : undefined,
-      render: (id) => (
-        <span className="text-sm text-gray-500">
-          {jobTitleMap[id] || "Unknown"}
-        </span>
-      ),
+      sortOrder: sortBy === "jobTitle" ? sortOrder : undefined,
+      render: (text, record) => record.jobTitle?.name || "No Data",
     },
     {
-      title: "Employee Type",
-      dataIndex: "employmentType",
+      title: "Employee Status",
+      dataIndex: "employeeStatusId",
       sorter: true,
-      sortOrder: sortBy === "employmentType" ? sortOrder : undefined,
-      render: (text) => <span className="text-sm text-gray-500">{text}</span>,
+      sortOrder: sortBy === "employeeStatus" ? sortOrder : undefined,
+      render: (text, record) => record.employeeStatus?.name || "No Data",
     },
     {
       title: "Sub Unit",
       dataIndex: "subUnitId",
       sorter: true,
-      sortOrder: sortBy === "subUnitId" ? sortOrder : undefined,
-      render: (id) => (
-        <span className="text-sm text-gray-500">
-          {subUnitMap[id] || "Unknown"}
-        </span>
-      ),
+      sortOrder: sortBy === "subUnit" ? sortOrder : undefined,
+      render: (text, record) => record.subUnit?.name || "No Data",
     },
     {
       title: (
@@ -117,12 +113,6 @@ export default function EmployeeListPage() {
       ),
     },
   ];
-
-  const handleResetSort = () => {
-    setSortBy(undefined);
-    setSortOrder(undefined);
-    setCurrentPage(1); // Reset to first page for consistency
-  };
 
   return (
     <div className="flex-1 w-full p-4 mt-2 space-y-6">
@@ -164,26 +154,32 @@ export default function EmployeeListPage() {
           </div>
           <div>
             <label className="w-full text-sm text-gray-500 font-small">
-              Status
+              Employee Status
             </label>
-            <Select defaultValue="--Select--" className="w-full !mt-2">
-              <Option value="--Select--">--Select--</Option>
-              {userStatuses.map((status) => (
+            <Select
+              className="w-full !mt-2"
+              placeholder="--Select--"
+              allowClear
+            >
+              {employeeStatuses.map((status) => (
                 <Option key={status.id} value={status.name}>
                   {status.name}
                 </Option>
               ))}
             </Select>
-            {userStatusError && (
-              <p className="mt-1 text-sm text-red-500">{userStatusError}</p>
+            {employeeStatusError && (
+              <p className="mt-1 text-sm text-red-500">{employeeStatusError}</p>
             )}
           </div>
           <div>
             <label className="w-full text-sm text-gray-500 font-small">
               Job Title
             </label>
-            <Select defaultValue="--Select--" className="w-full !mt-2">
-              <Option value="--Select--">--Select--</Option>
+            <Select
+              className="w-full !mt-2"
+              placeholder="--Select--"
+              allowClear
+            >
               {jobTitles.map((job) => (
                 <Option key={job.id} value={job.name}>
                   {job.name}
@@ -198,8 +194,11 @@ export default function EmployeeListPage() {
             <label className="w-full text-sm text-gray-500 font-small">
               Sub Unit
             </label>
-            <Select defaultValue="--Select--" className="w-full !mt-2">
-              <Option value="--Select--">--Select--</Option>
+            <Select
+              className="w-full !mt-2"
+              placeholder="--Select--"
+              allowClear
+            >
               {subUnits.map((sub) => (
                 <Option key={sub.id} value={sub.name}>
                   {sub.name}
@@ -238,7 +237,7 @@ export default function EmployeeListPage() {
           <h2 className="text-xl font-semibold text-gray-500">
             ({total ?? 0}) Records Found
           </h2>
-          <a className="text-sm text-blue-600 cursor-pointer hover:underline">
+          <a className="p-2 mb-2 text-sm text-blue-600 cursor-pointer hover:underline">
             Export
           </a>
         </div>
@@ -248,14 +247,16 @@ export default function EmployeeListPage() {
           pagination={false}
           rowKey="id"
           loading={loading}
+          scroll={{ x: "max-content" }}
           onChange={(pagination, filters, sorter) => {
             if (!Array.isArray(sorter)) {
-              const field = typeof sorter.field === "string" ? sorter.field : undefined;
+              const rawField =
+                typeof sorter.field === "string" ? sorter.field : undefined;
+              const mappedField = mapSorterFieldToApiField(rawField);
               const order = sorter.order as SortOrder | undefined;
 
-              // Only update states if there’s an actual change
-              if (field !== sortBy || order !== sortOrder) {
-                setSortBy(field);
+              if (mappedField !== sortBy || order !== sortOrder) {
+                setSortBy(mappedField);
                 setSortOrder(order);
               }
             }

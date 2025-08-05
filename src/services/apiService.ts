@@ -9,6 +9,8 @@ export const API_ENDPOINTS = {
   GET_ALL_SUB_UNITS: `${API_URL}/SubUnits/GetAllSubUnits`,
   //user status
   GET_ALL_USER_STAUSES: `${API_URL}/UserStatuses/GetAllUserStatuses`,
+  //employee-status
+  GET_ALL_EMPLOYEE_STATUSES: `${API_URL}/EmployeeStatuses/GetAllEmployeeStatuses`,
   //employee
   GET_ALL_EMPLOYEES: `${API_URL}/Employees/GetAllEmployees`,
   GET_EMPLOYEE_BY_ID: `${API_URL}/Employees/GetEmployeeById`,

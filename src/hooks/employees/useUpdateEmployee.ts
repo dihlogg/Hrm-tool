@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CreateEmployeeDto } from "./CreateEmployeeDto";
 import { API_ENDPOINTS } from "@/services/apiService";
-import axiosInstance from "@/utils/axiosInstance";
+import axiosInstance from "@/utils/auth/axiosInstance";
 
 export function useUpdateEmployee() {
   const [loading, setLoading] = useState(false);

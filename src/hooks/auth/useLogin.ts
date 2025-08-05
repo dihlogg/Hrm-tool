@@ -1,8 +1,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { API_ENDPOINTS } from "@/services/apiService";
-import { setAuthCookies } from "@/utils/getAccessToken";
-import axiosInstance from "@/utils/axiosInstance";
+import { setAuthCookies } from "@/utils/auth/getAccessToken";
+import axiosInstance from "@/utils/auth/axiosInstance";
 
 export function useLogin() {
   const router = useRouter();
