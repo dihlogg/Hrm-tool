@@ -5,12 +5,14 @@ import { API_ENDPOINTS } from "@/services/apiService";
 import { CreateEmployeeDto } from "./CreateEmployeeDto";
 import { PaginatedResponse } from "@/types/pagination";
 import axiosInstance from "@/utils/auth/axiosInstance";
+import { EmployeeFilters } from "./EmployeeFiltersDto";
 
 export function useEmployees(
   page: number,
   pageSize: number,
   sortBy?: string,
-  sortOrder?: "ASC" | "DESC"
+  sortOrder?: "ASC" | "DESC",
+  filters: EmployeeFilters = {}
 ) {
   const [employees, setEmployees] = useState<CreateEmployeeDto[]>([]);
   const [total, setTotal] = useState(0);
@@ -20,9 +22,17 @@ export function useEmployees(
   useEffect(() => {
     async function loadEmployees() {
       setLoading(true);
+
+      const cleanedFilters: Record<string, string> = Object.fromEntries(
+        Object.entries(filters).filter(
+          ([_, value]) => value && value.trim() !== ""
+        )
+      );
+
       const params: any = {
         page,
         pageSize,
+        ...cleanedFilters,
       };
 
       if (sortBy && sortOrder) {
@@ -44,7 +54,7 @@ export function useEmployees(
     }
 
     loadEmployees();
-  }, [page, pageSize, sortBy, sortOrder]);
+  }, [page, pageSize, sortBy, sortOrder, JSON.stringify(filters)]);
 
   return { employees, total, error, loading };
 }

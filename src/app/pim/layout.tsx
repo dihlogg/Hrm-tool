@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import React from "react";
 import MainLayout from "@/components/common/main-layout";
+import '@ant-design/v5-patch-for-react-19';
 
 const navItems = [
   { href: "/pim", label: "Employee List" },
