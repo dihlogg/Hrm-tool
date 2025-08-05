@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { API_ENDPOINTS } from "@/services/apiService";
 import { CreateEmployeeDto } from "./CreateEmployeeDto";
-import axiosInstance from "@/utils/axiosInstance";
+import axiosInstance from "@/utils/auth/axiosInstance";
 
 export function useGetEmployeeById(id: string | undefined) {
   const [employee, setEmployee] = useState<CreateEmployeeDto | null>(null);

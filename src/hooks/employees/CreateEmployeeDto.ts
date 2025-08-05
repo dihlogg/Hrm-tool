@@ -9,9 +9,21 @@ export interface CreateEmployeeDto {
   dayOfBirth?: string | null;
   nationality?: string | null;
   imageUrl?: string | null;
-  employmentType?: string | null // 'official' | 'temporary'
+  employeeStatusId?: string | null;
+  employeeStatus?: {
+    id: string;
+    name: string;
+  };
   jobTitleId?: string | null;
+  jobTitle?: {
+    id: string;
+    name: string;
+  };
   subUnitId?: string | null;
+  subUnit?: {
+    id: string;
+    name: string;
+  };
   userId?: string | null;
   createLogin?: boolean;
   user?: {

@@ -2,7 +2,7 @@
 
 import { API_ENDPOINTS } from "@/services/apiService";
 import { CreateEmployeeDto } from "./CreateEmployeeDto";
-import axiosInstance from "@/utils/axiosInstance";
+import axiosInstance from "@/utils/auth/axiosInstance";
 
 export function useAddEmployee() {
   async function addEmployee(employee: CreateEmployeeDto) {

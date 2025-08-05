@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { API_ENDPOINTS } from "@/services/apiService";
-import axiosInstance from "@/utils/axiosInstance";
+import axiosInstance from "@/utils/auth/axiosInstance";
 
 export interface SubUnits {
   id: string;

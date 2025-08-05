@@ -6,9 +6,10 @@ import { UploadOutlined } from "@ant-design/icons";
 import { Switch } from "@headlessui/react";
 import { useAddEmployee } from "@/hooks/employees/useAddEmployee";
 import { CreateEmployeeDto } from "@/hooks/employees/CreateEmployeeDto";
-import { useJobTitles } from "@/hooks/job-titles/useJobTitles";
-import { useSubUnits } from "@/hooks/sub-units/useSubUnits";
+import { useJobTitles } from "@/hooks/employees/job-titles/useJobTitles";
+import { useSubUnits } from "@/hooks/employees/sub-units/useSubUnits";
 import { useUserStatuses } from "@/hooks/user-statuses/useUserStatuses";
+import { useGetEmployeeStatus } from "@/hooks/employees/employee-statuses/useGetEmployeeStatus";
 
 const { Option } = Select;
 
@@ -16,6 +17,8 @@ export default function AddEmployeePage() {
   const { addEmployee } = useAddEmployee();
   const { jobTitles, error: jobTitleError } = useJobTitles();
   const { subUnits, error: subUnitError } = useSubUnits();
+  const { employeeStatuses, error: employeeStatusesEror } =
+    useGetEmployeeStatus();
   const { userStatuses, error: userStatusError } = useUserStatuses();
   const [fieldErrors, setFieldErrors] = useState<{ confirmPassword?: string }>(
     {}
@@ -26,8 +29,11 @@ export default function AddEmployeePage() {
   const [userStatus, setUserStatus] = useState<"Active" | "Inactive">("Active");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [jobTitleId, setJobTitleId] = useState("");
-  const [subUnitId, setSubUnitId] = useState("");
+  const [jobTitleId, setJobTitleId] = useState<string | undefined>(undefined);
+  const [subUnitId, setSubUnitId] = useState<string | undefined>(undefined);
+  const [employeeStatusId, setEmployeeStatusId] = useState<string | undefined>(
+    undefined
+  );
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -37,6 +43,7 @@ export default function AddEmployeePage() {
     setLastName("");
     setJobTitleId("");
     setSubUnitId("");
+    setEmployeeStatusId("");
     setLoginEnabled(false);
     setUsername("");
     setPassword("");
@@ -55,8 +62,8 @@ export default function AddEmployeePage() {
         imageUrl: avatarUrl ?? undefined,
         jobTitleId,
         subUnitId,
+        employeeStatusId,
         createLogin: loginEnabled,
-        employmentType: loginEnabled ? "Official" : "Temporary",
         ...(loginEnabled && {
           user: {
             userName: username,
@@ -71,14 +78,14 @@ export default function AddEmployeePage() {
       api.success({
         message: "Employee created successfully!",
         description: `Employee ${firstName} ${lastName} has been added.`,
-        placement: 'bottomLeft',
+        placement: "bottomLeft",
       });
       resetForm();
     } catch (err: any) {
       api.error({
         message: "Employee created failed!",
         description: err?.message || "An unknown error occurred.",
-        placement: 'bottomLeft',
+        placement: "bottomLeft",
       });
     }
   };
@@ -165,8 +172,8 @@ export default function AddEmployeePage() {
                     value={subUnitId}
                     onChange={(value) => setSubUnitId(value)}
                     className="w-full !mt-2"
+                    placeholder="--Select--"
                   >
-                    <Option value="">--Select--</Option>
                     {subUnits.map((sub) => (
                       <Option key={sub.id} value={sub.id}>
                         {sub.name}
@@ -186,8 +193,8 @@ export default function AddEmployeePage() {
                     value={jobTitleId}
                     onChange={(value) => setJobTitleId(value)}
                     className="w-full !mt-2"
+                    placeholder="--Select--"
                   >
-                    <Option value="">--Select--</Option>
                     {jobTitles.map((job) => (
                       <Option key={job.id} value={job.id}>
                         {job.name}
@@ -197,6 +204,31 @@ export default function AddEmployeePage() {
 
                   {jobTitleError && (
                     <p className="mt-1 text-sm text-red-500">{jobTitleError}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="w-full mb-2 text-sm text-gray-500 font-small">
+                    Employee Status
+                  </label>
+                  <Select
+                    value={employeeStatusId}
+                    onChange={(value) => setEmployeeStatusId(value)}
+                    className="w-full !mt-2"
+                    placeholder="--Select--"
+                    allowClear
+                  >
+                    {employeeStatuses.map((status) => (
+                      <Option key={status.id} value={status.id}>
+                        {status.name}
+                      </Option>
+                    ))}
+                  </Select>
+
+                  {employeeStatusesEror && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {employeeStatusesEror}
+                    </p>
                   )}
                 </div>
               </div>
@@ -329,7 +361,7 @@ export default function AddEmployeePage() {
                   shape="round"
                   size="middle"
                   className="text-white bg-blue-500 hover:bg-blue-600"
-                  onClick={handleSubmit}                  
+                  onClick={handleSubmit}
                 >
                   + Apply
                 </Button>

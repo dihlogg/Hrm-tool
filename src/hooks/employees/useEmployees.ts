@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { API_ENDPOINTS } from "@/services/apiService";
-import axiosInstance from "@/utils/axiosInstance";
 import { CreateEmployeeDto } from "./CreateEmployeeDto";
 import { PaginatedResponse } from "@/types/pagination";
+import axiosInstance from "@/utils/auth/axiosInstance";
 
 export function useEmployees(
   page: number,
