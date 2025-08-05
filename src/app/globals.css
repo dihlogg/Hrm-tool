@@ -6,7 +6,6 @@
 /* ant design v5 patch for React 19 */
 @import 'antd/dist/reset.css';
 
-
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -41,5 +40,11 @@ html, body {
   padding: 0;
   min-height: 100vh;
   height: 100%;
+}
+.custom-select .ant-select-selection-placeholder {
+  color: #6B7280 !important;
+}
+.custom-select::placeholder {
+  color: #000000 !important;
 }
 
