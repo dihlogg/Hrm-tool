@@ -111,7 +111,7 @@ export default function EmployeeListPage() {
       render: (_: any, record: CreateEmployeeDto) => (
         <div className="flex gap-4">
           <button
-            onClick={() => router.push(`/profile?id=${record.id}`)}
+            onClick={() => router.push(`/pim/edit-employee?id=${record.id}`)}
             className="p-2 text-blue-600 cursor-pointer hover:text-blue-800"
           >
             <EditOutlined style={{ fontSize: "16px", color: "#6B7280" }} />

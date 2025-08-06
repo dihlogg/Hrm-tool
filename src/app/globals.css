@@ -30,10 +30,6 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
-/* text-gray-500 */
-.custom-ant-select .ant-select-item-option-content {
-  color: #6B7280 !important;
-}
 /* globals.css */
 html, body {
   margin: 0;
@@ -41,7 +37,7 @@ html, body {
   min-height: 100vh;
   height: 100%;
 }
-.custom-select .ant-select-selection-placeholder {
+.custom-select .ant-select-selection-placeholder .ant-select-item-option-content {
   color: #6B7280 !important;
 }
 .custom-select::placeholder {

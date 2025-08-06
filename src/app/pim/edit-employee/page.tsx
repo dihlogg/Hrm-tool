@@ -11,36 +11,35 @@ import { useUpdateEmployee } from "@/hooks/employees/useUpdateEmployee";
 
 const { Option } = Select;
 
-export default function ProfilePage() {
+export default function EditEmployeePage() {
   const { updateEmployee } = useUpdateEmployee();
   const searchParams = useSearchParams();
   const employeeId = searchParams.get("id") || undefined;
   const { employee, loading } = useGetEmployeeById(employeeId ?? "");
   const [api, contextHolder] = notification.useNotification();
 
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState<string | null>(null);
+  const [lastName, setLastName] = useState<string | null>(null);
   const [empId, setEmpId] = useState(employeeId || "");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [address, setAddress] = useState("");
-  const [employmentType, setEmploymentType] = useState("--Select--");
-  const [nationality, setNationality] = useState("--Select--");
-  const [gender, setGender] = useState("--Select--");
+  const [email, setEmail] = useState<string | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
+  const [address, setAddress] = useState<string | null>(null);
+  const [nationality, setNationality] = useState<string | null>(null);
+  const [gender, setGender] = useState<string | null>(null);
   const [dateOfBirth, setDateOfBirth] = useState<Dayjs | null>(null);
 
   useEffect(() => {
     if (employee) {
-      setFirstName(employee.firstName || "");
-      setLastName(employee.lastName || "");
-      setAvatarUrl(employee.imageUrl || null);
-      setEmail(employee.email || "");
-      setPhoneNumber(employee.phoneNumber || "");
-      setAddress(employee.address || "");
-      setEmpId(employee.id || "");
-      setNationality(employee.nationality || "--Select--");
-      setGender(employee.gender || "--Select--");
+      setFirstName(employee.firstName ?? null);
+      setLastName(employee.lastName ?? null);
+      setImageUrl(employee.imageUrl ?? null);
+      setEmail(employee.email ?? null);
+      setPhoneNumber(employee.phoneNumber ?? null);
+      setAddress(employee.address ?? null);
+      setEmpId(employee.id ?? "");
+      setNationality(employee.nationality ?? null);
+      setGender(employee.gender ?? null);
       setDateOfBirth(employee.dayOfBirth ? dayjs(employee.dayOfBirth) : null);
     }
   }, [employee]);
@@ -49,15 +48,15 @@ export default function ProfilePage() {
     try {
       const payload: CreateEmployeeDto = {
         id: employeeId,
-        firstName,
-        lastName,
-        imageUrl: avatarUrl ?? undefined,
-        email,
-        phoneNumber,
-        address,
-        gender,
-        nationality,
-        dayOfBirth: dateOfBirth?.toISOString(),
+        firstName: firstName || "",
+        lastName: lastName || "",
+        imageUrl: imageUrl ?? null,
+        email: email ?? null,
+        phoneNumber: phoneNumber ?? null,
+        address: address ?? null,
+        gender: gender ?? null,
+        nationality: nationality ?? null,
+        dayOfBirth: dateOfBirth?.toISOString() ?? null,
       };
 
       await updateEmployee(employeeId!, payload);
@@ -94,9 +93,9 @@ export default function ProfilePage() {
             <div className="flex flex-col items-center">
               <div className="relative w-[180px] h-[180px]">
                 <div className="flex items-center justify-center w-full h-full overflow-hidden text-5xl text-gray-400 bg-gray-100 rounded-full">
-                  {avatarUrl ? (
+                  {imageUrl ? (
                     <img
-                      src={avatarUrl}
+                      src={imageUrl}
                       alt="Avatar"
                       className="object-cover w-full h-full"
                     />
@@ -111,7 +110,7 @@ export default function ProfilePage() {
                   beforeUpload={(file) => {
                     const reader = new FileReader();
                     reader.onload = (e) => {
-                      setAvatarUrl(e.target?.result as string);
+                      setImageUrl(e.target?.result as string);
                     };
                     reader.readAsDataURL(file);
                     return false;
@@ -134,7 +133,7 @@ export default function ProfilePage() {
                     First Name
                   </label>
                   <input
-                    value={firstName}
+                    value={firstName as string}
                     onChange={(e) => setFirstName(e.target.value)}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
@@ -147,7 +146,7 @@ export default function ProfilePage() {
                     Last Name
                   </label>
                   <input
-                    value={lastName}
+                    value={lastName as string}
                     onChange={(e) => setLastName(e.target.value)}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
@@ -162,7 +161,6 @@ export default function ProfilePage() {
                   <input
                     value={`#${empId.slice(0, 8)}`}
                     readOnly
-                    onChange={(e) => setEmpId(e.target.value)}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
                     placeholder="Type for hints..."
@@ -174,8 +172,8 @@ export default function ProfilePage() {
                     Email
                   </label>
                   <input
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={email as string}
+                    onChange={(e) => setEmail(e.target.value || null)}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
                     placeholder="Type for hints..."
@@ -187,8 +185,8 @@ export default function ProfilePage() {
                     Phone Number
                   </label>
                   <input
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    value={phoneNumber as string}
+                    onChange={(e) => setPhoneNumber(e.target.value || null)}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
                     placeholder="Type for hints..."
@@ -200,38 +198,22 @@ export default function ProfilePage() {
                     Address
                   </label>
                   <input
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
+                    value={address as string}
+                    onChange={(e) => setAddress(e.target.value || null)}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
                     placeholder="Type for hints..."
                   />
                 </div>
 
-                <div>
-                  <label className="w-full mb-2 text-sm text-gray-500 font-small">
-                    Employment Type
-                  </label>
-                  <Select
-                    value={employmentType}
-                    onChange={(value) => setEmploymentType(value)}
-                    className="w-full !mt-1 custom-ant-select"
-                    placeholder="--Select--"
-                  >
-                    <Option value="Official">Official</Option>
-                    <Option value="Temporary">Temporary</Option>
-                    <Option value="On Leave">On Leave</Option>
-                  </Select>
-                </div>
-
-                <div>
+                <div className="flex flex-col items-start">
                   <label className="w-full mb-1 text-sm text-gray-500 font-small">
                     Date Of Birth
                   </label>
                   <DatePicker
                     value={dateOfBirth}
                     onChange={(date) => setDateOfBirth(date)}
-                    className="w-full px-3 py-1 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                    className="w-full px-3 py-1 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400 custom-select"
                     placeholder="Select date"
                   />
                 </div>
@@ -245,9 +227,10 @@ export default function ProfilePage() {
                     onChange={(value) => setGender(value)}
                     className="w-full !mt-1 custom-ant-select"
                     placeholder="--Select--"
+                    allowClear
                   >
-                    <Option value="full-time">Male</Option>
-                    <Option value="part-time">Female</Option>
+                    <Option value="Male">Male</Option>
+                    <Option value="Female">Female</Option>
                   </Select>
                 </div>
 
@@ -258,11 +241,11 @@ export default function ProfilePage() {
                   <Select
                     value={nationality}
                     onChange={(value) => setNationality(value)}
-                    className="w-full !mt-1 custom-ant-select"
+                    className="w-full !mt-1 custom-select"
                     placeholder="--Select--"
                   >
-                    <Option value="full-time">VietNam</Option>
-                    <Option value="part-time">China</Option>
+                    <Option value="VietNam">VietNam</Option>
+                    <Option value="China">China</Option>
                   </Select>
                 </div>
               </div>
