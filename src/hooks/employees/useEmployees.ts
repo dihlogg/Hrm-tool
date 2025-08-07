@@ -12,7 +12,8 @@ export function useEmployees(
   pageSize: number,
   sortBy?: string,
   sortOrder?: "ASC" | "DESC",
-  filters: EmployeeFilters = {}
+  filters: EmployeeFilters = {},
+  hotReload: number = 0
 ) {
   const [employees, setEmployees] = useState<CreateEmployeeDto[]>([]);
   const [total, setTotal] = useState(0);
@@ -54,7 +55,7 @@ export function useEmployees(
     }
 
     loadEmployees();
-  }, [page, pageSize, sortBy, sortOrder, JSON.stringify(filters)]);
+  }, [page, pageSize, sortBy, sortOrder, JSON.stringify(filters), hotReload]);
 
-  return { employees, total, error, loading };
+  return { employees, total, error, loading, hotReload };
 }
