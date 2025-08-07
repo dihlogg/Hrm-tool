@@ -33,7 +33,6 @@ export default function EmployeeListPage() {
   const { subUnits, error: subUnitError } = useSubUnits();
   const { employeeStatuses, error: employeeStatusError } =
     useGetEmployeeStatus();
-
   const [filters, setFilters] = useState<EmployeeFilters>(getInitialFilters());
   const [filterDrafts, setFilterDrafts] = useState<EmployeeFilters>(
     getInitialFilters()
@@ -88,18 +87,18 @@ export default function EmployeeListPage() {
       render: (_, record) => record.jobTitle?.name || "No Data",
     },
     {
-      title: <span className="select-none">Employee Status</span>,
-      dataIndex: "employeeStatusId",
-      sorter: true,
-      sortOrder: sortBy === "employeeStatus" ? sortOrder : undefined,
-      render: (_, record) => record.employeeStatus?.name || "No Data",
-    },
-    {
       title: <span className="select-none">Sub Unit</span>,
       dataIndex: "subUnitId",
       sorter: true,
       sortOrder: sortBy === "subUnit" ? sortOrder : undefined,
       render: (_, record) => record.subUnit?.name || "No Data",
+    },
+    {
+      title: <span className="select-none">Employee Status</span>,
+      dataIndex: "employeeStatusId",
+      sorter: true,
+      sortOrder: sortBy === "employeeStatus" ? sortOrder : undefined,
+      render: (_, record) => record.employeeStatus?.name || "No Data",
     },
     {
       title: (
@@ -276,6 +275,7 @@ export default function EmployeeListPage() {
             onClick={() => {
               setFilterDrafts(getInitialFilters());
               setSortOrder(undefined);
+              setFilters(filterDrafts)
             }}
           >
             Reset

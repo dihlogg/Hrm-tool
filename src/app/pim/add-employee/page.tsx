@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Button, Upload, Select, notification } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { UploadOutlined, UserAddOutlined } from "@ant-design/icons";
 import { Switch } from "@headlessui/react";
 import { useAddEmployee } from "@/hooks/employees/useAddEmployee";
 import { CreateEmployeeDto } from "@/hooks/employees/CreateEmployeeDto";
@@ -15,18 +15,25 @@ const { Option } = Select;
 
 export default function AddEmployeePage() {
   const { addEmployee } = useAddEmployee();
-  const { jobTitles, error: jobTitleError } = useJobTitles();
-  const { subUnits, error: subUnitError } = useSubUnits();
-  const { employeeStatuses, error: employeeStatusesEror } =
-    useGetEmployeeStatus();
+  const { jobTitles } = useJobTitles();
+  const { subUnits } = useSubUnits();
+  const { employeeStatuses } = useGetEmployeeStatus();
   const { userStatuses, error: userStatusError } = useUserStatuses();
   const [fieldErrors, setFieldErrors] = useState<{ confirmPassword?: string }>(
     {}
   );
+  const [formErrors, setFormErrors] = useState<{
+    firstName?: string;
+    lastName?: string;
+    jobTitleId?: string;
+    subUnitId?: string;
+    employeeStatusId?: string;
+    userName?: string;
+    password?: string;
+  }>({});
   const [api, contextHolder] = notification.useNotification();
   const [loginEnabled, setLoginEnabled] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [userStatus, setUserStatus] = useState<"Active" | "Inactive">("Active");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [jobTitleId, setJobTitleId] = useState<string | undefined>(undefined);
@@ -35,15 +42,13 @@ export default function AddEmployeePage() {
     undefined
   );
   const [username, setUsername] = useState("");
+  const [userStatus, setUserStatus] = useState<"Active" | "Inactive">("Active");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const resetForm = () => {
     setFirstName("");
     setLastName("");
-    setJobTitleId("");
-    setSubUnitId("");
-    setEmployeeStatusId("");
     setLoginEnabled(false);
     setUsername("");
     setPassword("");
@@ -51,10 +56,28 @@ export default function AddEmployeePage() {
     setUserStatus("Active");
     setAvatarUrl(null);
     setFieldErrors({});
+    setSubUnitId(undefined);
+    setJobTitleId(undefined);
+    setEmployeeStatusId(undefined);
   };
 
   const handleSubmit = async () => {
     const selectedStatus = userStatuses.find((s) => s.name === userStatus);
+    const errors: typeof formErrors = {};
+
+    if (!firstName.trim()) errors.firstName = "*Required";
+    if (!lastName.trim()) errors.lastName = "*Required";
+    if (!jobTitleId) errors.jobTitleId = "*Required";
+    if (!subUnitId) errors.subUnitId = "*Required";
+    if (!employeeStatusId) errors.employeeStatusId = "*Required";
+    if (!username.trim()) errors.userName = "*Required";
+    if (!password.trim()) errors.password = "*Required";
+    setFormErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
     try {
       const payload: CreateEmployeeDto = {
         firstName,
@@ -109,7 +132,9 @@ export default function AddEmployeePage() {
                     className="object-cover w-full h-full"
                   />
                 ) : (
-                  <span>👤</span>
+                  <span>
+                    <UserAddOutlined style={{ fontSize: 40 }} />
+                  </span>
                 )}
               </div>
 
@@ -140,39 +165,73 @@ export default function AddEmployeePage() {
             <div className="flex-col w-full px-8 py-4 border-gray-200 rounded-lg sm:flex-row">
               <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-2">
                 <div className="flex flex-col items-start">
-                  <label className="w-full mb-1 text-sm text-gray-500 font-small">
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
                     First Name
+                    {formErrors.firstName && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.firstName}
+                      </span>
+                    )}
                   </label>
                   <input
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
                     placeholder="Type for hints..."
                     value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    onChange={(e) => {
+                      setFirstName(e.target.value);
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        firstName: undefined,
+                      }));
+                    }}
                   />
                 </div>
 
                 <div className="flex flex-col items-start">
-                  <label className="w-full mb-1 text-sm text-gray-500 font-small">
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
                     Last Name
+                    {formErrors.lastName && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.lastName}
+                      </span>
+                    )}
                   </label>
                   <input
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
                     placeholder="Type for hints..."
                     value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
+                    onChange={(e) => {
+                      setLastName(e.target.value);
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        lastName: undefined,
+                      }));
+                    }}
                   />
                 </div>
                 <div>
-                  <label className="w-full text-sm text-gray-500 font-small">
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
                     Sub Unit
+                    {formErrors.subUnitId && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.subUnitId}
+                      </span>
+                    )}
                   </label>
                   <Select
                     value={subUnitId}
-                    onChange={(value) => setSubUnitId(value)}
-                    className="w-full !mt-2"
+                    className="w-full"
                     placeholder="--Select--"
+                    allowClear
+                    onChange={(value) => {
+                      setSubUnitId(value);
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        subUnitId: undefined,
+                      }));
+                    }}
                   >
                     {subUnits.map((sub) => (
                       <Option key={sub.id} value={sub.id}>
@@ -180,20 +239,28 @@ export default function AddEmployeePage() {
                       </Option>
                     ))}
                   </Select>
-
-                  {subUnitError && (
-                    <p className="mt-1 text-sm text-red-500">{subUnitError}</p>
-                  )}
                 </div>
                 <div>
-                  <label className="w-full mb-2 text-sm text-gray-500 font-small">
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
                     Employee Job
+                    {formErrors.jobTitleId && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.jobTitleId}
+                      </span>
+                    )}
                   </label>
                   <Select
                     value={jobTitleId}
-                    onChange={(value) => setJobTitleId(value)}
-                    className="w-full !mt-2"
+                    className="w-full"
                     placeholder="--Select--"
+                    allowClear
+                    onChange={(value) => {
+                      setJobTitleId(value);
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        jobTitleId: undefined,
+                      }));
+                    }}
                   >
                     {jobTitles.map((job) => (
                       <Option key={job.id} value={job.id}>
@@ -201,22 +268,29 @@ export default function AddEmployeePage() {
                       </Option>
                     ))}
                   </Select>
-
-                  {jobTitleError && (
-                    <p className="mt-1 text-sm text-red-500">{jobTitleError}</p>
-                  )}
                 </div>
 
                 <div>
-                  <label className="w-full mb-2 text-sm text-gray-500 font-small">
-                    Employee Status
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
+                    Employee Status{" "}
+                    {formErrors.employeeStatusId && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.employeeStatusId}
+                      </span>
+                    )}
                   </label>
                   <Select
                     value={employeeStatusId}
-                    onChange={(value) => setEmployeeStatusId(value)}
-                    className="w-full !mt-2"
+                    className="w-full"
                     placeholder="--Select--"
                     allowClear
+                    onChange={(value) => {
+                      setEmployeeStatusId(value);
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        employeeStatusId: undefined,
+                      }));
+                    }}
                   >
                     {employeeStatuses.map((status) => (
                       <Option key={status.id} value={status.id}>
@@ -224,12 +298,6 @@ export default function AddEmployeePage() {
                       </Option>
                     ))}
                   </Select>
-
-                  {employeeStatusesEror && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {employeeStatusesEror}
-                    </p>
-                  )}
                 </div>
               </div>
 
@@ -254,15 +322,26 @@ export default function AddEmployeePage() {
               {loginEnabled && (
                 <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 bg-[#F1F5F9] mt-4 px-4 py-2 rounded-xl">
                   <div className="flex flex-col items-start">
-                    <label className="w-full mb-1 text-sm text-gray-500 font-small">
+                    <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
                       User Name
+                      {formErrors.userName && (
+                        <span className="!mt-1 text-sm text-red-500">
+                          {formErrors.userName}
+                        </span>
+                      )}
                     </label>
                     <input
                       className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                       type="text"
                       placeholder="Type for hints..."
                       value={username}
-                      onChange={(e) => setUsername(e.target.value)}
+                      onChange={(e) => {
+                        setUsername(e.target.value);
+                        setFormErrors((prev) => ({
+                          ...prev,
+                          userName: undefined,
+                        }));
+                      }}
                     />
                   </div>
                   <div>
@@ -297,15 +376,26 @@ export default function AddEmployeePage() {
                   </div>
 
                   <div className="flex flex-col">
-                    <label className="mt-4 text-sm text-gray-500">
-                      Password*
+                    <label className="flex justify-between mt-4 text-sm text-gray-500">
+                      Password
+                      {formErrors.password && (
+                        <span className="!mt-1 text-sm text-red-500">
+                          {formErrors.password}
+                        </span>
+                      )}
                     </label>
                     <input
                       className="w-full px-3 py-2 !mt-1 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                       type="password"
                       placeholder="Enter new password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        setFormErrors((prev) => ({
+                          ...prev,
+                          password: undefined,
+                        }));
+                      }}
                     />
                     <p className="!mt-2 text-sm text-gray-500">
                       For a strong password, please use a hard to guess
@@ -333,7 +423,7 @@ export default function AddEmployeePage() {
                         if (value !== password) {
                           setFieldErrors((prev) => ({
                             ...prev,
-                            confirmPassword: "Passwords do not match",
+                            confirmPassword: "Passwords do not match !",
                           }));
                         } else {
                           setFieldErrors((prev) => ({
@@ -345,7 +435,7 @@ export default function AddEmployeePage() {
                     />
 
                     {fieldErrors.confirmPassword && (
-                      <p className="mt-1 text-sm text-red-500">
+                      <p className="!mt-2 text-sm text-red-500">
                         {fieldErrors.confirmPassword}
                       </p>
                     )}
