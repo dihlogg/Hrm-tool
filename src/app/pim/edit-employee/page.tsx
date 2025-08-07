@@ -8,6 +8,9 @@ import { useSearchParams } from "next/navigation";
 import { useGetEmployeeById } from "@/hooks/employees/useGetEmployeeById";
 import dayjs, { Dayjs } from "dayjs";
 import { useUpdateEmployee } from "@/hooks/employees/useUpdateEmployee";
+import { useGetEmployeeStatus } from "@/hooks/employees/employee-statuses/useGetEmployeeStatus";
+import { useJobTitles } from "@/hooks/employees/job-titles/useJobTitles";
+import { useSubUnits } from "@/hooks/employees/sub-units/useSubUnits";
 
 const { Option } = Select;
 
@@ -29,6 +32,21 @@ export default function EditEmployeePage() {
   const [gender, setGender] = useState<string | null>(null);
   const [dateOfBirth, setDateOfBirth] = useState<Dayjs | null>(null);
 
+  const { employeeStatuses, error: employeeStatusesEror } =
+    useGetEmployeeStatus();
+  const [employeeStatusId, setEmployeeStatusId] = useState<string | null>(null);
+  const { jobTitles, error: jobTitleError } = useJobTitles();
+  const [jobTitleId, setJobTitleId] = useState<string | null>(null);
+  const { subUnits, error: subUnitError } = useSubUnits();
+  const [subUnitId, setSubUnitId] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<{
+    firstName?: string;
+    lastName?: string;
+    jobTitleId?: string;
+    subUnitId?: string;
+    employeeStatusId?: string;
+  }>({});
+
   useEffect(() => {
     if (employee) {
       setFirstName(employee.firstName ?? null);
@@ -41,6 +59,9 @@ export default function EditEmployeePage() {
       setNationality(employee.nationality ?? null);
       setGender(employee.gender ?? null);
       setDateOfBirth(employee.dayOfBirth ? dayjs(employee.dayOfBirth) : null);
+      setEmployeeStatusId(employee.employeeStatusId ?? null);
+      setJobTitleId(employee.jobTitleId ?? null);
+      setSubUnitId(employee.subUnitId ?? null);
     }
   }, [employee]);
 
@@ -57,7 +78,24 @@ export default function EditEmployeePage() {
         gender: gender ?? null,
         nationality: nationality ?? null,
         dayOfBirth: dateOfBirth?.toISOString() ?? null,
+        employeeStatusId,
+        jobTitleId,
+        subUnitId,
       };
+
+      const errors: typeof formErrors = {};
+
+      if (!firstName?.trim()) errors.firstName = "*Required";
+      if (!lastName?.trim()) errors.lastName = "*Required";
+      if (!jobTitleId) errors.jobTitleId = "*Required";
+      if (!subUnitId) errors.subUnitId = "*Required";
+      if (!employeeStatusId) errors.employeeStatusId = "*Required";
+      setFormErrors(errors);
+
+      if (Object.keys(errors).length > 0) {
+        setFormErrors(errors);
+        return;
+      }
 
       await updateEmployee(employeeId!, payload);
       api.success({
@@ -129,28 +167,50 @@ export default function EditEmployeePage() {
             <div className="flex-col w-full px-8 py-4 border-gray-200 rounded-lg sm:flex-row">
               <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-2">
                 <div className="flex flex-col items-start">
-                  <label className="w-full mb-1 text-sm text-gray-500 font-small">
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
                     First Name
+                    {formErrors.firstName && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.firstName}
+                      </span>
+                    )}
                   </label>
                   <input
-                    value={firstName as string}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    value={firstName ?? ""}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
                     placeholder="Type for hints..."
+                    onChange={(e) => {
+                      setFirstName(e.target.value);
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        firstName: undefined,
+                      }));
+                    }}
                   />
                 </div>
 
                 <div className="flex flex-col items-start">
-                  <label className="w-full mb-1 text-sm text-gray-500 font-small">
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
                     Last Name
+                    {formErrors.lastName && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.lastName}
+                      </span>
+                    )}
                   </label>
                   <input
-                    value={lastName as string}
-                    onChange={(e) => setLastName(e.target.value)}
+                    value={lastName ?? ""}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
                     placeholder="Type for hints..."
+                    onChange={(e) => {
+                      setLastName(e.target.value);
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        lastName: undefined,
+                      }));
+                    }}
                   />
                 </div>
 
@@ -172,7 +232,7 @@ export default function EditEmployeePage() {
                     Email
                   </label>
                   <input
-                    value={email as string}
+                    value={email ?? ""}
                     onChange={(e) => setEmail(e.target.value || null)}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
@@ -185,7 +245,7 @@ export default function EditEmployeePage() {
                     Phone Number
                   </label>
                   <input
-                    value={phoneNumber as string}
+                    value={phoneNumber ?? ""}
                     onChange={(e) => setPhoneNumber(e.target.value || null)}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
@@ -198,7 +258,7 @@ export default function EditEmployeePage() {
                     Address
                   </label>
                   <input
-                    value={address as string}
+                    value={address ?? ""}
                     onChange={(e) => setAddress(e.target.value || null)}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
@@ -246,6 +306,94 @@ export default function EditEmployeePage() {
                   >
                     <Option value="VietNam">VietNam</Option>
                     <Option value="China">China</Option>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
+                    Employee Status
+                    {formErrors.employeeStatusId && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.employeeStatusId}
+                      </span>
+                    )}
+                  </label>
+                  <Select
+                    value={employeeStatusId}
+                    className="w-full"
+                    placeholder="--Select--"
+                    allowClear
+                    onChange={(value) => {
+                      setEmployeeStatusId(value);
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        employeeStatusId: undefined,
+                      }));
+                    }}
+                  >
+                    {employeeStatuses.map((status) => (
+                      <Option key={status.id} value={status.id}>
+                        {status.name}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
+                <div>
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
+                    Sub Unit
+                    {formErrors.subUnitId && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.subUnitId}
+                      </span>
+                    )}
+                  </label>
+                  <Select
+                    value={subUnitId}
+                    className="w-full"
+                    placeholder="--Select--"
+                    allowClear
+                    onChange={(value) => {
+                      setSubUnitId(value);
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        subUnitId: undefined,
+                      }));
+                    }}
+                  >
+                    {subUnits.map((sub) => (
+                      <Option key={sub.id} value={sub.id}>
+                        {sub.name}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
+                <div>
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
+                    Employee Job
+                    {formErrors.jobTitleId && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.jobTitleId}
+                      </span>
+                    )}
+                  </label>
+                  <Select
+                    value={jobTitleId}
+                    className="w-full"
+                    placeholder="--Select--"
+                    allowClear
+                    onChange={(value) => {
+                      setJobTitleId(value);
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        jobTitleId: undefined,
+                      }));
+                    }}
+                  >
+                    {jobTitles.map((job) => (
+                      <Option key={job.id} value={job.id}>
+                        {job.name}
+                      </Option>
+                    ))}
                   </Select>
                 </div>
               </div>
