@@ -301,8 +301,9 @@ export default function EditEmployeePage() {
                   <Select
                     value={nationality}
                     onChange={(value) => setNationality(value)}
-                    className="w-full !mt-1 custom-select"
+                    className="w-full !mt-1"
                     placeholder="--Select--"
+                    allowClear
                   >
                     <Option value="VietNam">VietNam</Option>
                     <Option value="China">China</Option>
