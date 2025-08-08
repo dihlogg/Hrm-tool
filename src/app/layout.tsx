@@ -1,6 +1,7 @@
-import '@ant-design/v5-patch-for-react-19';
+import "@ant-design/v5-patch-for-react-19";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "./globals.css";
+import { AuthProvider } from "@/contexts/authContext";
 
 export const metadata = {
   title: "HRM App",
@@ -15,7 +16,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AntdRegistry>
-          {children}
+          <AuthProvider>{children}</AuthProvider>
         </AntdRegistry>
       </body>
     </html>

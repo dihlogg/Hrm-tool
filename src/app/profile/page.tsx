@@ -5,9 +5,13 @@ import { Button, Upload, Select, notification, DatePicker } from "antd";
 import { UploadOutlined, UserAddOutlined } from "@ant-design/icons";
 import { CreateEmployeeDto } from "@/hooks/employees/CreateEmployeeDto";
 import { useSearchParams } from "next/navigation";
-import { useGetEmployeeById } from "@/hooks/employees/useGetEmployeeById";
 import dayjs, { Dayjs } from "dayjs";
 import { useUpdateEmployee } from "@/hooks/employees/useUpdateEmployee";
+import { useGetEmployeeDetailsByUserId } from "@/hooks/employees/useGetEmployeeDetailsByUserId";
+import { useAuthContext } from "@/contexts/authContext";
+import { useGetEmployeeStatus } from "@/hooks/employees/employee-statuses/useGetEmployeeStatus";
+import { useJobTitles } from "@/hooks/employees/job-titles/useJobTitles";
+import { useSubUnits } from "@/hooks/employees/sub-units/useSubUnits";
 
 const { Option } = Select;
 
@@ -15,52 +19,87 @@ export default function ProfilePage() {
   const { updateEmployee } = useUpdateEmployee();
   const searchParams = useSearchParams();
   const employeeId = searchParams.get("id") || undefined;
-  const { employee, loading } = useGetEmployeeById(employeeId ?? "");
+  const { userId } = useAuthContext();
+  const { employee, loading } = useGetEmployeeDetailsByUserId(userId ?? "");
   const [api, contextHolder] = notification.useNotification();
 
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState<string | null>(null);
+  const [lastName, setLastName] = useState<string | null>(null);
   const [empId, setEmpId] = useState(employeeId || "");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [address, setAddress] = useState("");
-  const [employmentType, setEmploymentType] = useState("--Select--");
-  const [nationality, setNationality] = useState("--Select--");
-  const [gender, setGender] = useState("--Select--");
+  const [email, setEmail] = useState<string | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
+  const [address, setAddress] = useState<string | null>(null);
+  const [nationality, setNationality] = useState<string | null>(null);
+  const [gender, setGender] = useState<string | null>(null);
   const [dateOfBirth, setDateOfBirth] = useState<Dayjs | null>(null);
+
+  const { employeeStatuses, error: employeeStatusesEror } =
+    useGetEmployeeStatus();
+  const [employeeStatusId, setEmployeeStatusId] = useState<string | null>(null);
+  const { jobTitles, error: jobTitleError } = useJobTitles();
+  const [jobTitleId, setJobTitleId] = useState<string | null>(null);
+  const { subUnits, error: subUnitError } = useSubUnits();
+  const [subUnitId, setSubUnitId] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<{
+    firstName?: string;
+    lastName?: string;
+    jobTitleId?: string;
+    subUnitId?: string;
+    employeeStatusId?: string;
+  }>({});
 
   useEffect(() => {
     if (employee) {
-      setFirstName(employee.firstName || "");
-      setLastName(employee.lastName || "");
-      setAvatarUrl(employee.imageUrl || null);
-      setEmail(employee.email || "");
-      setPhoneNumber(employee.phoneNumber || "");
-      setAddress(employee.address || "");
-      setEmpId(employee.id || "");
-      setNationality(employee.nationality || "--Select--");
-      setGender(employee.gender || "--Select--");
+      setFirstName(employee.firstName ?? null);
+      setLastName(employee.lastName ?? null);
+      setImageUrl(employee.imageUrl ?? null);
+      setEmail(employee.email ?? null);
+      setPhoneNumber(employee.phoneNumber ?? null);
+      setAddress(employee.address ?? null);
+      setEmpId(employee.id ?? "");
+      setNationality(employee.nationality ?? null);
+      setGender(employee.gender ?? null);
       setDateOfBirth(employee.dayOfBirth ? dayjs(employee.dayOfBirth) : null);
+      setEmployeeStatusId(employee.employeeStatusId ?? null);
+      setJobTitleId(employee.jobTitleId ?? null);
+      setSubUnitId(employee.subUnitId ?? null);
     }
   }, [employee]);
 
   const handleSubmit = async () => {
     try {
       const payload: CreateEmployeeDto = {
-        id: employeeId,
-        firstName,
-        lastName,
-        imageUrl: avatarUrl ?? undefined,
-        email,
-        phoneNumber,
-        address,
-        gender,
-        nationality,
-        dayOfBirth: dateOfBirth?.toISOString(),
+        id: empId,
+        firstName: firstName || "",
+        lastName: lastName || "",
+        imageUrl: imageUrl ?? null,
+        email: email ?? null,
+        phoneNumber: phoneNumber ?? null,
+        address: address ?? null,
+        gender: gender ?? null,
+        nationality: nationality ?? null,
+        dayOfBirth: dateOfBirth?.toISOString() ?? null,
+        employeeStatusId,
+        jobTitleId,
+        subUnitId,
       };
 
-      await updateEmployee(employeeId!, payload);
+      const errors: typeof formErrors = {};
+
+      if (!firstName?.trim()) errors.firstName = "*Required";
+      if (!lastName?.trim()) errors.lastName = "*Required";
+      if (!jobTitleId) errors.jobTitleId = "*Required";
+      if (!subUnitId) errors.subUnitId = "*Required";
+      if (!employeeStatusId) errors.employeeStatusId = "*Required";
+      setFormErrors(errors);
+
+      if (Object.keys(errors).length > 0) {
+        setFormErrors(errors);
+        return;
+      }
+
+      await updateEmployee(empId!, payload);
       api.success({
         message: "Employee Update Successfully!",
         description: `Employee information has been updated.`,
@@ -94,9 +133,9 @@ export default function ProfilePage() {
             <div className="flex flex-col items-center">
               <div className="relative w-[180px] h-[180px]">
                 <div className="flex items-center justify-center w-full h-full overflow-hidden text-5xl text-gray-400 bg-gray-100 rounded-full">
-                  {avatarUrl ? (
+                  {imageUrl ? (
                     <img
-                      src={avatarUrl}
+                      src={imageUrl}
                       alt="Avatar"
                       className="object-cover w-full h-full"
                     />
@@ -111,7 +150,7 @@ export default function ProfilePage() {
                   beforeUpload={(file) => {
                     const reader = new FileReader();
                     reader.onload = (e) => {
-                      setAvatarUrl(e.target?.result as string);
+                      setImageUrl(e.target?.result as string);
                     };
                     reader.readAsDataURL(file);
                     return false;
@@ -130,28 +169,50 @@ export default function ProfilePage() {
             <div className="flex-col w-full px-8 py-4 border-gray-200 rounded-lg sm:flex-row">
               <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-2">
                 <div className="flex flex-col items-start">
-                  <label className="w-full mb-1 text-sm text-gray-500 font-small">
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
                     First Name
+                    {formErrors.firstName && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.firstName}
+                      </span>
+                    )}
                   </label>
                   <input
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    value={firstName ?? ""}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
                     placeholder="Type for hints..."
+                    onChange={(e) => {
+                      setFirstName(e.target.value);
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        firstName: undefined,
+                      }));
+                    }}
                   />
                 </div>
 
                 <div className="flex flex-col items-start">
-                  <label className="w-full mb-1 text-sm text-gray-500 font-small">
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
                     Last Name
+                    {formErrors.lastName && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.lastName}
+                      </span>
+                    )}
                   </label>
                   <input
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
+                    value={lastName ?? ""}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
                     placeholder="Type for hints..."
+                    onChange={(e) => {
+                      setLastName(e.target.value);
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        lastName: undefined,
+                      }));
+                    }}
                   />
                 </div>
 
@@ -162,7 +223,6 @@ export default function ProfilePage() {
                   <input
                     value={`#${empId.slice(0, 8)}`}
                     readOnly
-                    onChange={(e) => setEmpId(e.target.value)}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
                     placeholder="Type for hints..."
@@ -174,8 +234,8 @@ export default function ProfilePage() {
                     Email
                   </label>
                   <input
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={email ?? ""}
+                    onChange={(e) => setEmail(e.target.value || null)}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
                     placeholder="Type for hints..."
@@ -187,8 +247,8 @@ export default function ProfilePage() {
                     Phone Number
                   </label>
                   <input
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    value={phoneNumber ?? ""}
+                    onChange={(e) => setPhoneNumber(e.target.value || null)}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
                     placeholder="Type for hints..."
@@ -200,38 +260,22 @@ export default function ProfilePage() {
                     Address
                   </label>
                   <input
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
+                    value={address ?? ""}
+                    onChange={(e) => setAddress(e.target.value || null)}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                     type="text"
                     placeholder="Type for hints..."
                   />
                 </div>
 
-                <div>
-                  <label className="w-full mb-2 text-sm text-gray-500 font-small">
-                    Employment Type
-                  </label>
-                  <Select
-                    value={employmentType}
-                    onChange={(value) => setEmploymentType(value)}
-                    className="w-full !mt-1 custom-ant-select"
-                    placeholder="--Select--"
-                  >
-                    <Option value="Official">Official</Option>
-                    <Option value="Temporary">Temporary</Option>
-                    <Option value="On Leave">On Leave</Option>
-                  </Select>
-                </div>
-
-                <div>
+                <div className="flex flex-col items-start">
                   <label className="w-full mb-1 text-sm text-gray-500 font-small">
                     Date Of Birth
                   </label>
                   <DatePicker
                     value={dateOfBirth}
                     onChange={(date) => setDateOfBirth(date)}
-                    className="w-full px-3 py-1 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                    className="w-full px-3 py-1 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400 custom-select"
                     placeholder="Select date"
                   />
                 </div>
@@ -245,9 +289,10 @@ export default function ProfilePage() {
                     onChange={(value) => setGender(value)}
                     className="w-full !mt-1 custom-ant-select"
                     placeholder="--Select--"
+                    allowClear
                   >
-                    <Option value="full-time">Male</Option>
-                    <Option value="part-time">Female</Option>
+                    <Option value="Male">Male</Option>
+                    <Option value="Female">Female</Option>
                   </Select>
                 </div>
 
@@ -258,11 +303,100 @@ export default function ProfilePage() {
                   <Select
                     value={nationality}
                     onChange={(value) => setNationality(value)}
-                    className="w-full !mt-1 custom-ant-select"
+                    className="w-full !mt-1"
                     placeholder="--Select--"
+                    allowClear
                   >
-                    <Option value="full-time">VietNam</Option>
-                    <Option value="part-time">China</Option>
+                    <Option value="VietNam">VietNam</Option>
+                    <Option value="China">China</Option>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
+                    Employee Status
+                    {formErrors.employeeStatusId && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.employeeStatusId}
+                      </span>
+                    )}
+                  </label>
+                  <Select
+                    value={employeeStatusId}
+                    className="w-full"
+                    placeholder="--Select--"
+                    allowClear
+                    onChange={(value) => {
+                      setEmployeeStatusId(value);
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        employeeStatusId: undefined,
+                      }));
+                    }}
+                  >
+                    {employeeStatuses.map((status) => (
+                      <Option key={status.id} value={status.id}>
+                        {status.name}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
+                <div>
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
+                    Sub Unit
+                    {formErrors.subUnitId && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.subUnitId}
+                      </span>
+                    )}
+                  </label>
+                  <Select
+                    value={subUnitId}
+                    className="w-full"
+                    placeholder="--Select--"
+                    allowClear
+                    onChange={(value) => {
+                      setSubUnitId(value);
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        subUnitId: undefined,
+                      }));
+                    }}
+                  >
+                    {subUnits.map((sub) => (
+                      <Option key={sub.id} value={sub.id}>
+                        {sub.name}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
+                <div>
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
+                    Employee Job
+                    {formErrors.jobTitleId && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.jobTitleId}
+                      </span>
+                    )}
+                  </label>
+                  <Select
+                    value={jobTitleId}
+                    className="w-full"
+                    placeholder="--Select--"
+                    allowClear
+                    onChange={(value) => {
+                      setJobTitleId(value);
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        jobTitleId: undefined,
+                      }));
+                    }}
+                  >
+                    {jobTitles.map((job) => (
+                      <Option key={job.id} value={job.id}>
+                        {job.name}
+                      </Option>
+                    ))}
                   </Select>
                 </div>
               </div>
