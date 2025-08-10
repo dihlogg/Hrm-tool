@@ -10,6 +10,7 @@ import {
   Table,
   Descriptions,
   notification,
+  Popover,
 } from "antd";
 import { useState } from "react";
 import {
@@ -29,6 +30,9 @@ import {
   getInitialFilters,
 } from "@/hooks/employees/EmployeeFiltersDto";
 import { usePatchEmployeeStatus } from "@/hooks/employees/usePatchEmployeeStatus";
+import { exportPDF } from "@/utils/exportPDF";
+import { API_ENDPOINTS } from "@/services/apiService";
+import axiosInstance from "@/utils/auth/axiosInstance";
 
 const { Option } = Select;
 
@@ -105,6 +109,7 @@ export default function EmployeeListPage() {
     }
   };
 
+  const content = <span className="text-white">Click to export file</span>;
   const router = useRouter();
 
   function mapSorterFieldToApiField(
@@ -122,6 +127,20 @@ export default function EmployeeListPage() {
         return field;
     }
   }
+
+  const handleExport = async () => {
+    try {
+      const res = await axiosInstance.get(API_ENDPOINTS.GET_EMPLOYEE_LIST, {
+        params: { page: 1, pageSize: total },
+      });
+
+      const allEmployees = res.data.data;
+
+      exportPDF(columns, allEmployees, "Employee_List.pdf", "Employee List");
+    } catch (err) {
+      console.error("Export failed:", err);
+    }
+  };
 
   const columns: ColumnsType<CreateEmployeeDto> = [
     {
@@ -381,17 +400,20 @@ export default function EmployeeListPage() {
             <h2 className="text-xl font-semibold text-gray-500">
               ({total ?? 0}) Records Found
             </h2>
-            <Button
-              type="default"
-              shape="round"
-              icon={
-                <CloudUploadOutlined
-                  style={{ fontSize: "20px", color: "#6B7280" }}
-                />
-              }
-              size="large"
-              className="text-white bg-blue-500 !border-2 !border-gray-300 hover:bg-blue-600 transition"
-            ></Button>
+            <Popover content={content} color="#2e2b2b">
+              <Button
+                type="default"
+                shape="round"
+                icon={
+                  <CloudUploadOutlined
+                    style={{ fontSize: "20px", color: "#6B7280" }}
+                  />
+                }
+                size="large"
+                className="text-white bg-blue-500 !border-2 !border-gray-300 hover:bg-blue-600 transition"
+                onClick={handleExport}
+              ></Button>
+            </Popover>
           </div>
           <Table
             columns={columns}
