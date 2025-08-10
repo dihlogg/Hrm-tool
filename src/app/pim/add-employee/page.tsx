@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, Upload, Select, notification } from "antd";
+import { Button, Upload, Select, notification, message } from "antd";
 import { UploadOutlined, UserAddOutlined } from "@ant-design/icons";
 import { Switch } from "@headlessui/react";
 import { useAddEmployee } from "@/hooks/employees/useAddEmployee";
@@ -10,6 +10,7 @@ import { useJobTitles } from "@/hooks/employees/job-titles/useJobTitles";
 import { useSubUnits } from "@/hooks/employees/sub-units/useSubUnits";
 import { useUserStatuses } from "@/hooks/user-statuses/useUserStatuses";
 import { useGetEmployeeStatus } from "@/hooks/employees/employee-statuses/useGetEmployeeStatus";
+import { uploadImageToCloudinary } from "@/services/cloudinaryService";
 
 const { Option } = Select;
 
@@ -33,7 +34,8 @@ export default function AddEmployeePage() {
   }>({});
   const [api, contextHolder] = notification.useNotification();
   const [loginEnabled, setLoginEnabled] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [jobTitleId, setJobTitleId] = useState<string | undefined>(undefined);
@@ -54,7 +56,7 @@ export default function AddEmployeePage() {
     setPassword("");
     setConfirmPassword("");
     setUserStatus("Active");
-    setAvatarUrl(null);
+    setImageUrl(null);
     setFieldErrors({});
     setSubUnitId(undefined);
     setJobTitleId(undefined);
@@ -70,8 +72,10 @@ export default function AddEmployeePage() {
     if (!jobTitleId) errors.jobTitleId = "*Required";
     if (!subUnitId) errors.subUnitId = "*Required";
     if (!employeeStatusId) errors.employeeStatusId = "*Required";
-    if (!username.trim()) errors.userName = "*Required";
-    if (!password.trim()) errors.password = "*Required";
+    if (loginEnabled) {
+      if (!username.trim()) errors.userName = "*Required";
+      if (!password.trim()) errors.password = "*Required";
+    }
     setFormErrors(errors);
 
     if (Object.keys(errors).length > 0) {
@@ -82,7 +86,7 @@ export default function AddEmployeePage() {
       const payload: CreateEmployeeDto = {
         firstName,
         lastName,
-        imageUrl: avatarUrl ?? undefined,
+        imageUrl: imageUrl ?? undefined,
         jobTitleId,
         subUnitId,
         employeeStatusId,
@@ -125,9 +129,9 @@ export default function AddEmployeePage() {
             {/* Left: Upload Avatar */}
             <div className="flex flex-col items-center">
               <div className="w-[200px] h-[200px] rounded-full overflow-hidden bg-gray-100 flex items-center justify-center text-gray-400 text-5xl">
-                {avatarUrl ? (
+                {imageUrl ? (
                   <img
-                    src={avatarUrl}
+                    src={imageUrl}
                     alt="Avatar"
                     className="object-cover w-full h-full"
                   />
@@ -140,16 +144,23 @@ export default function AddEmployeePage() {
 
               <Upload
                 showUploadList={false}
-                beforeUpload={(file) => {
-                  const reader = new FileReader();
-                  reader.onload = (e) => {
-                    setAvatarUrl(e.target?.result as string);
-                  };
-                  reader.readAsDataURL(file);
+                beforeUpload={async (file) => {
+                  try {
+                    setLoading(true);
+                    const url = await uploadImageToCloudinary(file);
+                    setImageUrl(url);
+                    message.success("Upload Image Success!");
+                  } catch (err) {
+                    console.error(err);
+                    message.error("Upload Failed!");
+                  } finally {
+                    setLoading(false);
+                  }
                   return false;
                 }}
               >
                 <Button
+                  loading={loading}
                   icon={<UploadOutlined />}
                   className="mt-2 text-white bg-orange-500 hover:bg-orange-600"
                   shape="circle"
