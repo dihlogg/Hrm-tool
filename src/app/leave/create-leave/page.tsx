@@ -28,29 +28,6 @@ export default function CreateNewRequestPage() {
             </Select>
           </div>
 
-          {/* Duration */}
-          <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-center">
-            <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
-              Duration:
-            </label>
-            <input
-              className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
-              type="text"
-              placeholder="Type for hints..."
-            />
-          </div>
-
-          {/* From Date */}
-          <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-center">
-            <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
-              From Date:
-            </label>
-            <DatePicker
-              className="w-full sm:flex-1"
-              placeholder="Select date"
-            />
-          </div>
-
           {/* Approver */}
           <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-center">
             <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
@@ -63,25 +40,39 @@ export default function CreateNewRequestPage() {
             </Select>
           </div>
 
+          {/* From Date */}
+          <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-center">
+            <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
+              From Date:
+            </label>
+            <DatePicker
+              showTime={{ format: "HH:mm" }}
+              className="w-full sm:flex-1"
+              placeholder="Select date"
+            />
+          </div>
+
           {/* To Date */}
           <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-center">
             <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
               To Date:
             </label>
             <DatePicker
+              showTime={{ format: "HH:mm" }}
               className="w-full sm:flex-1"
               placeholder="Select date"
             />
           </div>
 
-          {/* Expected Approve */}
+          {/* Duration */}
           <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-center">
             <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
-              Excepted Approve:
+              Duration:
             </label>
-            <DatePicker
-              className="w-full sm:flex-1"
-              placeholder="Select date"
+            <input
+              className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+              type="text"
+              placeholder="Type for hints..."
             />
           </div>
 
@@ -94,18 +85,6 @@ export default function CreateNewRequestPage() {
               <Option value="--Select--">--Select--</Option>
               <Option value="FullDay">Full Day</Option>
               <Option value="HalfDay">Half Day</Option>
-            </Select>
-          </div>
-
-          {/* Supervisor */}
-          <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-center">
-            <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
-              Supervisor*:
-            </label>
-            <Select defaultValue="--Select--" className="w-full sm:flex-1">
-              <Option value="--Select--">--Select--</Option>
-              <Option value="Pending">UserA</Option>
-              <Option value="Approved">UserB</Option>
             </Select>
           </div>
 
