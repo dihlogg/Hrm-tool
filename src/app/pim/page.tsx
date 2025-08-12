@@ -148,14 +148,14 @@ export default function EmployeeListPage() {
       dataIndex: "firstName",
       sorter: true,
       sortOrder: sortBy === "firstName" ? sortOrder : undefined,
-      render: (text) => <span className="text-sm text-gray-500">{text}</span>,
+      render: (text) => <span>{text}</span>,
     },
     {
       title: <span className="select-none">Last Name</span>,
       dataIndex: "lastName",
       sorter: true,
       sortOrder: sortBy === "lastName" ? sortOrder : undefined,
-      render: (text) => <span className="text-sm text-gray-500">{text}</span>,
+      render: (text) => <span>{text}</span>,
     },
     {
       title: <span className="select-none">Job Title</span>,
