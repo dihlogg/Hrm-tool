@@ -4,7 +4,8 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import React from "react";
 import MainLayout from "@/components/common/main-layout";
-import '@ant-design/v5-patch-for-react-19';
+import "@ant-design/v5-patch-for-react-19";
+import { useIdleLogout } from "@/hooks/auth/useIdleLogout";
 
 const navItems = [
   { href: "/pim", label: "Employee List" },
@@ -13,7 +14,7 @@ const navItems = [
 
 export default function PimLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-
+  useIdleLogout(15)
   return (
     <MainLayout>
       <div className="flex flex-col h-full">
