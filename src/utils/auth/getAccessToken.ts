@@ -11,12 +11,14 @@ export const setAuthCookies = (
     path: "/",
     expires: 15 / 1440, //15m
     sameSite: "Lax",
+    secure: process.env.NODE_ENV === 'production',
   });
 
   Cookies.set(REFRESH_TOKEN_KEY, refreshToken, {
     path: "/",
     expires: 7,
     sameSite: "Lax",
+    secure: process.env.NODE_ENV === 'production',
   });
 };
 
