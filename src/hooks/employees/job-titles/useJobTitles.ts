@@ -2,16 +2,10 @@
 import { useEffect, useState } from "react";
 import { API_ENDPOINTS } from "@/services/apiService";
 import axiosInstance from "@/utils/auth/axiosInstance";
+import { CreateJobTitleDto } from "./CreateJobTitleDto";
 
-export interface JobTitles {
-  id: string;
-  name: string;
-  description: string;
-  displayOrder: number;
-}
-
-export function useJobTitles() {
-  const [jobTitles, setJobTitles] = useState<JobTitles[]>([]);
+export function useJobTitles(hotReload: number = 0) {
+  const [jobTitles, setJobTitles] = useState<CreateJobTitleDto[]>([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -27,7 +21,7 @@ export function useJobTitles() {
     }
 
     loadJobTitles();
-  }, []);
+  }, [hotReload]);
 
-  return { jobTitles, error };
+  return { jobTitles, error, hotReload };
 }
