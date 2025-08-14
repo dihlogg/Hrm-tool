@@ -130,11 +130,11 @@ export default function EmployeeListPage() {
 
   const handleExport = async () => {
     try {
-      const res = await axiosInstance.get(API_ENDPOINTS.GET_EMPLOYEE_LIST, {
+      const response = await axiosInstance.get(API_ENDPOINTS.GET_EMPLOYEE_LIST, {
         params: { page: 1, pageSize: total },
       });
 
-      const allEmployees = res.data.data;
+      const allEmployees = response.data.data;
 
       exportPDF(columns, allEmployees, "Employee_List.pdf", "Employee List");
     } catch (err) {

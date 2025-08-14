@@ -4,8 +4,12 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import React from "react";
 import MainLayout from "@/components/common/main-layout";
+import "@ant-design/v5-patch-for-react-19";
 
-const navItems = [{ href: "/admin", label: "User Management" }];
+const navItems = [
+  { href: "/admin", label: "User Management" },
+  { href: "/admin/job-title", label: "Job Titles Management" },
+];
 
 export default function AdminLayout({
   children,
@@ -19,7 +23,14 @@ export default function AdminLayout({
       <div className="flex flex-col h-full">
         <div className="flex gap-2 ml-3">
           {navItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive = (() => {
+              if (item.href === "/admin") {
+                return pathname === "/admin";
+              }
+              return (
+                pathname === item.href || pathname.startsWith(item.href + "/")
+              );
+            })();
             const baseClass =
               "px-4 py-2 text-xs font-medium rounded-full border transition-colors !bg-[#F9FAFB]";
             const activeClass =

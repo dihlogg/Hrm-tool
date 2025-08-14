@@ -13,6 +13,10 @@ export const API_ENDPOINTS = {
   GET_EMPLOYEE_DETAILS_BY_USER_ID: `${API_URL}/Employees/GetEmployeeDetailsByUserId`,
   //job titles
   GET_ALL_JOB_TITLES: `${API_URL}/JobTitles/GetAllJobTitles`,
+  GET_JOB_TITLE_BY_ID: `${API_URL}/JobTitles/GetJobTitleById`,
+  POST_JOB_TITLE: `${API_URL}/JobTitles/PostJobTitle`,
+  PUT_JOB_TITLE: `${API_URL}/JobTitles/PutJobTitle`,
+  DELETE_JOB_TITLE_BY_ID: `${API_URL}/JobTitles/DeleteJobTitle`,
   //sub units
   GET_ALL_SUB_UNITS: `${API_URL}/SubUnits/GetAllSubUnits`,
   //employee status

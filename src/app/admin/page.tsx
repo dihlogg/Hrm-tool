@@ -5,6 +5,8 @@ import { Button, Pagination, Select, Table } from "antd";
 import { useState } from "react";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
+import { CreateJobTitleDto } from "@/hooks/employees/job-titles/CreateJobTitleDto";
+import { useDeleteJobTitleById } from "@/hooks/employees/job-titles/useDeleteJobTitleById";
 
 const { Option } = Select;
 

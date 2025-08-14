@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, Upload, Select, notification, DatePicker } from "antd";
+import { Button, Upload, Select, notification, DatePicker, message } from "antd";
 import { UploadOutlined, UserAddOutlined } from "@ant-design/icons";
 import { CreateEmployeeDto } from "@/hooks/employees/CreateEmployeeDto";
 import { useSearchParams } from "next/navigation";
@@ -66,6 +66,20 @@ export default function EditEmployeePage() {
   }, [employee]);
 
   const handleSubmit = async () => {
+    const errors: typeof formErrors = {};
+
+    if (!firstName?.trim()) errors.firstName = "*Required";
+    if (!lastName?.trim()) errors.lastName = "*Required";
+    if (!jobTitleId) errors.jobTitleId = "*Required";
+    if (!subUnitId) errors.subUnitId = "*Required";
+    if (!employeeStatusId) errors.employeeStatusId = "*Required";
+    setFormErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      message.warning("Please fill in all required fields before submitting!");
+      setFormErrors(errors);
+      return;
+    }
     try {
       const payload: CreateEmployeeDto = {
         id: employeeId,
@@ -82,20 +96,6 @@ export default function EditEmployeePage() {
         jobTitleId,
         subUnitId,
       };
-
-      const errors: typeof formErrors = {};
-
-      if (!firstName?.trim()) errors.firstName = "*Required";
-      if (!lastName?.trim()) errors.lastName = "*Required";
-      if (!jobTitleId) errors.jobTitleId = "*Required";
-      if (!subUnitId) errors.subUnitId = "*Required";
-      if (!employeeStatusId) errors.employeeStatusId = "*Required";
-      setFormErrors(errors);
-
-      if (Object.keys(errors).length > 0) {
-        setFormErrors(errors);
-        return;
-      }
 
       await updateEmployee(employeeId!, payload);
       api.success({
