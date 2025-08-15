@@ -26,8 +26,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (!token) return;
     const fetchUser = async () => {
       try {
-        const res = await axiosInstance.get(API_ENDPOINTS.GET_USER_INFOR);
-        setUserId(res.data.userId);
+        const response = await axiosInstance.get(API_ENDPOINTS.GET_USER_INFOR);
+        setUserId(response.data.userId);
       } catch (err) {
         console.error("Failed to fetch user info:", err);
         setUserId(null);

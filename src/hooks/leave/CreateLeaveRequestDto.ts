@@ -1,19 +1,19 @@
 export interface CreateLeaveRequestDto {
   id?: string;
-  fromDate?: Date;
-  toDate?: Date;
-  duration?: string;
+  fromDate?: string | null;
+  toDate?: string | null;
+  duration?: string | null;
   leaveStatusId?: string | null;
   leaveStatus?: {
     id: string;
-    name: string;
-  };
+    name: string
+  }
   leaveReasonId?: string | null;
   leaveReason?: {
     id: string;
     name: string
   }
-  reasonDetails?: string;
+  reasonDetails?: string | null;
   partialDayId?: string | null;
   partialDay?: {
     id: string;
@@ -30,7 +30,12 @@ export interface CreateLeaveRequestDto {
     name: string;
   }
   approverId?: string | null;
-  approver?: {
+  approve?: {
+    id: string;
+    name: string;
+  }
+  informToId?: string | null;
+  inform?: {
     id: string;
     name: string;
   }

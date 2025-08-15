@@ -26,6 +26,7 @@ export const API_ENDPOINTS = {
   //user status
   GET_ALL_USER_STAUSES: `${API_URL}/UserStatuses/GetAllUserStatuses`,
   //leave request
+  POST_LEAVE_REQUEST: `${API_URL}/LeaveRequests/PostLeaveRequest`,
   GET_LEAVE_REQUEST_BY_EMPLOYEE_ID: `${API_URL}/LeaveRequests/GetLeaveRequestListByEmployeeId`,
   //leave status
   GET_ALL_LEAVE_STATUS: `${API_URL}/LeaveStatuses/GetAllLeaveStatuses`,
