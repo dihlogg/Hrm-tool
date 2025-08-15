@@ -79,6 +79,7 @@ export default function AddEmployeePage() {
     setFormErrors(errors);
 
     if (Object.keys(errors).length > 0) {
+      message.warning("Please fill in all required fields before submitting!");
       setFormErrors(errors);
       return;
     }

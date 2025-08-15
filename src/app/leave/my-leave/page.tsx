@@ -115,7 +115,7 @@ export default function MyRequestPage() {
       dataIndex: "approverId",
       sorter: true,
       sortOrder: sortBy === "Approver" ? sortOrder : undefined,
-      render: (_, record) => record.approver?.name || "N/A",
+      render: (_, record) => record.approve?.name || "N/A",
     },
     {
       title: (
