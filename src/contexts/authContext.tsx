@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const token = Cookies.get("accessToken");
-    if (!token) return;
+    // if (!token) return;
     const fetchUser = async () => {
       try {
         const response = await axiosInstance.get(API_ENDPOINTS.GET_USER_INFOR);

@@ -24,7 +24,7 @@ const { Option } = Select;
 
 export default function MyRequestPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 3;
+  const pageSize = 5;
   const [hotReload, setHotReload] = useState(0);
   const { userId } = useAuthContext();
   const { employee, loading: loadingEmployee } = useGetEmployeeDetailsByUserId(
@@ -229,12 +229,12 @@ export default function MyRequestPage() {
           }}
         />
         <div className="flex items-center justify-end mt-4">
-          <Pagination
-            current={currentPage}
-            pageSize={pageSize}
-            total={mockMyRequests.length}
-            onChange={(page) => setCurrentPage(page)}
-          />
+           <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={total}
+              onChange={(page) => setCurrentPage(page)}
+            />
         </div>
       </div>
     </div>

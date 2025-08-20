@@ -10,7 +10,10 @@ import { useGetPartialDay } from "@/hooks/leave/partial-days/useGetPartialDay";
 import { useAddLeaveRequest } from "@/hooks/leave/useAddLeaveRequest";
 import { Button, DatePicker, message, notification, Select } from "antd";
 import { Dayjs } from "dayjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useGetEmployeeBySubUnit } from "@/hooks/employees/useGetEmployeeBySubUnit";
+import { useGetSupervisorEmployee } from "@/hooks/employees/useGetSupervisorEmployee";
 
 const { Option } = Select;
 
@@ -24,12 +27,19 @@ export default function CreateNewRequestPage() {
   const { employee, loading: loadingEmployee } = useGetEmployeeDetailsByUserId(
     userId ?? ""
   );
+  const searchParams = useSearchParams();
+  const empId = searchParams.get("id") || undefined;
+  const subId = searchParams.get("subUnitId") || undefined;
 
   const [api, contextHolder] = notification.useNotification();
+  const [employeeId, setEmployeeId] = useState(empId || "");
+  const [subUnitId, setSubUnitId] = useState(subId || "");
+  const { subUnitEmployees } = useGetEmployeeBySubUnit(subUnitId, employeeId);
+  const { supervisorEmployee } = useGetSupervisorEmployee(employeeId);
   const [fromDate, setFromDate] = useState<Dayjs | null>(null);
   const [toDate, setToDate] = useState<Dayjs | null>(null);
   const [duration, setDuration] = useState<string | null>(null);
-  const [reasonDetails, setReasonDetails] = useState<string | null>(null);
+  const [reasonDetails, setReasonDetails] = useState("");
   const [leaveReasonId, setLeaveReasonId] = useState<string | undefined>(
     undefined
   );
@@ -53,6 +63,31 @@ export default function CreateNewRequestPage() {
     approverId?: string;
     informToId?: string;
   }>({});
+
+  useEffect(() => {
+    if (fromDate && toDate) {
+      if (fromDate.isSame(toDate, "day")) {
+        const diffHours = toDate.diff(fromDate, "minute") / 60;
+        const rounded = Math.round(diffHours * 100) / 100;
+        setDuration(`${rounded} hours on ${fromDate.format("DD-MM-YYYY")}`);
+      } else {
+        setDuration(
+          `from ${fromDate.format("DD-MM-YYYY")} to ${toDate.format(
+            "DD-MM-YYYY"
+          )}`
+        );
+      }
+    } else {
+      setDuration(null);
+    }
+  }, [fromDate, toDate]);
+
+  useEffect(() => {
+    if (employee) {
+      setEmployeeId(employee.id ?? "");
+      setSubUnitId(employee.subUnitId ?? "");
+    }
+  }, [employee]);
 
   const resetForm = () => {
     setFromDate(null);
@@ -178,9 +213,9 @@ export default function CreateNewRequestPage() {
                     }));
                   }}
                 >
-                  {employees.map((emp) => (
-                    <Option key={emp.id} value={emp.id}>
-                      {emp.firstName} {emp.lastName}
+                  {supervisorEmployee?.map((approve) => (
+                    <Option key={approve.id} value={approve.id}>
+                      {approve.firstName} {approve.lastName}
                     </Option>
                   ))}
                 </Select>
@@ -194,13 +229,13 @@ export default function CreateNewRequestPage() {
 
             {/* From Date */}
             <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-baseline">
-              <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
+              <label className="w-full text-sm text-gray-500 sm:w-24 shrink-0">
                 From Date:
               </label>
               <div className="flex flex-col w-full">
                 <DatePicker
                   showTime={{ format: "HH:mm" }}
-                  format="YYYY-MM-DD HH:mm"
+                  format="DD-MM-YYYY HH:mm"
                   className="w-full"
                   placeholder="Select date"
                   value={fromDate}
@@ -219,16 +254,39 @@ export default function CreateNewRequestPage() {
 
             {/* To Date */}
             <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-baseline">
-              <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
+              <label className="w-full text-sm text-gray-500 sm:w-24 shrink-0">
                 To Date:
               </label>
               <div className="flex flex-col w-full">
                 <DatePicker
                   showTime={{ format: "HH:mm" }}
-                  format="YYYY-MM-DD HH:mm"
+                  format="DD-MM-YYYY HH:mm"
                   className="w-full"
                   placeholder="Select date"
                   value={toDate}
+                  disabledDate={(current) => {
+                    return fromDate ? current.isBefore(fromDate, "day") : false;
+                  }}
+                  disabledTime={(date) => {
+                    if (!fromDate || !date) return {};
+                    if (date.isSame(fromDate, "day")) {
+                      return {
+                        disabledHours: () =>
+                          Array.from(
+                            { length: fromDate.hour() + 1 },
+                            (_, i) => i
+                          ),
+                        disabledMinutes: (selectedHour) =>
+                          selectedHour === fromDate.hour()
+                            ? Array.from(
+                                { length: fromDate.minute() + 1 },
+                                (_, i) => i
+                              )
+                            : [],
+                      };
+                    }
+                    return {};
+                  }}
                   onChange={(to) => {
                     setToDate(to);
                     setFormErrors((prev) => ({ ...prev, toDate: undefined }));
@@ -244,14 +302,16 @@ export default function CreateNewRequestPage() {
 
             {/* Duration */}
             <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-baseline">
-              <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
+              <label className="w-full text-sm text-gray-500 sm:w-24 shrink-0">
                 Duration:
               </label>
               <div className="flex flex-col w-full">
                 <input
-                  className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md bg-gray-50 focus:outline-none"
                   type="text"
-                  placeholder="Type for hints..."
+                  value={duration ?? ""}
+                  readOnly
+                  placeholder="Duration will be calculated"
                 />
               </div>
             </div>
@@ -341,9 +401,9 @@ export default function CreateNewRequestPage() {
                     }));
                   }}
                 >
-                  {employees.map((empI) => (
-                    <Option key={empI.id} value={empI.id}>
-                      {empI.firstName} {empI.lastName}
+                  {subUnitEmployees?.map((inform) => (
+                    <Option key={inform.id} value={inform.id}>
+                      {inform.firstName} {inform.lastName}
                     </Option>
                   ))}
                 </Select>
@@ -364,6 +424,14 @@ export default function CreateNewRequestPage() {
                 <textarea
                   id="message"
                   rows={4}
+                  value={reasonDetails}
+                  onChange={(e) => {
+                    setReasonDetails(e.target.value);
+                    setFormErrors((prev) => ({
+                      ...prev,
+                      reasonDetails: undefined,
+                    }));
+                  }}
                   className="w-full px-3 py-2 !mt-2 text-sm text-gray-900 bg-white border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-200"
                   placeholder="Write your reason details here..."
                 ></textarea>
