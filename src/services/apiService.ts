@@ -11,6 +11,8 @@ export const API_ENDPOINTS = {
   PATCH_EMPLOYEE_STATUS: `${API_URL}/Employees/PatchEmployeeStatusOnLeave`,
   GET_EMPLOYEE_LIST: `${API_URL}/Employees/GetEmployeeList`,
   GET_EMPLOYEE_DETAILS_BY_USER_ID: `${API_URL}/Employees/GetEmployeeDetailsByUserId`,
+  GET_EMPLOYEE_BY_SUB_UNIT: `${API_URL}/Employees/GetEmployeeBySubUnit`,
+  GET_SUPERVISOR_EMPLOYEE: `${API_URL}/Employees/GetSupervisorEmployee`,
   //job titles
   GET_ALL_JOB_TITLES: `${API_URL}/JobTitles/GetAllJobTitles`,
   GET_JOB_TITLE_BY_ID: `${API_URL}/JobTitles/GetJobTitleById`,
