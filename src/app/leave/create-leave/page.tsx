@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuthContext } from "@/contexts/authContext";
-import { useGetAllEmployees } from "@/hooks/employees/useGetAllEmployees";
 import { useGetEmployeeDetailsByUserId } from "@/hooks/employees/useGetEmployeeDetailsByUserId";
 import { CreateLeaveRequestDto } from "@/hooks/leave/CreateLeaveRequestDto";
 import { useGetLeaveReason } from "@/hooks/leave/leave-reasons/useGetLeaveReason";
@@ -22,7 +21,6 @@ export default function CreateNewRequestPage() {
   const { leaveReasons } = useGetLeaveReason();
   const { leaveRequestTypes } = useGetLeaveRequestType();
   const { partialDays } = useGetPartialDay();
-  const { employees } = useGetAllEmployees();
   const { userId } = useAuthContext();
   const { employee, loading: loadingEmployee } = useGetEmployeeDetailsByUserId(
     userId ?? ""

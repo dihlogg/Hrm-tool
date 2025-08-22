@@ -4,7 +4,8 @@ export type LeaveRequestFilters = {
   employeeId?: string;
   leaveStatusId?: string;
   leaveReasonId?: string;
-  partialDayId?: string
+  partialDayId?: string;
+  leaveRequestTypeId?: string;
 };
 
 export function getInitialFilters(): LeaveRequestFilters {
@@ -15,5 +16,6 @@ export function getInitialFilters(): LeaveRequestFilters {
     leaveStatusId: "",
     leaveReasonId: "",
     partialDayId: "",
+    leaveRequestTypeId: "",
   };
 }

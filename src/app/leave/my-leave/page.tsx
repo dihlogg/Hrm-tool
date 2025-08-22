@@ -2,13 +2,11 @@
 
 import { useAuthContext } from "@/contexts/authContext";
 import { useGetEmployeeDetailsByUserId } from "@/hooks/employees/useGetEmployeeDetailsByUserId";
-import { CreateLeaveRequestDto } from "@/hooks/leave/CreateLeaveRequestDto";
 import {
   getInitialFilters,
   LeaveRequestFilters,
 } from "@/hooks/leave/LeaveRequestFilterDto";
 import { useGetLeaveRequestByEmployeeId } from "@/hooks/leave/useGetLeaveRequestByEmployeeId";
-import { mockMyRequests } from "@/utils/leave/mock-data-my-request";
 import { antdSortOrderToApiOrder } from "@/utils/tableSorting";
 import { Button, DatePicker, Pagination, Select, Table } from "antd";
 import { ColumnsType, SortOrder } from "antd/es/table/interface";
@@ -16,6 +14,9 @@ import { useState } from "react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { LeaveRequestDto } from "@/hooks/leave/LeaveRequestDto";
+import { useGetLeaveRequestType } from "@/hooks/leave/leave-request-types/useGetLeaveRequestTypes";
+import { useGetLeaveStatus } from "@/hooks/leave/leave-statuses/useGetLeaveStatus";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -30,6 +31,9 @@ export default function MyRequestPage() {
   const { employee, loading: loadingEmployee } = useGetEmployeeDetailsByUserId(
     userId ?? ""
   );
+  const { leaveRequestTypes, error: leaveRequestTypeError } =
+    useGetLeaveRequestType();
+  const { leaveStatuses, error: leaveStatusError } = useGetLeaveStatus();
   const [sortBy, setSortBy] = useState<string | undefined>(undefined);
   const [sortOrder, setSortOrder] = useState<SortOrder | undefined>(undefined);
 
@@ -66,7 +70,7 @@ export default function MyRequestPage() {
     }
   }
 
-  const columns: ColumnsType<CreateLeaveRequestDto> = [
+  const columns: ColumnsType<LeaveRequestDto> = [
     {
       title: <span className="select-none">Request Type</span>,
       dataIndex: "leaveRequestTypeId",
@@ -80,7 +84,7 @@ export default function MyRequestPage() {
       render: (text) => (
         <span>
           {text
-            ? dayjs(text).tz("Asia/Bangkok").format("YYYY-MM-DD HH:mm")
+            ? dayjs(text).tz("Asia/Bangkok").format("DD-MM-YYYY HH:mm")
             : "N/A"}
         </span>
       ),
@@ -91,7 +95,7 @@ export default function MyRequestPage() {
       render: (text) => (
         <span>
           {text
-            ? dayjs(text).tz("Asia/Bangkok").format("YYYY-MM-DD HH:mm")
+            ? dayjs(text).tz("Asia/Bangkok").format("DD-MM-YYYY HH:mm")
             : "N/A"}
         </span>
       ),
@@ -99,8 +103,6 @@ export default function MyRequestPage() {
     {
       title: <span className="select-none">Duration (Days)</span>,
       dataIndex: "duration",
-      sorter: true,
-      sortOrder: sortBy === "duration" ? sortOrder : undefined,
       render: (text) => <span>{text}</span>,
     },
     {
@@ -113,18 +115,28 @@ export default function MyRequestPage() {
     {
       title: <span className="select-none">Approver</span>,
       dataIndex: "approverId",
-      sorter: true,
-      sortOrder: sortBy === "Approver" ? sortOrder : undefined,
-      render: (_, record) => record.approve?.name || "N/A",
+      render: (_, record) => {
+        const approver = record.participantsRequests.find(
+          (p) => p.type === "approve"
+        );
+        return approver
+          ? `${approver.employees.firstName} ${approver.employees.lastName}`
+          : "N/A";
+      },
     },
     {
-      title: (
-        <span className="text-sm font-semibold text-gray-600">Inform To</span>
-      ),
-      dataIndex: "InformTo",
-      render: (text: string) => (
-        <span className="text-sm text-gray-500 font-small">{text}</span>
-      ),
+      title: <span className="select-none">Inform To</span>,
+      dataIndex: "informToId",
+      render: (_, record) => {
+        const informs = record.participantsRequests.filter(
+          (p) => p.type === "inform"
+        );
+        return informs.length > 0
+          ? informs
+              .map((i) => `${i.employees.firstName} ${i.employees.lastName}`)
+              .join(", ")
+          : "N/A";
+      },
     },
     {
       title: <span className="select-none">Status</span>,
@@ -150,33 +162,91 @@ export default function MyRequestPage() {
             <label className="w-full text-sm text-gray-500 font-small">
               From Date
             </label>
-            <DatePicker className="w-full !mt-2" placeholder="Select date" />
+            <DatePicker
+              className="w-full !mt-2"
+              placeholder="Select date"
+              format={"DD-MM-YYYY"}
+              value={
+                filterDrafts.fromDate ? dayjs(filterDrafts.fromDate) : null
+              }
+              onChange={(from) =>
+                setFilterDrafts((prev) => ({
+                  ...prev,
+                  fromDate: from ? from.toDate() : undefined,
+                }))
+              }
+            />
           </div>
           <div>
             <label className="w-full text-sm text-gray-500 font-small">
               To Date
             </label>
-            <DatePicker className="w-full !mt-2" placeholder="Select date" />
+            <DatePicker
+              className="w-full !mt-2"
+              placeholder="Select date"
+              format={"DD-MM-YYYY"}
+              value={filterDrafts.toDate ? dayjs(filterDrafts.toDate) : null}
+              onChange={(to) =>
+                setFilterDrafts((prev) => ({
+                  ...prev,
+                  toDate: to ? to.toDate() : undefined,
+                }))
+              }
+            />
           </div>
           <div>
             <label className="w-full text-sm text-gray-500 font-small">
               Request Status
             </label>
-            <Select defaultValue="--Select--" className="w-full !mt-2">
-              <Option value="--Select--">--Select--</Option>
-              <Option value="Pending">Pending</Option>
-              <Option value="Approved">Approved</Option>
+            <Select
+              className="w-full !mt-2 custom-select"
+              placeholder="--Select--"
+              allowClear
+              value={filterDrafts.leaveStatusId || null}
+              onChange={(value) =>
+                setFilterDrafts((prev) => ({
+                  ...prev,
+                  leaveStatusId: value,
+                }))
+              }
+            >
+              {leaveStatuses.map((status) => (
+                <Option key={status.id} value={status.id}>
+                  {status.name}
+                </Option>
+              ))}
             </Select>
+            {leaveStatusError && (
+              <p className="mt-1 text-sm text-red-500">{leaveStatusError}</p>
+            )}
           </div>
           <div>
             <label className="w-full text-sm text-gray-500 font-small">
               Request Type
             </label>
-            <Select defaultValue="--Select--" className="w-full !mt-2">
-              <Option value="--Select--">--Select--</Option>
-              <Option value="Annual">Annual</Option>
-              <Option value="Sick">Sick</Option>
+            <Select
+              className="w-full !mt-2 custom-select"
+              placeholder="--Select--"
+              allowClear
+              value={filterDrafts.leaveRequestTypeId || null}
+              onChange={(value) =>
+                setFilterDrafts((prev) => ({
+                  ...prev,
+                  leaveRequestTypeId: value,
+                }))
+              }
+            >
+              {leaveRequestTypes.map((type) => (
+                <Option key={type.id} value={type.id}>
+                  {type.name}
+                </Option>
+              ))}
             </Select>
+            {leaveRequestTypeError && (
+              <p className="mt-1 text-sm text-red-500">
+                {leaveRequestTypeError}
+              </p>
+            )}
           </div>
         </div>
         <div className="grid justify-end grid-flow-col gap-2 mt-4">
@@ -186,14 +256,24 @@ export default function MyRequestPage() {
             size="middle"
             ghost
             className="text-blue-500"
+            onClick={() => {
+              const initial = getInitialFilters();
+              setFilterDrafts(initial);
+              setSortOrder(undefined);
+              setFilters(initial);
+            }}
           >
-            Cancel
+            Reset
           </Button>
           <Button
             type="primary"
             shape="round"
             size="middle"
             className="text-white bg-blue-500 hover:bg-blue-600"
+            onClick={() => {
+              setFilters(filterDrafts);
+              setCurrentPage(1);
+            }}
           >
             + Apply
           </Button>
@@ -229,12 +309,12 @@ export default function MyRequestPage() {
           }}
         />
         <div className="flex items-center justify-end mt-4">
-           <Pagination
-              current={currentPage}
-              pageSize={pageSize}
-              total={total}
-              onChange={(page) => setCurrentPage(page)}
-            />
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={total}
+            onChange={(page) => setCurrentPage(page)}
+          />
         </div>
       </div>
     </div>
