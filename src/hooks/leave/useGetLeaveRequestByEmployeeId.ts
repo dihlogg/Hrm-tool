@@ -6,6 +6,7 @@ import { PaginatedResponse } from "@/types/pagination";
 import axiosInstance from "@/utils/auth/axiosInstance";
 import { LeaveRequestFilters } from "./LeaveRequestFilterDto";
 import { CreateLeaveRequestDto } from "./CreateLeaveRequestDto";
+import { LeaveRequestDto } from "./LeaveRequestDto";
 
 export function useGetLeaveRequestByEmployeeId(
   employeeId: string,
@@ -16,7 +17,7 @@ export function useGetLeaveRequestByEmployeeId(
   filters: LeaveRequestFilters = {},
   hotReload: number = 0
 ) {
-  const [leaveRequests, setLeaveRequests] = useState<CreateLeaveRequestDto[]>(
+  const [leaveRequests, setLeaveRequests] = useState<LeaveRequestDto[]>(
     []
   );
   const [total, setTotal] = useState(0);
@@ -53,7 +54,7 @@ export function useGetLeaveRequestByEmployeeId(
 
       try {
         const response = await axiosInstance.get<
-          PaginatedResponse<CreateLeaveRequestDto>
+          PaginatedResponse<LeaveRequestDto>
         >(`${API_ENDPOINTS.GET_LEAVE_REQUEST_BY_EMPLOYEE_ID}/${employeeId}`, {
           params,
         });

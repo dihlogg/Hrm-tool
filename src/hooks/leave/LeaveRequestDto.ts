@@ -1,4 +1,4 @@
-export interface CreateLeaveRequestDto {
+export interface LeaveRequestDto {
   id?: string;
   fromDate?: string | null;
   toDate?: string | null;
@@ -39,5 +39,15 @@ export interface CreateLeaveRequestDto {
     id: string;
     name: string;
   }
+  participantsRequests: {
+    id: string;
+    type: "approve" | "inform";
+    employees: {
+      id: string;
+      firstName: string;
+      lastName: string;
+      imageUrl?: string;
+    };
+  }[];
 }
 

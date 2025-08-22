@@ -130,9 +130,12 @@ export default function EmployeeListPage() {
 
   const handleExport = async () => {
     try {
-      const response = await axiosInstance.get(API_ENDPOINTS.GET_EMPLOYEE_LIST, {
-        params: { page: 1, pageSize: total },
-      });
+      const response = await axiosInstance.get(
+        API_ENDPOINTS.GET_EMPLOYEE_LIST,
+        {
+          params: { page: 1, pageSize: total },
+        }
+      );
 
       const allEmployees = response.data.data;
 
@@ -372,9 +375,10 @@ export default function EmployeeListPage() {
               ghost
               className="text-blue-500"
               onClick={() => {
-                setFilterDrafts(getInitialFilters());
+                const initial = getInitialFilters();
+                setFilterDrafts(initial);
                 setSortOrder(undefined);
-                setFilters(filterDrafts);
+                setFilters(initial);
               }}
             >
               Reset
