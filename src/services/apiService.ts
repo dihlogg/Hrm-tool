@@ -30,6 +30,7 @@ export const API_ENDPOINTS = {
   //leave request
   POST_LEAVE_REQUEST: `${API_URL}/LeaveRequests/PostLeaveRequest`,
   GET_LEAVE_REQUEST_BY_EMPLOYEE_ID: `${API_URL}/LeaveRequests/GetLeaveRequestListByEmployeeId`,
+  GET_LEAVE_BALANCE_BY_EMPLOYEE_ID: `${API_URL}/LeaveRequests/GetLeaveBalancesByEmployeeId`,
   //leave status
   GET_ALL_LEAVE_STATUS: `${API_URL}/LeaveStatuses/GetAllLeaveStatuses`,
   //partial days

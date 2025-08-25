@@ -13,6 +13,8 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useGetEmployeeBySubUnit } from "@/hooks/employees/useGetEmployeeBySubUnit";
 import { useGetSupervisorEmployee } from "@/hooks/employees/useGetSupervisorEmployee";
+import { useGetLeaveBalanceByEmployeeId } from "@/hooks/leave/useGetLeaveBalanceByEmployeeId";
+import LeaveBalanceModal from "@/components/leave/LeaveBalanceModal";
 
 const { Option } = Select;
 
@@ -36,19 +38,20 @@ export default function CreateNewRequestPage() {
   const { supervisorEmployee } = useGetSupervisorEmployee(employeeId);
   const [fromDate, setFromDate] = useState<Dayjs | null>(null);
   const [toDate, setToDate] = useState<Dayjs | null>(null);
-  const [duration, setDuration] = useState<string | null>(null);
+  const [duration, setDuration] = useState("");
   const [reasonDetails, setReasonDetails] = useState("");
-  const [leaveReasonId, setLeaveReasonId] = useState<string | undefined>(
-    undefined
+  const [leaveReasonId, setLeaveReasonId] = useState<string | null>(null);
+  const [leaveRequestTypeId, setLeaveRequestTypeId] = useState<string | null>(
+    null
   );
-  const [leaveRequestTypeId, setLeaveRequestTypeId] = useState<
-    string | undefined
-  >(undefined);
-  const [partialDayId, setPartialDayId] = useState<string | undefined>(
-    undefined
-  );
-  const [approverId, setApproverId] = useState<string | undefined>(undefined);
-  const [informToId, setInformToId] = useState<string | undefined>(undefined);
+  const [partialDayId, setPartialDayId] = useState<string | null>(null);
+  const [approverId, setApproverId] = useState<string | null>(null);
+  const [informToId, setInformToId] = useState<string | null>(null);
+
+  //leave balance modal
+  const [modalVisible, setModalVisible] = useState(false);
+  const { leaveBalance, loading: loadingModal } =
+    useGetLeaveBalanceByEmployeeId(employeeId);
 
   const [formErrors, setFormErrors] = useState<{
     fromDate?: string;
@@ -63,24 +66,6 @@ export default function CreateNewRequestPage() {
   }>({});
 
   useEffect(() => {
-    if (fromDate && toDate) {
-      if (fromDate.isSame(toDate, "day")) {
-        const diffHours = toDate.diff(fromDate, "minute") / 60;
-        const rounded = Math.round(diffHours * 100) / 100;
-        setDuration(`${rounded} hours on ${fromDate.format("DD-MM-YYYY")}`);
-      } else {
-        setDuration(
-          `from ${fromDate.format("DD-MM-YYYY")} to ${toDate.format(
-            "DD-MM-YYYY"
-          )}`
-        );
-      }
-    } else {
-      setDuration(null);
-    }
-  }, [fromDate, toDate]);
-
-  useEffect(() => {
     if (employee) {
       setEmployeeId(employee.id ?? "");
       setSubUnitId(employee.subUnitId ?? "");
@@ -92,11 +77,11 @@ export default function CreateNewRequestPage() {
     setToDate(null);
     setDuration("");
     setReasonDetails("");
-    setLeaveReasonId(undefined);
-    setLeaveRequestTypeId(undefined);
-    setPartialDayId(undefined);
-    setApproverId(undefined);
-    setInformToId(undefined);
+    setLeaveReasonId(null);
+    setLeaveRequestTypeId(null);
+    setPartialDayId(null);
+    setApproverId(null);
+    setInformToId(null);
   };
 
   const handleSubmit = async () => {
@@ -109,10 +94,31 @@ export default function CreateNewRequestPage() {
     if (!partialDayId) errors.partialDayId = "Required";
     if (!approverId) errors.approverId = "Required";
     if (!informToId) errors.informToId = "Required";
+
+    if (!duration) {
+      errors.duration = "Required";
+    } else {
+      const durationNumber = Number(duration);
+      if (isNaN(durationNumber)) {
+        errors.duration = "Duration must be a number";
+      } else if (durationNumber <= 0) {
+        errors.duration = "Duration must be greater than 0";
+      }
+    }
+
+    const selectedReason = leaveReasons.find(
+      (reason) => reason.id === leaveReasonId
+    );
+    if (selectedReason?.name === "Others" && !reasonDetails.trim()) {
+      errors.reasonDetails = "Required";
+    }
+
     setFormErrors(errors);
 
     if (Object.keys(errors).length > 0) {
-      message.warning("Please fill in all required fields before submitting!");
+      message.warning(
+        "Please fill in all required fields correctly and completely before submitting!"
+      );
       setFormErrors(errors);
       return;
     }
@@ -155,16 +161,28 @@ export default function CreateNewRequestPage() {
           <h2 className="pb-2 text-xl font-semibold text-gray-500 border-b border-b-gray-400">
             Create New Request
           </h2>
-          <a className="inline-block mb-4 text-sm text-blue-600 hover:underline">
+          <a
+            className="inline-block mb-4 text-sm text-blue-600 hover:underline"
+            onClick={() => setModalVisible(true)}
+          >
             Time Off (Leave) Requests and Balances
           </a>
+          <LeaveBalanceModal
+            visible={modalVisible}
+            onClose={() => setModalVisible(false)}
+            leaveBalance={leaveBalance}
+            loading={loadingModal}
+            employeeName={`${employee?.firstName ?? ""} ${
+              employee?.lastName ?? ""
+            }`}
+          />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {/* Request Type */}
-            <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-baseline">
+            <div className="flex flex-col items-start min-w-0 gap-2 mb-4 sm:flex-row sm:items-baseline">
               <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
                 Request Type*:
               </label>
-              <div className="flex flex-col w-full">
+              <div className="flex flex-col w-full min-w-0">
                 <Select
                   className="w-full"
                   placeholder="--Select--"
@@ -232,8 +250,9 @@ export default function CreateNewRequestPage() {
               </label>
               <div className="flex flex-col w-full">
                 <DatePicker
-                  showTime={{ format: "HH:mm" }}
-                  format="DD-MM-YYYY HH:mm"
+                  format={(value) =>
+                    value ? value.format("DD-MMM-YYYY").toUpperCase() : ""
+                  }
                   className="w-full"
                   placeholder="Select date"
                   value={fromDate}
@@ -257,33 +276,14 @@ export default function CreateNewRequestPage() {
               </label>
               <div className="flex flex-col w-full">
                 <DatePicker
-                  showTime={{ format: "HH:mm" }}
-                  format="DD-MM-YYYY HH:mm"
+                  format={(value) =>
+                    value ? value.format("DD-MMM-YYYY").toUpperCase() : ""
+                  }
                   className="w-full"
                   placeholder="Select date"
                   value={toDate}
                   disabledDate={(current) => {
                     return fromDate ? current.isBefore(fromDate, "day") : false;
-                  }}
-                  disabledTime={(date) => {
-                    if (!fromDate || !date) return {};
-                    if (date.isSame(fromDate, "day")) {
-                      return {
-                        disabledHours: () =>
-                          Array.from(
-                            { length: fromDate.hour() + 1 },
-                            (_, i) => i
-                          ),
-                        disabledMinutes: (selectedHour) =>
-                          selectedHour === fromDate.hour()
-                            ? Array.from(
-                                { length: fromDate.minute() + 1 },
-                                (_, i) => i
-                              )
-                            : [],
-                      };
-                    }
-                    return {};
                   }}
                   onChange={(to) => {
                     setToDate(to);
@@ -295,22 +295,6 @@ export default function CreateNewRequestPage() {
                     {formErrors.toDate}
                   </span>
                 )}
-              </div>
-            </div>
-
-            {/* Duration */}
-            <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-baseline">
-              <label className="w-full text-sm text-gray-500 sm:w-24 shrink-0">
-                Duration:
-              </label>
-              <div className="flex flex-col w-full">
-                <input
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md bg-gray-50 focus:outline-none"
-                  type="text"
-                  value={duration ?? ""}
-                  readOnly
-                  placeholder="Duration will be calculated"
-                />
               </div>
             </div>
 
@@ -342,6 +326,33 @@ export default function CreateNewRequestPage() {
                 {formErrors.partialDayId && (
                   <span className="mt-1 text-sm font-medium text-red-500">
                     {formErrors.partialDayId}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Duration */}
+            <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-baseline">
+              <label className="w-full text-sm text-gray-500 sm:w-24 shrink-0">
+                Duration:
+              </label>
+              <div className="flex flex-col w-full">
+                <input
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none"
+                  type="text"
+                  value={duration}
+                  placeholder="Duration in days"
+                  onChange={(e) => {
+                    setDuration(e.target.value);
+                    setFormErrors((prev) => ({
+                      ...prev,
+                      duration: undefined,
+                    }));
+                  }}
+                />
+                {formErrors.duration && (
+                  <span className="mt-1 text-sm font-medium text-red-500">
+                    {formErrors.duration}
                   </span>
                 )}
               </div>
