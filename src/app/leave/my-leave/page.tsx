@@ -84,9 +84,7 @@ export default function MyRequestPage() {
       dataIndex: "fromDate",
       render: (text) => (
         <span>
-          {text
-            ? dayjs(text).tz("Asia/Bangkok").format("DD-MM-YYYY HH:mm")
-            : "N/A"}
+          {text ? dayjs(text).tz("Asia/Bangkok").format("DD-MMM-YYYY") : "N/A"}
         </span>
       ),
     },
@@ -95,9 +93,7 @@ export default function MyRequestPage() {
       dataIndex: "toDate",
       render: (text) => (
         <span>
-          {text
-            ? dayjs(text).tz("Asia/Bangkok").format("DD-MM-YYYY HH:mm")
-            : "N/A"}
+          {text ? dayjs(text).tz("Asia/Bangkok").format("DD-MMM-YYYY") : "N/A"}
         </span>
       ),
     },
@@ -109,8 +105,6 @@ export default function MyRequestPage() {
     {
       title: <span className="select-none">Reason</span>,
       dataIndex: "leaveReasonId",
-      sorter: true,
-      sortOrder: sortBy === "leaveReason" ? sortOrder : undefined,
       render: (_, record) => record.leaveReason?.name || "N/A",
     },
     {

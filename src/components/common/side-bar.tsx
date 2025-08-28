@@ -50,27 +50,27 @@ const SidebarComponent = () => {
           },
           {
             key: "admin",
-            icon: <AuditOutlined style={iconStyle}/>,
+            icon: <ReconciliationOutlined style={iconStyle}/>,
             label: <Link href="/admin" style={labelStyle}>Admin</Link>,
           },
           {
             key: "leave",
-            icon: <ReconciliationOutlined style={iconStyle}/>,
+            icon: <FieldTimeOutlined style={iconStyle}/>,
             label: <Link href="/leave" style={labelStyle}>Leave</Link>,
           },
           {
             key: "pim",
-            icon: <UserOutlined style={iconStyle}/>,
+            icon: <AuditOutlined style={iconStyle}/>,
             label: <Link href="/pim" style={labelStyle}>Pim</Link>,
           },
           {
             key: "time",
-            icon: <FieldTimeOutlined style={iconStyle}/>,
+            icon: <ProfileOutlined style={iconStyle}/>,
             label: <Link href="/time" style={labelStyle}>Time</Link>,
           },
           {
             key: "profile",
-            icon: <ProfileOutlined style={iconStyle}/>,
+            icon: <UserOutlined style={iconStyle}/>,
             label: <Link href="/profile" style={labelStyle}>Profile</Link>,
           },
           {

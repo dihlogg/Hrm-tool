@@ -9,6 +9,7 @@ export interface CreateEmployeeDto {
   dayOfBirth?: string | null;
   nationality?: string | null;
   imageUrl?: string | null;
+  parentId?: string | null;
   employeeStatusId?: string | null;
   employeeStatus?: {
     id: string;
