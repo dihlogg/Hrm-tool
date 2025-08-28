@@ -7,8 +7,8 @@ import axiosInstance from "@/utils/auth/axiosInstance";
 import { LeaveRequestFilters } from "./LeaveRequestFilterDto";
 import { LeaveRequestDto } from "./LeaveRequestDto";
 
-export function useGetLeaveRequestByEmployeeId(
-  employeeId: string,
+export function useGetLeaveRequestForSupervisorId(
+  supervisorId: string,
   page: number,
   pageSize: number,
   sortBy?: string,
@@ -16,16 +16,14 @@ export function useGetLeaveRequestByEmployeeId(
   filters: LeaveRequestFilters = {},
   hotReload: number = 0
 ) {
-  const [leaveRequests, setLeaveRequests] = useState<LeaveRequestDto[]>(
-    []
-  );
+  const [leaveRequests, setLeaveRequests] = useState<LeaveRequestDto[]>([]);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!employeeId) return;
-    async function loadLeaveRequestByEmployeeId(employeeId: string) {
+    if (!supervisorId) return;
+    async function loadLeaveRequestForSupervisorId(supervisorId: string) {
       setLoading(true);
 
       const cleanedFilters: Record<string, string> = Object.fromEntries(
@@ -54,22 +52,22 @@ export function useGetLeaveRequestByEmployeeId(
       try {
         const response = await axiosInstance.get<
           PaginatedResponse<LeaveRequestDto>
-        >(`${API_ENDPOINTS.GET_LEAVE_REQUEST_BY_EMPLOYEE_ID}/${employeeId}`, {
+        >(`${API_ENDPOINTS.GET_LEAVE_REQUEST_FOR_SUPERVISOR}/${supervisorId}`, {
           params,
         });
 
         setLeaveRequests(response.data.data);
         setTotal(response.data.total);
       } catch (err: any) {
-        setError(err.message || "Failed to load leave requests");
+        setError(err.message || "Failed to load leave requests for supervisor");
       } finally {
         setLoading(false);
       }
     }
 
-    loadLeaveRequestByEmployeeId(employeeId);
+    loadLeaveRequestForSupervisorId(supervisorId);
   }, [
-    employeeId,
+    supervisorId,
     page,
     pageSize,
     sortBy,
@@ -78,5 +76,5 @@ export function useGetLeaveRequestByEmployeeId(
     hotReload,
   ]);
 
-  return { employeeId, leaveRequests, total, error, loading, hotReload };
+  return { supervisorId, leaveRequests, total, error, loading, hotReload };
 }

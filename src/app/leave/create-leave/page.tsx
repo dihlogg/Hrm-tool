@@ -45,7 +45,7 @@ export default function CreateNewRequestPage() {
     null
   );
   const [partialDayId, setPartialDayId] = useState<string | null>(null);
-  const [approverId, setApproverId] = useState<string | null>(null);
+  const [approverId, setApproverId] = useState<string | undefined>(undefined);
   const [informToId, setInformToId] = useState<string | null>(null);
 
   //leave balance modal
@@ -80,7 +80,7 @@ export default function CreateNewRequestPage() {
     setLeaveReasonId(null);
     setLeaveRequestTypeId(null);
     setPartialDayId(null);
-    setApproverId(null);
+    setApproverId(undefined);
     setInformToId(null);
   };
 
