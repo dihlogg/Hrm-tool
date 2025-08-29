@@ -446,6 +446,7 @@ export default function EmployeeListPage() {
               pageSize={pageSize}
               total={total}
               onChange={(page) => setCurrentPage(page)}
+              showLessItems
             />
           </div>
         </div>
