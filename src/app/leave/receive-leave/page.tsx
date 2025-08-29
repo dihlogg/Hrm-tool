@@ -18,10 +18,11 @@ import {
   Modal,
   notification,
   Pagination,
+  Popover,
   Select,
   Table,
 } from "antd";
-import { SelectOutlined } from "@ant-design/icons";
+import { CloudUploadOutlined, SelectOutlined } from "@ant-design/icons";
 import { ColumnsType } from "antd/es/table";
 import { SortOrder } from "antd/es/table/interface";
 import { useState } from "react";
@@ -29,6 +30,9 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { usePatchLeaveRequestStatus } from "@/hooks/leave/usePatchLeaveRequestStatus";
+import axiosInstance from "@/utils/auth/axiosInstance";
+import { API_ENDPOINTS } from "@/services/apiService";
+import { exportPDF } from "@/utils/exportPDF";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -131,6 +135,7 @@ export default function ReceiveRequestPage() {
       }
     }
   };
+  const content = <span className="text-white">Click to export file</span>;
 
   function mapSorterFieldToApiField(
     field: string | undefined
@@ -150,9 +155,29 @@ export default function ReceiveRequestPage() {
     }
   }
 
+  const handleExport = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `${API_ENDPOINTS.GET_LEAVE_REQUEST_FOR_SUPERVISOR}/${employee?.id}`,
+          {
+            params: {
+              page: 1,
+              pageSize: total,
+            },
+          }
+        );
+
+        const allReceiveLeave = response.data.data;
+
+        exportPDF(columns, allReceiveLeave, "Leave_Receive_List.pdf", "Leave Receive List");
+      } catch (err) {
+        console.error("Export failed:", err);
+      }
+  };
+
   const columns: ColumnsType<LeaveRequestDto> = [
     {
-      title: <span className="select-none">Requester</span>,
+      title: <span className="text-sm font-semibold text-gray-600 select-none">Requester</span>,
       key: "requester",
       render: (_, record) => {
         const requester = record.employee
@@ -162,14 +187,14 @@ export default function ReceiveRequestPage() {
       },
     },
     {
-      title: <span className="select-none">Request Type</span>,
+      title: <span className="text-sm font-semibold text-gray-600 select-none">Request Type</span>,
       dataIndex: "leaveRequestTypeId",
       sorter: true,
       sortOrder: sortBy === "leaveRequestType" ? sortOrder : undefined,
       render: (_, record) => record.leaveRequestType?.name || "N/A",
     },
     {
-      title: <span className="select-none">Time Request</span>,
+      title: <span className="text-sm font-semibold text-gray-600 select-none">Time Request</span>,
       render: (_, record) => {
         const fromDate = record.fromDate
           ? dayjs(record.fromDate).tz("Asia/Bangkok").format("DD-MMM-YYYY")
@@ -184,22 +209,22 @@ export default function ReceiveRequestPage() {
       },
     },
     {
-      title: <span className="select-none">Partial Days</span>,
+      title: <span className="text-sm font-semibold text-gray-600 select-none">Partial Days</span>,
       dataIndex: "partialDayId",
       render: (_, record) => record.partialDay?.name || "N/A",
     },
     {
-      title: <span className="select-none">Duration (Days)</span>,
+      title: <span className="text-sm font-semibold text-gray-600 select-none">Duration (Days)</span>,
       dataIndex: "duration",
       render: (text) => <span>{text}</span>,
     },
     {
-      title: <span className="select-none">Reason</span>,
+      title: <span className="text-sm font-semibold text-gray-600 select-none">Reason</span>,
       dataIndex: "leaveReasonId",
       render: (_, record) => record.leaveReason?.name || "N/A",
     },
     {
-      title: <span className="select-none">Inform To</span>,
+      title: <span className="text-sm font-semibold text-gray-600 select-none">Inform To</span>,
       dataIndex: "informToId",
       render: (_, record) => {
         const informs = record.participantsRequests.filter(
@@ -213,7 +238,7 @@ export default function ReceiveRequestPage() {
       },
     },
     {
-      title: <span className="select-none">Status</span>,
+      title: <span className="text-sm font-semibold text-gray-600 select-none">Status</span>,
       dataIndex: "leaveStatusId",
       sorter: true,
       sortOrder: sortBy === "leaveStatus" ? sortOrder : undefined,
@@ -399,11 +424,22 @@ export default function ReceiveRequestPage() {
         <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-gray-500">
-              List Requests
+              ({total ?? 0}) Records Found
             </h2>
-            <a className="text-sm text-blue-600 cursor-pointer hover:underline">
-              View All
-            </a>
+            <Popover content={content} color="#2e2b2b">
+              <Button
+                type="default"
+                shape="round"
+                icon={
+                  <CloudUploadOutlined
+                    style={{ fontSize: "20px", color: "#6B7280" }}
+                  />
+                }
+                size="large"
+                className="text-white bg-blue-500 !border-2 !border-gray-300 hover:bg-blue-600 transition"
+                onClick={handleExport}
+              ></Button>
+            </Popover>
           </div>
           <Table
             columns={columns}

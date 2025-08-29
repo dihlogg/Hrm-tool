@@ -33,6 +33,7 @@ import { usePatchEmployeeStatus } from "@/hooks/employees/usePatchEmployeeStatus
 import { exportPDF } from "@/utils/exportPDF";
 import { API_ENDPOINTS } from "@/services/apiService";
 import axiosInstance from "@/utils/auth/axiosInstance";
+import { exportExcel } from "@/utils/exportExcel";
 
 const { Option } = Select;
 
@@ -108,8 +109,6 @@ export default function EmployeeListPage() {
       }
     }
   };
-
-  const content = <span className="text-white">Click to export file</span>;
   const router = useRouter();
 
   function mapSorterFieldToApiField(
@@ -128,7 +127,7 @@ export default function EmployeeListPage() {
     }
   }
 
-  const handleExport = async () => {
+  const handleExportPDF = async () => {
     try {
       const response = await axiosInstance.get(
         API_ENDPOINTS.GET_EMPLOYEE_LIST,
@@ -144,6 +143,39 @@ export default function EmployeeListPage() {
       console.error("Export failed:", err);
     }
   };
+
+  const handleExportExcel = async () => {
+    try {
+      const response = await axiosInstance.get(
+        API_ENDPOINTS.GET_EMPLOYEE_LIST,
+        {
+          params: { page: 1, pageSize: total },
+        }
+      );
+      const allEmployees = response.data.data;
+      exportExcel(columns, allEmployees, "Employee_List.xlsx", "Employee List");
+    } catch (err) {
+      console.error("Export Excel failed:", err);
+    }
+  };
+  const content = (
+    <div className="flex flex-col space-y-2">
+      <Button
+        type="text"
+        className="hover:!text-blue-500 transition-colors"
+        onClick={handleExportPDF}
+      >
+        Export PDF
+      </Button>
+      <Button
+        type="text"
+        className="hover:!text-blue-500 transition-colors"
+        onClick={handleExportExcel}
+      >
+        Export Excel
+      </Button>
+    </div>
+  );
 
   const columns: ColumnsType<CreateEmployeeDto> = [
     {
@@ -404,19 +436,14 @@ export default function EmployeeListPage() {
             <h2 className="text-xl font-semibold text-gray-500">
               ({total ?? 0}) Records Found
             </h2>
-            <Popover content={content} color="#2e2b2b">
+            <Popover content={content} color="#fff" trigger="click">
               <Button
                 type="default"
                 shape="round"
-                icon={
-                  <CloudUploadOutlined
-                    style={{ fontSize: "20px", color: "#6B7280" }}
-                  />
-                }
+                icon={<CloudUploadOutlined style={{ fontSize: 20 }} />}
                 size="large"
-                className="text-white bg-blue-500 !border-2 !border-gray-300 hover:bg-blue-600 transition"
-                onClick={handleExport}
-              ></Button>
+                className="transition-all duration-300 !border-2 shadow-md hover:shadow-lg"
+              />
             </Popover>
           </div>
           <Table
