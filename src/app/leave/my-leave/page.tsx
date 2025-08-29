@@ -309,6 +309,7 @@ export default function MyRequestPage() {
             pageSize={pageSize}
             total={total}
             onChange={(page) => setCurrentPage(page)}
+            showLessItems
           />
         </div>
       </div>
