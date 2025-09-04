@@ -32,18 +32,13 @@ export interface LeaveRequestDto {
     name: string;
   };
   approverId?: string | null;
-  approve?: {
-    id: string;
-    name: string;
-  };
   informToId?: string | null;
-  inform?: {
-    id: string;
-    name: string;
-  };
+  confirmId?: string | null;
+  pendingId?: string | null;
+  rejectId?: string | null;
   participantsRequests: {
     id: string;
-    type: "approve" | "inform";
+    type: "approve" | "inform" | "confirm" | "pending" | "reject";
     employees: {
       id: string;
       firstName: string;

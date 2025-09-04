@@ -1,18 +1,17 @@
 import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
 
 export const exportExcel = (
   columns: any[],
   data: any[],
   fileName: string,
-  title: string
+  sheetName: string,
 ) => {
-  // bỏ column action
+  // Bỏ cột action
   const exportColumns = columns.filter(
     (col) => (col.dataIndex || col.render) && col.key !== "actions"
   );
 
-  // lấy tiêu đề
+  // Lấy tiêu đề cột
   const tableColumn = exportColumns.map((col) => {
     if (typeof col.title === "string") return col.title;
     if (col.title?.props?.children) {
@@ -24,7 +23,7 @@ export const exportExcel = (
     return "";
   });
 
-  // lấy data
+  // Lấy dữ liệu từ bảng
   const tableRows = data.map((row) =>
     exportColumns.map((col) => {
       if (col.render) {
@@ -38,18 +37,16 @@ export const exportExcel = (
     })
   );
 
-  // gộp header + body
-  const worksheetData = [tableColumn, ...tableRows];
+  // Tạo worksheet
+  const wsData = [tableColumn, ...tableRows];
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
 
-  // tạo sheet
-  const ws = XLSX.utils.aoa_to_sheet(worksheetData);
+  ws["!cols"] = exportColumns.map(() => ({ wch: 20 }));
+
+  // Tạo workbook và thêm worksheet
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, title);
+  XLSX.utils.book_append_sheet(wb, ws, sheetName);
 
-  // export file
-  const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-  const dataBlob = new Blob([excelBuffer], {
-    type: "application/octet-stream",
-  });
-  saveAs(dataBlob, fileName.endsWith(".xlsx") ? fileName : `${fileName}.xlsx`);
+  // Xuất file Excel với hỗ trợ Unicode
+  XLSX.writeFile(wb, fileName, { bookType: "xlsx", type: "array" });
 };

@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { API_ENDPOINTS } from "@/services/apiService";
-import { PaginatedResponse } from "@/types/pagination";
-import axiosInstance from "@/utils/auth/axiosInstance";
 import { LeaveRequestFilters } from "./LeaveRequestFilterDto";
 import { LeaveRequestDto } from "./LeaveRequestDto";
+import axiosInstance from "@/utils/auth/axiosInstance";
+import { PaginatedResponse } from "@/types/pagination";
+import { API_ENDPOINTS } from "@/services/apiService";
 
-export function useGetLeaveRequestForSupervisorId(
-  supervisorId: string,
+export function useGetLeaveRequestForDirector(
+  directorId: string,
   page: number,
   pageSize: number,
   sortBy?: string,
@@ -16,14 +16,16 @@ export function useGetLeaveRequestForSupervisorId(
   filters: LeaveRequestFilters = {},
   hotReload: number = 0
 ) {
-  const [leaveRequests, setLeaveRequests] = useState<LeaveRequestDto[]>([]);
+  const [leaveRequests, setleaveRequests] = useState<
+    LeaveRequestDto[]
+  >([]);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!supervisorId) return;
-    async function loadLeaveRequestForSupervisorId(supervisorId: string) {
+    if (!directorId) return;
+    async function loadLeaveRequestForDirectorId(directorId: string) {
       setLoading(true);
 
       const cleanedFilters: Record<string, string> = Object.fromEntries(
@@ -52,22 +54,23 @@ export function useGetLeaveRequestForSupervisorId(
       try {
         const response = await axiosInstance.get<
           PaginatedResponse<LeaveRequestDto>
-        >(`${API_ENDPOINTS.GET_LEAVE_REQUEST_FOR_SUPERVISOR}/${supervisorId}`, {
+        >(`${API_ENDPOINTS.GET_LEAVE_REQUEST_FOR_DIRECTOR}/${directorId}`, {
           params,
         });
-
-        setLeaveRequests(response.data.data);
+        setleaveRequests(response.data.data);
         setTotal(response.data.total);
       } catch (err: any) {
-        setError(err.message || "Failed to load leave requests for supervisor");
+        setError(
+          err.response?.data?.message ||
+            "Failed to get leave request for director"
+        );
       } finally {
         setLoading(false);
       }
     }
-
-    loadLeaveRequestForSupervisorId(supervisorId);
+    loadLeaveRequestForDirectorId(directorId);
   }, [
-    supervisorId,
+    directorId,
     page,
     pageSize,
     sortBy,
@@ -76,5 +79,5 @@ export function useGetLeaveRequestForSupervisorId(
     hotReload,
   ]);
 
-  return { supervisorId, leaveRequests, total, error, loading, hotReload };
+  return { leaveRequests, total, loading, error };
 }

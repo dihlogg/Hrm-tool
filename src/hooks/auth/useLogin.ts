@@ -9,7 +9,8 @@ import { useAuthContext } from "@/contexts/authContext";
 export function useLogin() {
   const router = useRouter();
   const [error, setError] = useState("");
-   const { setUserId } = useAuthContext();
+  const { setUserId } = useAuthContext();
+  const { setUserRoles } = useAuthContext();
 
   const login = async (userName: string, password: string) => {
     try {
@@ -25,7 +26,9 @@ export function useLogin() {
       //decode userId
       const decodedToken: any = jwtDecode(access_token);
       const userId = decodedToken.sub;
+      const roles = decodedToken.roles || [];
       setUserId(userId);
+      setUserRoles(Array.isArray(roles) ? roles : [roles]);
 
       router.push("/pim");
       return true;

@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
   GET_EMPLOYEE_DETAILS_BY_USER_ID: `${API_URL}/Employees/GetEmployeeDetailsByUserId`,
   GET_EMPLOYEE_BY_SUB_UNIT: `${API_URL}/Employees/GetEmployeeBySubUnit`,
   GET_SUPERVISOR_EMPLOYEE: `${API_URL}/Employees/GetSupervisorEmployee`,
+  GET_DIRECTOR_BY_SUB_UNIT: `${API_URL}/Employees/GetDirectorBySubUnit`,
   //job titles
   GET_ALL_JOB_TITLES: `${API_URL}/JobTitles/GetAllJobTitles`,
   GET_JOB_TITLE_BY_ID: `${API_URL}/JobTitles/GetJobTitleById`,
@@ -33,6 +34,7 @@ export const API_ENDPOINTS = {
   GET_LEAVE_BALANCE_BY_EMPLOYEE_ID: `${API_URL}/LeaveRequests/GetLeaveBalancesByEmployeeId`,
   GET_LEAVE_REQUEST_FOR_SUPERVISOR: `${API_URL}/LeaveRequests/GetLeaveRequestsForSupervisor`,
   PATCH_LEAVE_REQUEST_STATUS: `${API_URL}/LeaveRequests/PatchLeaveRequestStatus`,
+  GET_LEAVE_REQUEST_FOR_DIRECTOR: `${API_URL}/LeaveRequests/getLeaveRequestForDirector`,
   //leave status
   GET_ALL_LEAVE_STATUS: `${API_URL}/LeaveStatuses/GetAllLeaveStatuses`,
   //partial days

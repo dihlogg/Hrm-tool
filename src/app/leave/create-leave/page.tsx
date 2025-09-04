@@ -15,6 +15,7 @@ import { useGetEmployeeBySubUnit } from "@/hooks/employees/useGetEmployeeBySubUn
 import { useGetSupervisorEmployee } from "@/hooks/employees/useGetSupervisorEmployee";
 import { useGetLeaveBalanceByEmployeeId } from "@/hooks/leave/useGetLeaveBalanceByEmployeeId";
 import LeaveBalanceModal from "@/components/leave/LeaveBalanceModal";
+import { useGetDirectorBySubUnit } from "@/hooks/employees/useGetDirectorBySubUnit";
 
 const { Option } = Select;
 
@@ -24,9 +25,8 @@ export default function CreateNewRequestPage() {
   const { leaveRequestTypes } = useGetLeaveRequestType();
   const { partialDays } = useGetPartialDay();
   const { userId } = useAuthContext();
-  const { employee, loading: loadingEmployee } = useGetEmployeeDetailsByUserId(
-    userId ?? ""
-  );
+  const { employee } = useGetEmployeeDetailsByUserId(userId ?? "");
+  
   const searchParams = useSearchParams();
   const empId = searchParams.get("id") || undefined;
   const subId = searchParams.get("subUnitId") || undefined;
@@ -35,6 +35,7 @@ export default function CreateNewRequestPage() {
   const [employeeId, setEmployeeId] = useState(empId || "");
   const [subUnitId, setSubUnitId] = useState(subId || "");
   const { subUnitEmployees } = useGetEmployeeBySubUnit(subUnitId, employeeId);
+  const { director } = useGetDirectorBySubUnit(subUnitId);
   const { supervisorEmployee } = useGetSupervisorEmployee(employeeId);
   const [fromDate, setFromDate] = useState<Dayjs | null>(null);
   const [toDate, setToDate] = useState<Dayjs | null>(null);
@@ -46,6 +47,7 @@ export default function CreateNewRequestPage() {
   );
   const [partialDayId, setPartialDayId] = useState<string | null>(null);
   const [approverId, setApproverId] = useState<string | undefined>(undefined);
+  const [confirmId, setConfirmId] = useState<string | undefined>(undefined);
   const [informToId, setInformToId] = useState<string | null>(null);
 
   //leave balance modal
@@ -62,6 +64,7 @@ export default function CreateNewRequestPage() {
     leaveRequestTypeId?: string;
     partialDayId?: string;
     approverId?: string;
+    confirmId?: string;
     informToId?: string;
   }>({});
 
@@ -81,6 +84,7 @@ export default function CreateNewRequestPage() {
     setLeaveRequestTypeId(null);
     setPartialDayId(null);
     setApproverId(undefined);
+    setConfirmId(undefined);
     setInformToId(null);
   };
 
@@ -93,6 +97,7 @@ export default function CreateNewRequestPage() {
     if (!leaveRequestTypeId) errors.leaveRequestTypeId = "Required";
     if (!partialDayId) errors.partialDayId = "Required";
     if (!approverId) errors.approverId = "Required";
+    if (!confirmId) errors.confirmId = "Required";
     if (!informToId) errors.informToId = "Required";
 
     if (!duration) {
@@ -134,6 +139,7 @@ export default function CreateNewRequestPage() {
         leaveRequestTypeId,
         partialDayId,
         approverId,
+        confirmId,
         informToId,
       };
       await addLeaveRequest(payload);
@@ -229,7 +235,7 @@ export default function CreateNewRequestPage() {
                     }));
                   }}
                 >
-                  {supervisorEmployee?.map((approve) => (
+                  {director?.map((approve) => (
                     <Option key={approve.id} value={approve.id}>
                       {approve.firstName} {approve.lastName}
                     </Option>
@@ -358,34 +364,34 @@ export default function CreateNewRequestPage() {
               </div>
             </div>
 
-            {/* Reason */}
+            {/* Confirm */}
             <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-baseline">
               <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
-                Reason*:
+                Confirm*:
               </label>
               <div className="flex flex-col w-full">
                 <Select
+                  placeholder="--Select--"
                   className="w-full"
-                  placeholder="--Select"
                   allowClear
-                  value={leaveReasonId}
+                  value={confirmId}
                   onChange={(value) => {
-                    setLeaveReasonId(value);
+                    setConfirmId(value);
                     setFormErrors((prev) => ({
                       ...prev,
-                      leaveReasonId: undefined,
+                      confirmId: undefined,
                     }));
                   }}
                 >
-                  {leaveReasons.map((reason) => (
-                    <Option key={reason.id} value={reason.id}>
-                      {reason.name}
+                  {supervisorEmployee?.map((confirm) => (
+                    <Option key={confirm.id} value={confirm.id}>
+                      {confirm.firstName} {confirm.lastName}
                     </Option>
                   ))}
                 </Select>
-                {formErrors.leaveReasonId && (
+                {formErrors.confirmId && (
                   <span className="mt-1 text-sm font-medium text-red-500">
-                    {formErrors.leaveReasonId}
+                    {formErrors.confirmId}
                   </span>
                 )}
               </div>
@@ -419,6 +425,39 @@ export default function CreateNewRequestPage() {
                 {formErrors.informToId && (
                   <span className="mt-1 text-sm font-medium text-red-500">
                     {formErrors.informToId}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Reason */}
+            <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-baseline">
+              <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
+                Reason*:
+              </label>
+              <div className="flex flex-col w-full">
+                <Select
+                  className="w-full"
+                  placeholder="--Select"
+                  allowClear
+                  value={leaveReasonId}
+                  onChange={(value) => {
+                    setLeaveReasonId(value);
+                    setFormErrors((prev) => ({
+                      ...prev,
+                      leaveReasonId: undefined,
+                    }));
+                  }}
+                >
+                  {leaveReasons.map((reason) => (
+                    <Option key={reason.id} value={reason.id}>
+                      {reason.name}
+                    </Option>
+                  ))}
+                </Select>
+                {formErrors.leaveReasonId && (
+                  <span className="mt-1 text-sm font-medium text-red-500">
+                    {formErrors.leaveReasonId}
                   </span>
                 )}
               </div>

@@ -30,14 +30,7 @@ export interface CreateLeaveRequestDto {
     name: string;
   }
   approverId?: string | null;
-  approve?: {
-    id: string;
-    name: string;
-  }
+  confirmId?: string | null;
   informToId?: string | null;
-  inform?: {
-    id: string;
-    name: string;
-  }
 }
 
