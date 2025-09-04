@@ -73,14 +73,22 @@ export default function MyRequestPage() {
 
   const columns: ColumnsType<LeaveRequestDto> = [
     {
-      title: <span className="select-none">Request Type</span>,
+      title: (
+        <span className="text-sm font-semibold text-gray-600 select-none">
+          Request Type
+        </span>
+      ),
       dataIndex: "leaveRequestTypeId",
       sorter: true,
       sortOrder: sortBy === "leaveRequestType" ? sortOrder : undefined,
       render: (_, record) => record.leaveRequestType?.name || "N/A",
     },
     {
-      title: <span className="select-none">From Date</span>,
+      title: (
+        <span className="text-sm font-semibold text-gray-600 select-none">
+          From Date
+        </span>
+      ),
       dataIndex: "fromDate",
       render: (text) => (
         <span>
@@ -89,7 +97,11 @@ export default function MyRequestPage() {
       ),
     },
     {
-      title: <span className="select-none">To Date</span>,
+      title: (
+        <span className="text-sm font-semibold text-gray-600 select-none">
+          To Date
+        </span>
+      ),
       dataIndex: "toDate",
       render: (text) => (
         <span>
@@ -98,17 +110,29 @@ export default function MyRequestPage() {
       ),
     },
     {
-      title: <span className="select-none">Duration (Days)</span>,
+      title: (
+        <span className="text-sm font-semibold text-gray-600 select-none">
+          Duration (Days)
+        </span>
+      ),
       dataIndex: "duration",
       render: (text) => <span>{text}</span>,
     },
     {
-      title: <span className="select-none">Reason</span>,
+      title: (
+        <span className="text-sm font-semibold text-gray-600 select-none">
+          Reason
+        </span>
+      ),
       dataIndex: "leaveReasonId",
       render: (_, record) => record.leaveReason?.name || "N/A",
     },
     {
-      title: <span className="select-none">Approver</span>,
+      title: (
+        <span className="text-sm font-semibold text-gray-600 select-none">
+          Approver
+        </span>
+      ),
       dataIndex: "approverId",
       render: (_, record) => {
         const approver = record.participantsRequests.find(
@@ -116,25 +140,15 @@ export default function MyRequestPage() {
         );
         return approver
           ? `${approver.employees.firstName} ${approver.employees.lastName}`
-          : "N/A";
+          : "";
       },
     },
     {
-      title: <span className="select-none">Inform To</span>,
-      dataIndex: "informToId",
-      render: (_, record) => {
-        const informs = record.participantsRequests.filter(
-          (p) => p.type === "inform"
-        );
-        return informs.length > 0
-          ? informs
-              .map((i) => `${i.employees.firstName} ${i.employees.lastName}`)
-              .join(", ")
-          : "N/A";
-      },
-    },
-    {
-      title: <span className="select-none">Status</span>,
+      title: (
+        <span className="text-sm font-semibold text-gray-600 select-none">
+          Status
+        </span>
+      ),
       dataIndex: "leaveStatusId",
       sorter: true,
       sortOrder: sortBy === "leaveStatus" ? sortOrder : undefined,

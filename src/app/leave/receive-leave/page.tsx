@@ -9,7 +9,7 @@ import {
   getInitialFilters,
   LeaveRequestFilters,
 } from "@/hooks/leave/LeaveRequestFilterDto";
-import { useGetLeaveRequestForSupervisorId } from "@/hooks/leave/useGetLeaveRequestForSupervisorId";
+import { useGetLeaveRequestForSupervisor } from "@/hooks/leave/useGetLeaveRequestForSupervisor";
 import { antdSortOrderToApiOrder } from "@/utils/tableSorting";
 import {
   Button,
@@ -32,10 +32,12 @@ import timezone from "dayjs/plugin/timezone";
 import { usePatchLeaveRequestStatus } from "@/hooks/leave/usePatchLeaveRequestStatus";
 import axiosInstance from "@/utils/auth/axiosInstance";
 import { API_ENDPOINTS } from "@/services/apiService";
-import { exportPDF } from "@/utils/exportPDF";
+import { exportExcel } from "@/utils/exportExcel";
+import { useGetLeaveRequestForDirector } from "@/hooks/leave/useGetLeaveRequestForDirector";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
 const { Option } = Select;
 
 export default function ReceiveRequestPage() {
@@ -44,9 +46,7 @@ export default function ReceiveRequestPage() {
   const [api, contextHolder] = notification.useNotification();
   const [hotReload, setHotReload] = useState(0);
   const { userId } = useAuthContext();
-  const { employee, loading: loadingEmployee } = useGetEmployeeDetailsByUserId(
-    userId ?? ""
-  );
+  const { employee } = useGetEmployeeDetailsByUserId(userId ?? "");
   const { leaveRequestTypes, error: leaveRequestTypeError } =
     useGetLeaveRequestType();
   const { leaveStatuses, error: leaveStatusError } = useGetLeaveStatus();
@@ -60,7 +60,29 @@ export default function ReceiveRequestPage() {
   const [filterDrafts, setFilterDrafts] = useState<LeaveRequestFilters>(
     getInitialFilters()
   );
-  const { leaveRequests, total, loading } = useGetLeaveRequestForSupervisorId(
+
+  const {
+    patchLeaveRequestStatus,
+    loading: patchLoading,
+    error: patchError,
+  } = usePatchLeaveRequestStatus();
+
+  const { userRoles } = useAuthContext();
+  // check role
+  const isManager = Array.isArray(userRoles) && userRoles.includes("Manager");
+  const isDirectorOrCeo =
+    Array.isArray(userRoles) &&
+    (userRoles.includes("Director") || userRoles.includes("CEO"));
+
+  const dataHook = isDirectorOrCeo
+    ? useGetLeaveRequestForDirector
+    : useGetLeaveRequestForSupervisor;
+
+  const {
+    leaveRequests: data,
+    total,
+    loading,
+  } = dataHook(
     employee?.id ?? "",
     currentPage,
     pageSize,
@@ -69,17 +91,12 @@ export default function ReceiveRequestPage() {
     filters,
     hotReload
   );
-  const {
-    patchLeaveRequestStatus,
-    loading: patchLoading,
-    error: patchError,
-  } = usePatchLeaveRequestStatus();
 
   //modal
   const [selectedLeaveRequest, setSelectedLeaveRequest] =
     useState<LeaveRequestDto | null>(null);
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const handleCancel = async () => {
+  const handleReject = async () => {
     if (selectedLeaveRequest?.id) {
       try {
         await patchLeaveRequestStatus(selectedLeaveRequest.id, "REJECTED");
@@ -107,7 +124,7 @@ export default function ReceiveRequestPage() {
       }
     }
   };
-  const handleOk = async () => {
+  const handleApprove = async () => {
     if (selectedLeaveRequest?.id) {
       try {
         await patchLeaveRequestStatus(selectedLeaveRequest.id, "APPROVED");
@@ -135,6 +152,32 @@ export default function ReceiveRequestPage() {
       }
     }
   };
+  const handleConfirm = async () => {
+    if (selectedLeaveRequest?.id) {
+      try {
+        await patchLeaveRequestStatus(selectedLeaveRequest.id, "CONFIRMED");
+        setIsOpenModal(false);
+        setSelectedLeaveRequest(null);
+        setHotReload((prev) => prev + 1);
+        api.success({
+          message: "Leave Request Update Successfully!",
+          description: `Leave request has been confirmed.`,
+          placement: "bottomLeft",
+          duration: 3,
+          pauseOnHover: true,
+        });
+      } catch (err: any) {
+        console.error("Failed to confirm leave request:", err);
+        api.error({
+          message: "Update failed!",
+          description: "Leave request has not been confirmed.",
+          placement: "bottomLeft",
+          duration: 3,
+          pauseOnHover: true,
+        });
+      }
+    }
+  };
   const content = <span className="text-white">Click to export file</span>;
 
   function mapSorterFieldToApiField(
@@ -156,28 +199,37 @@ export default function ReceiveRequestPage() {
   }
 
   const handleExport = async () => {
-      try {
-        const response = await axiosInstance.get(
-          `${API_ENDPOINTS.GET_LEAVE_REQUEST_FOR_SUPERVISOR}/${employee?.id}`,
-          {
-            params: {
-              page: 1,
-              pageSize: total,
-            },
-          }
-        );
+    try {
+      const response = await axiosInstance.get(
+        `${API_ENDPOINTS.GET_LEAVE_REQUEST_FOR_SUPERVISOR}/${employee?.id}`,
+        {
+          params: {
+            page: 1,
+            pageSize: total,
+          },
+        }
+      );
 
-        const allReceiveLeave = response.data.data;
+      const allReceiveLeave = response.data.data;
 
-        exportPDF(columns, allReceiveLeave, "Leave_Receive_List.pdf", "Leave Receive List");
-      } catch (err) {
-        console.error("Export failed:", err);
-      }
+      exportExcel(
+        columns,
+        allReceiveLeave,
+        "Leave_Receive_List.xlsx",
+        "Leave Receive List"
+      );
+    } catch (err) {
+      console.error("Export failed:", err);
+    }
   };
 
   const columns: ColumnsType<LeaveRequestDto> = [
     {
-      title: <span className="text-sm font-semibold text-gray-600 select-none">Requester</span>,
+      title: (
+        <span className="text-sm font-semibold text-gray-600 select-none">
+          Requester
+        </span>
+      ),
       key: "requester",
       render: (_, record) => {
         const requester = record.employee
@@ -187,14 +239,22 @@ export default function ReceiveRequestPage() {
       },
     },
     {
-      title: <span className="text-sm font-semibold text-gray-600 select-none">Request Type</span>,
+      title: (
+        <span className="text-sm font-semibold text-gray-600 select-none">
+          Request Type
+        </span>
+      ),
       dataIndex: "leaveRequestTypeId",
       sorter: true,
       sortOrder: sortBy === "leaveRequestType" ? sortOrder : undefined,
       render: (_, record) => record.leaveRequestType?.name || "N/A",
     },
     {
-      title: <span className="text-sm font-semibold text-gray-600 select-none">Time Request</span>,
+      title: (
+        <span className="text-sm font-semibold text-gray-600 select-none">
+          Time Request
+        </span>
+      ),
       render: (_, record) => {
         const fromDate = record.fromDate
           ? dayjs(record.fromDate).tz("Asia/Bangkok").format("DD-MMM-YYYY")
@@ -209,36 +269,56 @@ export default function ReceiveRequestPage() {
       },
     },
     {
-      title: <span className="text-sm font-semibold text-gray-600 select-none">Partial Days</span>,
+      title: (
+        <span className="text-sm font-semibold text-gray-600 select-none">
+          Partial Days
+        </span>
+      ),
       dataIndex: "partialDayId",
       render: (_, record) => record.partialDay?.name || "N/A",
     },
     {
-      title: <span className="text-sm font-semibold text-gray-600 select-none">Duration (Days)</span>,
+      title: (
+        <span className="text-sm font-semibold text-gray-600 select-none">
+          Duration (Days)
+        </span>
+      ),
       dataIndex: "duration",
       render: (text) => <span>{text}</span>,
     },
     {
-      title: <span className="text-sm font-semibold text-gray-600 select-none">Reason</span>,
+      title: (
+        <span className="text-sm font-semibold text-gray-600 select-none">
+          Reason
+        </span>
+      ),
       dataIndex: "leaveReasonId",
       render: (_, record) => record.leaveReason?.name || "N/A",
     },
     {
-      title: <span className="text-sm font-semibold text-gray-600 select-none">Inform To</span>,
-      dataIndex: "informToId",
+      title: (
+        <span className="text-sm font-semibold text-gray-600 select-none">
+          Confirm By
+        </span>
+      ),
+      dataIndex: "confirmId",
       render: (_, record) => {
-        const informs = record.participantsRequests.filter(
-          (p) => p.type === "inform"
+        const confirm = record.participantsRequests.filter(
+          (p) => p.type === "confirm"
         );
-        return informs.length > 0
-          ? informs
-              .map((i) => `${i.employees.firstName} ${i.employees.lastName}`)
+        return confirm.length > 0
+          ? confirm
+              .map((c) => `${c.employees.firstName} ${c.employees.lastName}`)
               .join(", ")
-          : "N/A";
+          : "";
       },
     },
     {
-      title: <span className="text-sm font-semibold text-gray-600 select-none">Status</span>,
+      title: (
+        <span className="text-sm font-semibold text-gray-600 select-none">
+          Status
+        </span>
+      ),
       dataIndex: "leaveStatusId",
       sorter: true,
       sortOrder: sortBy === "leaveStatus" ? sortOrder : undefined,
@@ -443,7 +523,7 @@ export default function ReceiveRequestPage() {
           </div>
           <Table
             columns={columns}
-            dataSource={leaveRequests}
+            dataSource={data}
             pagination={false}
             rowKey="id"
             loading={loading}
@@ -484,7 +564,7 @@ export default function ReceiveRequestPage() {
         <Modal
           title="Leave Request Details:"
           open={isOpenModal}
-          onCancel={() => setIsOpenModal(false)}
+          onCancel={() => setIsOpenModal(false)} // chỉ đóng modal
           cancelText="Reject"
           cancelButtonProps={{
             style: {
@@ -493,9 +573,10 @@ export default function ReceiveRequestPage() {
               borderColor: "#ef5350",
             },
             className: "hover:!bg-red-400 hover:!border-red-400",
+            onClick: handleReject, // gọi reject khi click nút Reject
           }}
-          onOk={handleOk}
-          okText="Approve"
+          onOk={isManager ? handleConfirm : handleApprove}
+          okText={isManager ? "Confirm" : "Approve"}
           closable={true}
           width={{
             xs: "90%",
@@ -521,7 +602,15 @@ export default function ReceiveRequestPage() {
               <Descriptions.Item label="Request Type">
                 {selectedLeaveRequest.leaveRequestType?.name || "N/A"}
               </Descriptions.Item>
-              <Descriptions.Item label="Approved By">
+              <Descriptions.Item label="Confirmed By">
+                {selectedLeaveRequest.participantsRequests
+                  .filter((p) => p.type === "confirm")
+                  .map(
+                    (a) => `${a.employees.firstName} ${a.employees.lastName}`
+                  )
+                  .join(", ") || "N/A"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Approve By">
                 {selectedLeaveRequest.participantsRequests
                   .filter((p) => p.type === "approve")
                   .map(
@@ -534,6 +623,17 @@ export default function ReceiveRequestPage() {
                   .filter((p) => p.type === "inform")
                   .map(
                     (i) => `${i.employees.firstName} ${i.employees.lastName}`
+                  )
+                  .join(", ") || "N/A"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Reject By">
+                {selectedLeaveRequest.participantsRequests
+                  ?.filter((p) => p.type === "reject")
+                  .map(
+                    (a) =>
+                      `${a.employees?.firstName ?? ""} ${
+                        a.employees?.lastName ?? ""
+                      }`
                   )
                   .join(", ") || "N/A"}
               </Descriptions.Item>

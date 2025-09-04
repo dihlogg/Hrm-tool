@@ -14,12 +14,15 @@ import Cookies from "js-cookie";
 interface AuthContextType {
   userId: string | null;
   setUserId: (id: string | null) => void;
+  userRoles: string[];
+  setUserRoles: (roles: string[]) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userId, setUserId] = useState<string | null>(null);
+  const [userRoles, setUserRoles] = useState<string[]>([]);
 
   useEffect(() => {
     const token = Cookies.get("accessToken");
@@ -28,9 +31,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const response = await axiosInstance.get(API_ENDPOINTS.GET_USER_INFOR);
         setUserId(response.data.userId);
+        setUserRoles(response.data.userRoles);
       } catch (err) {
         console.error("Failed to fetch user info:", err);
         setUserId(null);
+        setUserRoles([]);
       }
     };
 
@@ -38,7 +43,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ userId, setUserId }}>
+    <AuthContext.Provider value={{ userId, setUserId, userRoles, setUserRoles }}>
       {children}
     </AuthContext.Provider>
   );
