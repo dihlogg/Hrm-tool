@@ -45,7 +45,7 @@ export default function ReceiveRequestPage() {
   const pageSize = 5;
   const [api, contextHolder] = notification.useNotification();
   const [hotReload, setHotReload] = useState(0);
-  const { userId } = useAuthContext();
+  const { userId, userRoles } = useAuthContext();
   const { employee } = useGetEmployeeDetailsByUserId(userId ?? "");
   const { leaveRequestTypes, error: leaveRequestTypeError } =
     useGetLeaveRequestType();
@@ -67,7 +67,6 @@ export default function ReceiveRequestPage() {
     error: patchError,
   } = usePatchLeaveRequestStatus();
 
-  const { userRoles } = useAuthContext();
   // check role
   const isManager = Array.isArray(userRoles) && userRoles.includes("Manager");
   const isDirectorOrCeo =
@@ -296,23 +295,21 @@ export default function ReceiveRequestPage() {
       render: (_, record) => record.leaveReason?.name || "N/A",
     },
     {
-      title: (
-        <span className="text-sm font-semibold text-gray-600 select-none">
-          Confirm By
-        </span>
-      ),
-      dataIndex: "confirmId",
+      title: "Confirm By",
+      dataIndex: "expectedConfirmId",
       render: (_, record) => {
-        const confirm = record.participantsRequests.filter(
+        const confirm = record.participantsRequests?.find(
           (p) => p.type === "confirm"
         );
-        return confirm.length > 0
-          ? confirm
-              .map((c) => `${c.employees.firstName} ${c.employees.lastName}`)
-              .join(", ")
+
+        return confirm?.employees
+          ? `${confirm.employees.firstName || ""} ${
+              confirm.employees.lastName || ""
+            }`
           : "";
       },
     },
+
     {
       title: (
         <span className="text-sm font-semibold text-gray-600 select-none">
@@ -564,7 +561,7 @@ export default function ReceiveRequestPage() {
         <Modal
           title="Leave Request Details:"
           open={isOpenModal}
-          onCancel={() => setIsOpenModal(false)} // chỉ đóng modal
+          onCancel={() => setIsOpenModal(false)} //close modal
           cancelText="Reject"
           cancelButtonProps={{
             style: {
@@ -573,7 +570,7 @@ export default function ReceiveRequestPage() {
               borderColor: "#ef5350",
             },
             className: "hover:!bg-red-400 hover:!border-red-400",
-            onClick: handleReject, // gọi reject khi click nút Reject
+            onClick: handleReject, // call handle reject
           }}
           onOk={isManager ? handleConfirm : handleApprove}
           okText={isManager ? "Confirm" : "Approve"}
@@ -602,14 +599,22 @@ export default function ReceiveRequestPage() {
               <Descriptions.Item label="Request Type">
                 {selectedLeaveRequest.leaveRequestType?.name || "N/A"}
               </Descriptions.Item>
+
               <Descriptions.Item label="Confirmed By">
-                {selectedLeaveRequest.participantsRequests
-                  .filter((p) => p.type === "confirm")
-                  .map(
-                    (a) => `${a.employees.firstName} ${a.employees.lastName}`
-                  )
-                  .join(", ") || "N/A"}
+                {(() => {
+                  const confirms = selectedLeaveRequest.participantsRequests
+                    ?.filter((p) => p.type === "confirm" && p.employees)
+                    .map((a) => {
+                      const { firstName = "", lastName = "" } = a.employees;
+                      return `${firstName} ${lastName}`.trim();
+                    });
+
+                  return confirms && confirms.length > 0
+                    ? confirms.join(", ")
+                    : "N/A";
+                })()}
               </Descriptions.Item>
+
               <Descriptions.Item label="Approve By">
                 {selectedLeaveRequest.participantsRequests
                   .filter((p) => p.type === "approve")
@@ -618,6 +623,7 @@ export default function ReceiveRequestPage() {
                   )
                   .join(", ") || "N/A"}
               </Descriptions.Item>
+
               <Descriptions.Item label="Inform To">
                 {selectedLeaveRequest.participantsRequests
                   .filter((p) => p.type === "inform")
@@ -626,6 +632,7 @@ export default function ReceiveRequestPage() {
                   )
                   .join(", ") || "N/A"}
               </Descriptions.Item>
+
               <Descriptions.Item label="Reject By">
                 {selectedLeaveRequest.participantsRequests
                   ?.filter((p) => p.type === "reject")
@@ -637,6 +644,7 @@ export default function ReceiveRequestPage() {
                   )
                   .join(", ") || "N/A"}
               </Descriptions.Item>
+
               <Descriptions.Item label="Duration (Days)">
                 {selectedLeaveRequest.duration || "N/A"}
               </Descriptions.Item>

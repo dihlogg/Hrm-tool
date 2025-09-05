@@ -31,9 +31,9 @@ export interface LeaveRequestDto {
     id: string;
     name: string;
   };
-  approverId?: string | null;
-  informToId?: string | null;
-  confirmId?: string | null;
+  expectedApproverId?: string | null;
+  expectedInformToId?: string | null;
+  expectedConfirmId?: string | null;
   pendingId?: string | null;
   rejectId?: string | null;
   participantsRequests: {

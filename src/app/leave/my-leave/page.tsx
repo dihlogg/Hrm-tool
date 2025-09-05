@@ -133,7 +133,7 @@ export default function MyRequestPage() {
           Approver
         </span>
       ),
-      dataIndex: "approverId",
+      dataIndex: "expectedApproverId",
       render: (_, record) => {
         const approver = record.participantsRequests.find(
           (p) => p.type === "approve"

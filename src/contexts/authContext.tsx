@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const response = await axiosInstance.get(API_ENDPOINTS.GET_USER_INFOR);
         setUserId(response.data.userId);
-        setUserRoles(response.data.userRoles);
+        setUserRoles(response.data.roles ?? []);
       } catch (err) {
         console.error("Failed to fetch user info:", err);
         setUserId(null);
@@ -43,7 +43,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ userId, setUserId, userRoles, setUserRoles }}>
+    <AuthContext.Provider
+      value={{ userId, setUserId, userRoles, setUserRoles }}
+    >
       {children}
     </AuthContext.Provider>
   );

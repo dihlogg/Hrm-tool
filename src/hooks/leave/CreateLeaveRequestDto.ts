@@ -29,8 +29,10 @@ export interface CreateLeaveRequestDto {
     id: string;
     name: string;
   }
-  approverId?: string | null;
-  confirmId?: string | null;
-  informToId?: string | null;
+  expectedApproverId?: string | null;
+  expectedInformToId?: string | null;
+  expectedConfirmId?: string | null;
+  pendingId?: string | null;
+  rejectId?: string | null;
 }
 

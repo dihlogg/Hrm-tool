@@ -8,11 +8,16 @@ export function usePatchLeaveRequestStatus() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const patchLeaveRequestStatus = async (id: string, statusCode: string) => {
+  const patchLeaveRequestStatus = async (
+    id: string,
+    statusCode: string,
+    note?: string
+  ) => {
     setLoading(true);
     try {
       const response = await axiosInstance.patch(
-        `${API_ENDPOINTS.PATCH_LEAVE_REQUEST_STATUS}/${id}/status/${statusCode}`
+        `${API_ENDPOINTS.PATCH_LEAVE_REQUEST_STATUS}/${id}`,
+        { statusCode, note }
       );
       return response.data;
     } catch (err: any) {
