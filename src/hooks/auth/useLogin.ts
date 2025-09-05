@@ -9,8 +9,7 @@ import { useAuthContext } from "@/contexts/authContext";
 export function useLogin() {
   const router = useRouter();
   const [error, setError] = useState("");
-  const { setUserId } = useAuthContext();
-  const { setUserRoles } = useAuthContext();
+  const { setUserId, setUserRoles } = useAuthContext();
 
   const login = async (userName: string, password: string) => {
     try {
@@ -23,7 +22,7 @@ export function useLogin() {
 
       setAuthCookies(access_token, refresh_token);
 
-      //decode userId
+      //decode get userId and roles from token
       const decodedToken: any = jwtDecode(access_token);
       const userId = decodedToken.sub;
       const roles = decodedToken.roles || [];

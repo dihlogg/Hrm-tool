@@ -41,14 +41,14 @@ export default function CreateNewRequestPage() {
   const [toDate, setToDate] = useState<Dayjs | null>(null);
   const [duration, setDuration] = useState("");
   const [reasonDetails, setReasonDetails] = useState("");
-  const [leaveReasonId, setLeaveReasonId] = useState<string | null>(null);
-  const [leaveRequestTypeId, setLeaveRequestTypeId] = useState<string | null>(
-    null
+  const [leaveReasonId, setLeaveReasonId] = useState<string | undefined>(undefined);
+  const [leaveRequestTypeId, setLeaveRequestTypeId] = useState<string | undefined>(
+    undefined
   );
-  const [partialDayId, setPartialDayId] = useState<string | null>(null);
-  const [approverId, setApproverId] = useState<string | undefined>(undefined);
-  const [confirmId, setConfirmId] = useState<string | undefined>(undefined);
-  const [informToId, setInformToId] = useState<string | null>(null);
+  const [partialDayId, setPartialDayId] = useState<string | undefined>(undefined);
+  const [expectedApproverId, setExpectedApproverId] = useState<string | undefined>(undefined);
+  const [expectedConfirmId, setExpectedConfirmId] = useState<string | undefined>(undefined);
+  const [expectedInformToId, setExpectedInformToId] = useState<string | undefined>(undefined);
 
   //leave balance modal
   const [modalVisible, setModalVisible] = useState(false);
@@ -63,9 +63,9 @@ export default function CreateNewRequestPage() {
     leaveReasonId?: string;
     leaveRequestTypeId?: string;
     partialDayId?: string;
-    approverId?: string;
-    confirmId?: string;
-    informToId?: string;
+    expectedApproverId?: string;
+    expectedConfirmId?: string;
+    expectedInformToId?: string;
   }>({});
 
   useEffect(() => {
@@ -80,12 +80,12 @@ export default function CreateNewRequestPage() {
     setToDate(null);
     setDuration("");
     setReasonDetails("");
-    setLeaveReasonId(null);
-    setLeaveRequestTypeId(null);
-    setPartialDayId(null);
-    setApproverId(undefined);
-    setConfirmId(undefined);
-    setInformToId(null);
+    setLeaveReasonId(undefined);
+    setLeaveRequestTypeId(undefined);
+    setPartialDayId(undefined);
+    setExpectedApproverId(undefined);
+    setExpectedConfirmId(undefined);
+    setExpectedInformToId(undefined);
   };
 
   const handleSubmit = async () => {
@@ -96,9 +96,9 @@ export default function CreateNewRequestPage() {
     if (!leaveReasonId) errors.leaveReasonId = "Required";
     if (!leaveRequestTypeId) errors.leaveRequestTypeId = "Required";
     if (!partialDayId) errors.partialDayId = "Required";
-    if (!approverId) errors.approverId = "Required";
-    if (!confirmId) errors.confirmId = "Required";
-    if (!informToId) errors.informToId = "Required";
+    if (!expectedApproverId) errors.expectedApproverId = "Required";
+    if (!expectedConfirmId) errors.expectedConfirmId = "Required";
+    if (!expectedInformToId) errors.expectedInformToId = "Required";
 
     if (!duration) {
       errors.duration = "Required";
@@ -138,9 +138,9 @@ export default function CreateNewRequestPage() {
         leaveReasonId,
         leaveRequestTypeId,
         partialDayId,
-        approverId,
-        confirmId,
-        informToId,
+        expectedApproverId,
+        expectedConfirmId,
+        expectedInformToId,
       };
       await addLeaveRequest(payload);
       console.log("Leave Request created successfully!");
@@ -226,12 +226,12 @@ export default function CreateNewRequestPage() {
                   placeholder="--Select--"
                   className="w-full"
                   allowClear
-                  value={approverId}
+                  value={expectedApproverId}
                   onChange={(value) => {
-                    setApproverId(value);
+                    setExpectedApproverId(value);
                     setFormErrors((prev) => ({
                       ...prev,
-                      approverId: undefined,
+                      expectedApproverId: undefined,
                     }));
                   }}
                 >
@@ -241,9 +241,9 @@ export default function CreateNewRequestPage() {
                     </Option>
                   ))}
                 </Select>
-                {formErrors.approverId && (
+                {formErrors.expectedApproverId && (
                   <span className="mt-1 text-sm font-medium text-red-500">
-                    {formErrors.approverId}
+                    {formErrors.expectedApproverId}
                   </span>
                 )}
               </div>
@@ -374,12 +374,12 @@ export default function CreateNewRequestPage() {
                   placeholder="--Select--"
                   className="w-full"
                   allowClear
-                  value={confirmId}
+                  value={expectedConfirmId}
                   onChange={(value) => {
-                    setConfirmId(value);
+                    setExpectedConfirmId(value);
                     setFormErrors((prev) => ({
                       ...prev,
-                      confirmId: undefined,
+                      expectedConfirmId: undefined,
                     }));
                   }}
                 >
@@ -389,9 +389,9 @@ export default function CreateNewRequestPage() {
                     </Option>
                   ))}
                 </Select>
-                {formErrors.confirmId && (
+                {formErrors.expectedConfirmId && (
                   <span className="mt-1 text-sm font-medium text-red-500">
-                    {formErrors.confirmId}
+                    {formErrors.expectedConfirmId}
                   </span>
                 )}
               </div>
@@ -407,12 +407,12 @@ export default function CreateNewRequestPage() {
                   placeholder="--Select--"
                   className="w-full"
                   allowClear
-                  value={informToId}
+                  value={expectedInformToId}
                   onChange={(value) => {
-                    setInformToId(value);
+                    setExpectedInformToId(value);
                     setFormErrors((prev) => ({
                       ...prev,
-                      informToId: undefined,
+                      expectedInformToId: undefined,
                     }));
                   }}
                 >
@@ -422,9 +422,9 @@ export default function CreateNewRequestPage() {
                     </Option>
                   ))}
                 </Select>
-                {formErrors.informToId && (
+                {formErrors.expectedInformToId && (
                   <span className="mt-1 text-sm font-medium text-red-500">
-                    {formErrors.informToId}
+                    {formErrors.expectedInformToId}
                   </span>
                 )}
               </div>
