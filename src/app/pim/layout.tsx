@@ -14,13 +14,24 @@ const navItems = [
 
 export default function PimLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  useIdleLogout(15)
+  useIdleLogout(15);
   return (
     <MainLayout>
       <div className="flex flex-col h-full">
         <div className="flex gap-2 ml-3">
           {navItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive = (() => {
+              if (item.href === "/pim") {
+                return (
+                  pathname === "/pim" ||
+                  (pathname.startsWith("/pim/") &&
+                    !pathname.startsWith("/pim/add-employee"))
+                );
+              }
+              return (
+                pathname === item.href || pathname.startsWith(item.href + "/")
+              );
+            })();
             const baseClass =
               "px-4 py-2 text-xs font-medium rounded-full border transition-colors !bg-[#F9FAFB]";
             const activeClass =
