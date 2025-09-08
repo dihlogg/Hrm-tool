@@ -16,8 +16,8 @@ import { useState } from "react";
 import {
   EditOutlined,
   CloudUploadOutlined,
-  InfoOutlined,
   SelectOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { CreateEmployeeDto } from "@/hooks/employees/CreateEmployeeDto";
@@ -240,7 +240,7 @@ export default function EmployeeListPage() {
               setIsOpenModalChangeStatus(true);
             }}
           >
-            <InfoOutlined style={{ fontSize: "16px", color: "#6B7280" }} />
+            <DeleteOutlined style={{ fontSize: "16px", color: "#6B7280" }} />
           </Button>
           <Button
             type="default"
@@ -537,8 +537,9 @@ export default function EmployeeListPage() {
           title="Confirm Leave"
           closable={true}
           open={isOpenModalChangeStatus}
-          onCancel={handleCancelModalChangeStatus}
-          onOk={handleOkChangeStatus}
+          onCancel={() => {
+            setIsOpenModalChangeStatus(false);
+          }}
           width={{
             xs: "90%",
             sm: "80%",
@@ -547,6 +548,27 @@ export default function EmployeeListPage() {
             xl: "50%",
             xxl: "40%",
           }}
+          footer={[
+            <Button
+              key="cancel"
+              variant="filled"
+              onClick={() => {
+                setIsOpenModalChangeStatus(false);
+              }}
+            >
+              Cancel
+            </Button>,
+            <Button
+              key="delete"
+              color="danger"
+              variant="filled"
+              onClick={() => {
+                handleOkChangeStatus();
+              }}
+            >
+              Delete
+            </Button>,
+          ]}
         >
           <span className="text-sm font-medium text-gray-500">
             Are you sure you want to update the leave status for employee:{" "}

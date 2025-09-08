@@ -8,7 +8,7 @@ import { useAddEmployee } from "@/hooks/employees/useAddEmployee";
 import { CreateEmployeeDto } from "@/hooks/employees/CreateEmployeeDto";
 import { useJobTitles } from "@/hooks/employees/job-titles/useJobTitles";
 import { useSubUnits } from "@/hooks/employees/sub-units/useSubUnits";
-import { useUserStatuses } from "@/hooks/user-statuses/useUserStatuses";
+import { useUserStatuses } from "@/hooks/users/user-statuses/useUserStatuses";
 import { useGetEmployeeStatus } from "@/hooks/employees/employee-statuses/useGetEmployeeStatus";
 import { uploadImageToCloudinary } from "@/services/cloudinaryService";
 

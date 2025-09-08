@@ -3,6 +3,8 @@ export const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 export const API_ENDPOINTS = {
   //auth
   LOGIN: `${API_URL}/Auth/Login`,
+  //role
+  GET_ALL_ROLES: `${API_URL}/Roles/GetAllRoles`,
   //employee
   GET_ALL_EMPLOYEES: `${API_URL}/Employees/GetAllEmployees`,
   GET_EMPLOYEE_BY_ID: `${API_URL}/Employees/GetEmployeeById`,
@@ -25,6 +27,7 @@ export const API_ENDPOINTS = {
   //employee status
   GET_ALL_EMPLOYEE_STATUSES: `${API_URL}/EmployeeStatuses/GetAllEmployeeStatuses`,
   //user
+  GET_USER_LIST: `${API_URL}/Users/GetUserList`,
   GET_USER_INFOR: `${API_URL}/Users/GetUserInfor`,
   //user status
   GET_ALL_USER_STAUSES: `${API_URL}/UserStatuses/GetAllUserStatuses`,

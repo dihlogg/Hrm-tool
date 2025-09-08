@@ -36,6 +36,7 @@ export interface LeaveRequestDto {
   expectedConfirmId?: string | null;
   pendingId?: string | null;
   rejectId?: string | null;
+
   participantsRequests: {
     id: string;
     type: "approve" | "inform" | "confirm" | "pending" | "reject";
@@ -46,4 +47,5 @@ export interface LeaveRequestDto {
       imageUrl?: string;
     };
   }[];
+  note?: string | null;
 }

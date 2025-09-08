@@ -25,7 +25,11 @@ export default function AdminLayout({
           {navItems.map((item) => {
             const isActive = (() => {
               if (item.href === "/admin") {
-                return pathname === "/admin";
+                return (
+                  pathname === "/admin" ||
+                  (pathname.startsWith("/admin/") &&
+                    !pathname.startsWith("/admin/job-title"))
+                );
               }
               return (
                 pathname === item.href || pathname.startsWith(item.href + "/")

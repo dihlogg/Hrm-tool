@@ -15,6 +15,7 @@ import {
   Button,
   DatePicker,
   Descriptions,
+  Input,
   Modal,
   notification,
   Pagination,
@@ -92,9 +93,53 @@ export default function ReceiveRequestPage() {
   );
 
   //modal
+  const [isPendingModalOpen, setIsPendingModalOpen] = useState(false);
+  const [pendingNote, setPendingNote] = useState<string>("");
+
   const [selectedLeaveRequest, setSelectedLeaveRequest] =
     useState<LeaveRequestDto | null>(null);
   const [isOpenModal, setIsOpenModal] = useState(false);
+
+  const handlePending = async () => {
+    if (selectedLeaveRequest?.id && pendingNote.trim()) {
+      try {
+        await patchLeaveRequestStatus(
+          selectedLeaveRequest.id,
+          "PENDING",
+          pendingNote
+        );
+        setIsPendingModalOpen(false);
+        setPendingNote(""); // Reset ghi chú
+        setSelectedLeaveRequest(null);
+        setHotReload((prev) => prev + 1);
+        api.success({
+          message: "Leave Request Updated Successfully!",
+          description: `Leave request has been set to pending with note.`,
+          placement: "bottomLeft",
+          duration: 3,
+          pauseOnHover: true,
+        });
+      } catch (err: any) {
+        console.error("Failed to set leave request to pending:", err);
+        api.error({
+          message: "Update failed!",
+          description: "Leave request could not be set to pending.",
+          placement: "bottomLeft",
+          duration: 3,
+          pauseOnHover: true,
+        });
+      }
+    } else {
+      api.warning({
+        message: "Missing Note",
+        description: "Please provide a note for the pending request.",
+        placement: "bottomLeft",
+        duration: 3,
+        pauseOnHover: true,
+      });
+    }
+  };
+
   const handleReject = async () => {
     if (selectedLeaveRequest?.id) {
       try {
@@ -177,7 +222,9 @@ export default function ReceiveRequestPage() {
       }
     }
   };
-  const content = <span className="text-white">Click to export file</span>;
+  const content = (
+    <span className="text-white">Click to export excel file</span>
+  );
 
   function mapSorterFieldToApiField(
     field: string | undefined
@@ -261,7 +308,6 @@ export default function ReceiveRequestPage() {
         const toDate = record.toDate
           ? dayjs(record.toDate).tz("Asia/Bangkok").format("DD-MMM-YYYY")
           : null;
-
         if (!fromDate && !toDate) return "N/A";
         if (fromDate === toDate) return `On ${fromDate}`;
         return `From ${fromDate} to ${toDate}`;
@@ -294,22 +340,24 @@ export default function ReceiveRequestPage() {
       dataIndex: "leaveReasonId",
       render: (_, record) => record.leaveReason?.name || "N/A",
     },
-    {
-      title: "Confirm By",
-      dataIndex: "expectedConfirmId",
-      render: (_, record) => {
-        const confirm = record.participantsRequests?.find(
-          (p) => p.type === "confirm"
-        );
-
-        return confirm?.employees
-          ? `${confirm.employees.firstName || ""} ${
-              confirm.employees.lastName || ""
-            }`
-          : "";
-      },
-    },
-
+    ...(isDirectorOrCeo
+      ? [
+          {
+            title: "Confirm By",
+            dataIndex: "expectedConfirmId",
+            render: (_: any, record: { participantsRequests: any[] }) => {
+              const confirm = record.participantsRequests?.find(
+                (p) => p.type === "confirm"
+              );
+              return confirm?.employees
+                ? `${confirm.employees.firstName || ""} ${
+                    confirm.employees.lastName || ""
+                  }`
+                : "";
+            },
+          },
+        ]
+      : []),
     {
       title: (
         <span className="text-sm font-semibold text-gray-600 select-none">
@@ -561,19 +609,7 @@ export default function ReceiveRequestPage() {
         <Modal
           title="Leave Request Details:"
           open={isOpenModal}
-          onCancel={() => setIsOpenModal(false)} //close modal
-          cancelText="Reject"
-          cancelButtonProps={{
-            style: {
-              backgroundColor: "#ef5350",
-              color: "white",
-              borderColor: "#ef5350",
-            },
-            className: "hover:!bg-red-400 hover:!border-red-400",
-            onClick: handleReject, // call handle reject
-          }}
-          onOk={isManager ? handleConfirm : handleApprove}
-          okText={isManager ? "Confirm" : "Approve"}
+          onCancel={() => setIsOpenModal(false)}
           closable={true}
           width={{
             xs: "90%",
@@ -583,6 +619,36 @@ export default function ReceiveRequestPage() {
             xl: "50%",
             xxl: "40%",
           }}
+          footer={[
+            isManager && (
+              <Button
+                key="pending"
+                color="orange"
+                variant="text"
+                onClick={() => {
+                  setIsPendingModalOpen(true);
+                  setIsOpenModal(false);
+                }}
+              >
+                Pending
+              </Button>
+            ),
+            <Button
+              key="reject"
+              color="danger"
+              variant="filled"
+              onClick={handleReject}
+            >
+              Reject
+            </Button>,
+            <Button
+              key="ok"
+              type="primary"
+              onClick={isManager ? handleConfirm : handleApprove}
+            >
+              {isManager ? "Confirm" : "Approve"}
+            </Button>,
+          ]}
         >
           {selectedLeaveRequest && (
             <Descriptions column={1} size="small" bordered>
@@ -674,8 +740,52 @@ export default function ReceiveRequestPage() {
               <Descriptions.Item label="Reason Details">
                 {selectedLeaveRequest.reasonDetails || "N/A"}
               </Descriptions.Item>
+              <Descriptions.Item label="Pending Note">
+                {selectedLeaveRequest.note || "N/A"}
+              </Descriptions.Item>
             </Descriptions>
           )}
+        </Modal>
+        {/* Modal Pending */}
+        <Modal
+          title="Pending Request"
+          open={isPendingModalOpen}
+          onCancel={() => {
+            setIsPendingModalOpen(false);
+            setPendingNote("");
+          }}
+          closable={true}
+          footer={[
+            <Button
+              key="cancel"
+              onClick={() => {
+                setIsPendingModalOpen(false);
+                setPendingNote("");
+              }}
+            >
+              Close
+            </Button>,
+            <Button
+              key="send"
+              type="primary"
+              onClick={handlePending}
+              disabled={!pendingNote.trim()}
+            >
+              Send
+            </Button>,
+          ]}
+        >
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-gray-600">
+              Note*:
+            </label>
+            <Input.TextArea
+              rows={4}
+              value={pendingNote}
+              onChange={(e) => setPendingNote(e.target.value)}
+              placeholder="Enter the reason for pending the request"
+            />
+          </div>
         </Modal>
       </div>
     </>
