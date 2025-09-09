@@ -465,7 +465,7 @@ export default function AddEmployeePage() {
                   className="text-white bg-blue-500 hover:bg-blue-600"
                   onClick={handleSubmit}
                 >
-                  + Apply
+                  + Save
                 </Button>
               </div>
             </div>

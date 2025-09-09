@@ -29,6 +29,8 @@ export const API_ENDPOINTS = {
   //user
   GET_USER_LIST: `${API_URL}/Users/GetUserList`,
   GET_USER_INFOR: `${API_URL}/Users/GetUserInfor`,
+  GET_USER_BY_ID: `${API_URL}/Users/GetUserById`,
+  PUT_USER: `${API_URL}/Users/PutUser`,
   //user status
   GET_ALL_USER_STAUSES: `${API_URL}/UserStatuses/GetAllUserStatuses`,
   //leave request
