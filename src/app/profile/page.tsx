@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, Upload, Select, notification, DatePicker } from "antd";
+import {
+  Button,
+  Upload,
+  Select,
+  notification,
+  DatePicker,
+  message,
+} from "antd";
 import { UploadOutlined, UserAddOutlined } from "@ant-design/icons";
 import { CreateEmployeeDto } from "@/hooks/employees/CreateEmployeeDto";
 import { useSearchParams } from "next/navigation";
@@ -12,6 +19,7 @@ import { useAuthContext } from "@/contexts/authContext";
 import { useGetEmployeeStatus } from "@/hooks/employees/employee-statuses/useGetEmployeeStatus";
 import { useJobTitles } from "@/hooks/employees/job-titles/useJobTitles";
 import { useSubUnits } from "@/hooks/employees/sub-units/useSubUnits";
+import { uploadImageToCloudinary } from "@/services/cloudinaryService";
 
 const { Option } = Select;
 
@@ -24,6 +32,7 @@ export default function ProfilePage() {
   const [api, contextHolder] = notification.useNotification();
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [uploadLoading, setUploadLoading] = useState(false);
   const [firstName, setFirstName] = useState<string | null>(null);
   const [lastName, setLastName] = useState<string | null>(null);
   const [empId, setEmpId] = useState(employeeId || "");
@@ -131,38 +140,49 @@ export default function ProfilePage() {
           <div className="flex flex-col gap-6 pt-1 md:flex-row">
             {/* Left: Avatar */}
             <div className="flex flex-col items-center">
-              <div className="relative w-[180px] h-[180px]">
-                <div className="flex items-center justify-center w-full h-full overflow-hidden text-5xl text-gray-400 bg-gray-100 rounded-full">
-                  {imageUrl ? (
-                    <img
-                      src={imageUrl}
-                      alt="Avatar"
-                      className="object-cover w-full h-full"
-                    />
-                  ) : (
-                    <span>
-                      <UserAddOutlined style={{ fontSize: 40 }} />
-                    </span>
-                  )}
-                </div>
-                <Upload
-                  showUploadList={false}
-                  beforeUpload={(file) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                      setImageUrl(e.target?.result as string);
-                    };
-                    reader.readAsDataURL(file);
-                    return false;
-                  }}
-                >
-                  <Button
-                    icon={<UploadOutlined />}
-                    shape="circle"
-                    className="absolute text-white bg-orange-500 border-none shadow-lg bottom-10 left-33 hover:bg-orange-600"
+              <div className="w-[200px] h-[200px] rounded-full overflow-hidden bg-gray-100 flex items-center justify-center text-gray-400 text-5xl">
+                {imageUrl ? (
+                  <img
+                    src={imageUrl}
+                    alt="Avatar"
+                    className="object-cover w-full h-full"
                   />
-                </Upload>
+                ) : (
+                  <span>
+                    <UserAddOutlined style={{ fontSize: 40 }} />
+                  </span>
+                )}
               </div>
+
+              <Upload
+                showUploadList={false}
+                beforeUpload={async (file) => {
+                  try {
+                    setUploadLoading(true);
+                    const url = await uploadImageToCloudinary(file);
+                    setImageUrl(url);
+                    message.success("Upload Image Success!");
+                  } catch (err) {
+                    console.error(err);
+                    message.error("Upload Failed!");
+                  } finally {
+                    setUploadLoading(false);
+                  }
+                  return false;
+                }}
+              >
+                <Button
+                  loading={uploadLoading}
+                  icon={<UploadOutlined />}
+                  className="mt-2 text-white bg-orange-500 hover:bg-orange-600"
+                  shape="circle"
+                />
+              </Upload>
+
+              <p className="mt-2 text-xs text-center text-gray-500">
+                Accepts jpg, png, gif up to 1MB.
+                <br />
+              </p>
             </div>
 
             {/* Right: Persional Details */}
@@ -411,7 +431,7 @@ export default function ProfilePage() {
                   className="text-white bg-blue-500 hover:bg-blue-600"
                   onClick={handleSubmit}
                 >
-                  + Apply
+                  + Save
                 </Button>
               </div>
             </div>

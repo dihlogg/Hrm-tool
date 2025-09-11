@@ -9,7 +9,7 @@ import { useAuthContext } from "@/contexts/authContext";
 export function useLogin() {
   const router = useRouter();
   const [error, setError] = useState("");
-  const { setUserId, setUserRoles } = useAuthContext();
+  const { setUserId, setUserRoles, setEmployee } = useAuthContext();
 
   const login = async (userName: string, password: string) => {
     try {
@@ -28,6 +28,12 @@ export function useLogin() {
       const roles = decodedToken.roles || [];
       setUserId(userId);
       setUserRoles(Array.isArray(roles) ? roles : [roles]);
+
+      // Fetch employee details sau khi có userId
+      const employeeResponse = await axiosInstance.get(
+        `${API_ENDPOINTS.GET_EMPLOYEE_DETAILS_BY_USER_ID}/${userId}`
+      );
+      setEmployee(employeeResponse.data);
 
       router.push("/pim");
       return true;

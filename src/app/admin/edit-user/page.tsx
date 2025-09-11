@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, message, notification, Pagination, Select, Table } from "antd";
+import { Button, message, notification, Select } from "antd";
 import { useEffect, useState } from "react";
 import { Switch } from "@headlessui/react";
 import { useUpdateUser } from "@/hooks/users/useUpdateUser";

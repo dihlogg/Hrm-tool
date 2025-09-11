@@ -10,12 +10,17 @@ import {
 import axiosInstance from "@/utils/auth/axiosInstance";
 import { API_ENDPOINTS } from "@/services/apiService";
 import Cookies from "js-cookie";
+import { CreateEmployeeDto } from "@/hooks/employees/CreateEmployeeDto";
+import { useRouter } from "next/navigation";
 
 interface AuthContextType {
   userId: string | null;
   setUserId: (id: string | null) => void;
   userRoles: string[];
   setUserRoles: (roles: string[]) => void;
+  employee: CreateEmployeeDto | null;
+  setEmployee: (employee: CreateEmployeeDto | null) => void;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,28 +28,63 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userId, setUserId] = useState<string | null>(null);
   const [userRoles, setUserRoles] = useState<string[]>([]);
+  const [employee, setEmployee] = useState<CreateEmployeeDto | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    const token = Cookies.get("accessToken");
-    // if (!token) return;
+    const token = Cookies.get("access_token");
+    if (!token) return;
     const fetchUser = async () => {
       try {
-        const response = await axiosInstance.get(API_ENDPOINTS.GET_USER_INFOR);
-        setUserId(response.data.userId);
-        setUserRoles(response.data.roles ?? []);
+        // Fetch user info
+        const userResponse = await axiosInstance.get(
+          API_ENDPOINTS.GET_USER_INFOR
+        );
+        const fetchedUserId = userResponse.data.userId;
+        setUserId(fetchedUserId);
+        setUserRoles(userResponse.data.roles ?? []);
+
+        // Fetch employee details sau khi có userId
+        if (fetchedUserId) {
+          const employeeResponse = await axiosInstance.get(
+            `${API_ENDPOINTS.GET_EMPLOYEE_DETAILS_BY_USER_ID}/${fetchedUserId}`
+          );
+          setEmployee(employeeResponse.data);
+        }
       } catch (err) {
-        console.error("Failed to fetch user info:", err);
+        console.error("Failed to fetch user info or employee:", err);
         setUserId(null);
         setUserRoles([]);
+        setEmployee(null);
       }
     };
 
     fetchUser();
   }, []);
+  const logout = () => {
+    // clear token fr cookies
+    Cookies.remove("access_token");
+    Cookies.remove("refresh_token");
+
+    // Clear state
+    setUserId(null);
+    setUserRoles([]);
+    setEmployee(null);
+
+    router.push("/auth");
+  };
 
   return (
     <AuthContext.Provider
-      value={{ userId, setUserId, userRoles, setUserRoles }}
+      value={{
+        userId,
+        setUserId,
+        userRoles,
+        setUserRoles,
+        employee,
+        setEmployee,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>
