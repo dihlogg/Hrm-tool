@@ -11,6 +11,7 @@ import { useSubUnits } from "@/hooks/employees/sub-units/useSubUnits";
 import { useUserStatuses } from "@/hooks/users/user-statuses/useUserStatuses";
 import { useGetEmployeeStatus } from "@/hooks/employees/employee-statuses/useGetEmployeeStatus";
 import { uploadImageToCloudinary } from "@/services/cloudinaryService";
+import { useGetParentForEmployee } from "@/hooks/employees/useGetParentForEmployee";
 
 const { Option } = Select;
 
@@ -20,6 +21,8 @@ export default function AddEmployeePage() {
   const { subUnits } = useSubUnits();
   const { employeeStatuses } = useGetEmployeeStatus();
   const { userStatuses, error: userStatusError } = useUserStatuses();
+  const { parentEmployee, error: parentEmployeeError } =
+    useGetParentForEmployee();
   const [fieldErrors, setFieldErrors] = useState<{ confirmPassword?: string }>(
     {}
   );
@@ -29,6 +32,7 @@ export default function AddEmployeePage() {
     jobTitleId?: string;
     subUnitId?: string;
     employeeStatusId?: string;
+    parentId?: string;
     userName?: string;
     password?: string;
   }>({});
@@ -43,6 +47,7 @@ export default function AddEmployeePage() {
   const [employeeStatusId, setEmployeeStatusId] = useState<string | undefined>(
     undefined
   );
+  const [parentId, setParentId] = useState<string | undefined>(undefined);
   const [username, setUsername] = useState("");
   const [userStatus, setUserStatus] = useState<"Active" | "Inactive">("Active");
   const [password, setPassword] = useState("");
@@ -61,6 +66,7 @@ export default function AddEmployeePage() {
     setSubUnitId(undefined);
     setJobTitleId(undefined);
     setEmployeeStatusId(undefined);
+    setParentId(undefined);
   };
 
   const handleSubmit = async () => {
@@ -72,6 +78,7 @@ export default function AddEmployeePage() {
     if (!jobTitleId) errors.jobTitleId = "*Required";
     if (!subUnitId) errors.subUnitId = "*Required";
     if (!employeeStatusId) errors.employeeStatusId = "*Required";
+    if (!parentId) errors.employeeStatusId = "*Required";
     if (loginEnabled) {
       if (!username.trim()) errors.userName = "*Required";
       if (!password.trim()) errors.password = "*Required";
@@ -91,6 +98,7 @@ export default function AddEmployeePage() {
         jobTitleId,
         subUnitId,
         employeeStatusId,
+        parentId,
         createLogin: loginEnabled,
         ...(loginEnabled && {
           user: {
@@ -284,7 +292,7 @@ export default function AddEmployeePage() {
 
                 <div>
                   <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
-                    Employee Status{" "}
+                    Employee Status
                     {formErrors.employeeStatusId && (
                       <span className="!mt-1 text-sm text-red-500">
                         {formErrors.employeeStatusId}
@@ -307,6 +315,36 @@ export default function AddEmployeePage() {
                     {employeeStatuses.map((status) => (
                       <Option key={status.id} value={status.id}>
                         {status.name}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
+                    Supervisor
+                    {formErrors.parentId && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.parentId}
+                      </span>
+                    )}
+                  </label>
+                  <Select
+                    value={parentId}
+                    className="w-full"
+                    placeholder="--Select--"
+                    allowClear
+                    onChange={(value) => {
+                      setParentId(value);
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        parentId: undefined,
+                      }));
+                    }}
+                  >
+                    {parentEmployee.map((parent) => (
+                      <Option key={parent.id} value={parent.id}>
+                        {parent.lastName} {parent.firstName}
                       </Option>
                     ))}
                   </Select>

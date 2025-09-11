@@ -26,7 +26,7 @@ import {
 import { CloudUploadOutlined, SelectOutlined } from "@ant-design/icons";
 import { ColumnsType } from "antd/es/table";
 import { SortOrder } from "antd/es/table/interface";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -35,6 +35,8 @@ import axiosInstance from "@/utils/auth/axiosInstance";
 import { API_ENDPOINTS } from "@/services/apiService";
 import { exportExcel } from "@/utils/exportExcel";
 import { useGetLeaveRequestForDirector } from "@/hooks/leave/useGetLeaveRequestForDirector";
+import { useGetEmployeeBySubUnit } from "@/hooks/employees/useGetEmployeeBySubUnit";
+import { useSearchParams } from "next/navigation";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -48,6 +50,22 @@ export default function ReceiveRequestPage() {
   const [hotReload, setHotReload] = useState(0);
   const { userId, userRoles } = useAuthContext();
   const { employee } = useGetEmployeeDetailsByUserId(userId ?? "");
+
+  const searchParams = useSearchParams();
+  const empId = searchParams.get("id") || undefined;
+  const subId = searchParams.get("subUnitId") || undefined;
+
+  const [employeeId, setEmployeeId] = useState(empId || "");
+  const [subUnitId, setSubUnitId] = useState(subId || "");
+  const { subUnitEmployees } = useGetEmployeeBySubUnit(subUnitId, employeeId);
+
+  useEffect(() => {
+    if (employee) {
+      setEmployeeId(employee.id ?? "");
+      setSubUnitId(employee.subUnitId ?? "");
+    }
+  }, [employee]);
+
   const { leaveRequestTypes, error: leaveRequestTypeError } =
     useGetLeaveRequestType();
   const { leaveStatuses, error: leaveStatusError } = useGetLeaveStatus();
@@ -109,7 +127,7 @@ export default function ReceiveRequestPage() {
           pendingNote
         );
         setIsPendingModalOpen(false);
-        setPendingNote(""); // Reset ghi chú
+        setPendingNote(""); // reset note pending
         setSelectedLeaveRequest(null);
         setHotReload((prev) => prev + 1);
         api.success({
@@ -498,10 +516,23 @@ export default function ReceiveRequestPage() {
               <label className="w-full text-sm text-gray-500 font-small">
                 Requester
               </label>
-              <Select defaultValue="--Select--" className="w-full !mt-2">
-                <Option value="--Select--">--Select--</Option>
-                <Option value="Annual">RequesterA</Option>
-                <Option value="Sick">RequesterB</Option>
+              <Select
+                                className="w-full !mt-2 custom-select"
+                placeholder="--Select--"
+                allowClear
+                value={filterDrafts.employeeId}
+                onChange={(value) =>
+                  setFilterDrafts((prev) => ({
+                    ...prev,
+                    employeeId: value,
+                  }))
+                }
+              >
+                {subUnitEmployees.map((sub) => (
+                  <Option key={sub.id} value={sub.id}>
+                    {`${sub.firstName} ${sub.lastName}`}
+                  </Option>
+                ))}
               </Select>
             </div>
             <div>

@@ -1,7 +1,7 @@
 export type LeaveRequestFilters = {
   fromDate?: Date;
   toDate?: Date;
-  employeeId?: string;
+  employeeId?: string | null;
   leaveStatusId?: string;
   leaveReasonId?: string;
   partialDayId?: string;
