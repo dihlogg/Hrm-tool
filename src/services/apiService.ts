@@ -16,6 +16,7 @@ export const API_ENDPOINTS = {
   GET_EMPLOYEE_BY_SUB_UNIT: `${API_URL}/Employees/GetEmployeeBySubUnit`,
   GET_SUPERVISOR_EMPLOYEE: `${API_URL}/Employees/GetSupervisorEmployee`,
   GET_DIRECTOR_BY_SUB_UNIT: `${API_URL}/Employees/GetDirectorBySubUnit`,
+  GET_PARENT_FOR_EMPLOYEE: `${API_URL}/Employees/GetParentEmployee`,
   //job titles
   GET_ALL_JOB_TITLES: `${API_URL}/JobTitles/GetAllJobTitles`,
   GET_JOB_TITLE_BY_ID: `${API_URL}/JobTitles/GetJobTitleById`,
