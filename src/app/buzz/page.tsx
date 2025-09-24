@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Tabs, Card, Avatar, Button, Input, Space, Dropdown } from "antd";
 import {
   CameraOutlined,
@@ -16,29 +15,9 @@ import { mockMyRequests } from "@/utils/buzz/mock-data-buzz-page";
 const { TextArea } = Input;
 
 export default function BuzzPage() {
-  const [posts, setPosts] = useState(mockMyRequests);
-  const [inputValue, setInputValue] = useState("");
-
-  // Handler khi nhấn nút Post
-  const handlePost = () => {
-    if (!inputValue.trim()) return;
-
-    const newPost = {
-      id: Date.now().toString(),
-      user: mockMyRequests[0].user,
-      content: inputValue,
-      createdAt: new Date().toISOString(),
-      likes: 0,
-      comments: 0,
-      shares: 0,
-    };
-
-    setPosts([newPost, ...posts]);
-    setInputValue("");
-  };
 
   return (
-    <div className="flex-1 w-full max-w-4xl p-4 mx-auto mt-6 space-y-6">
+    <div className="flex-1 w-full max-w-4xl mx-auto mt-6 space-y-6">
       <h2 className="text-xl font-semibold">Buzz Newsfeed</h2>
       {/* Post Editor Section */}
       <Card className="p-4 bg-white shadow-sm rounded-2xl">
@@ -49,8 +28,6 @@ export default function BuzzPage() {
               name="postContent"
               rows={2}
               placeholder="What's on your mind?"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
               className="w-full px-4 py-2 bg-gray-100 border-none rounded-2xl sm:rounded-full focus:ring-0"
             />
             <div className="flex items-center justify-between mt-4">
@@ -68,7 +45,6 @@ export default function BuzzPage() {
                 type="primary"
                 shape="round"
                 size="large"
-                onClick={handlePost}
                 className="text-white bg-blue-500 hover:bg-blue-600"
               >
                 Post
@@ -90,7 +66,7 @@ export default function BuzzPage() {
 
       {/* Post List Section */}
       <div className="flex flex-col gap-5">
-        {posts.map((post) => (
+        {mockMyRequests.map((post) => (
           <Card
             key={post.id}
             className="p-4 space-y-3 transition bg-white shadow-sm rounded-2xl hover:shadow-lg"
@@ -118,17 +94,25 @@ export default function BuzzPage() {
                 menu={{
                   items: [
                     {
+                      key: "edit",
+                      label: <span className="text-blue-500">Edit Post</span>,
+                    },
+                    {
                       key: "delete",
-                      label: <span className="text-red-500">Delete</span>,
+                      label: <span className="text-red-500">Delete Post</span>,
                     },
                   ],
                 }}
               >
                 <Button
-                  type="text"
-                  icon={<MoreOutlined className="text-xl" />}
-                  className="bg-gray-500 rounded-full hover:bg-gray-100"
-                />
+                  type="default"
+                  shape="circle"
+                  className="p-2 text-gray-600 cursor-pointer hover:text-blue-800"
+                >
+                  <MoreOutlined
+                    style={{ fontSize: "16px", color: "#6B7280" }}
+                  />
+                </Button>
               </Dropdown>
             </div>
 

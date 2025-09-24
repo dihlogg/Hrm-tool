@@ -3,6 +3,7 @@ import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/authContext";
 import HeaderComponent from "@/components/common/header";
+import { NotificationProvider } from "@/contexts/notificationContext";
 
 export const metadata = {
   title: "HRM App",
@@ -17,7 +18,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AntdRegistry>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <NotificationProvider>{children}</NotificationProvider>
+          </AuthProvider>
         </AntdRegistry>
       </body>
     </html>

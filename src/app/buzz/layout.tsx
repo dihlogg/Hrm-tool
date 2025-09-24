@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import Link from "next/link";
+import "@ant-design/v5-patch-for-react-19";
 import React from "react";
 import MainLayout from "@/components/common/main-layout";
 
