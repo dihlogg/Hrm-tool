@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, Button, Dropdown, Layout } from "antd";
+import { Avatar, Badge, Button, Dropdown, Layout, Popover } from "antd";
 import {
   BellTwoTone,
   DownOutlined,
@@ -10,10 +10,15 @@ import {
 } from "@ant-design/icons";
 import { useAuthContext } from "@/contexts/authContext";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import NotificationTab from "../notifications/NotificationTab";
+import { useNotifications } from "@/contexts/notificationContext"; // Import từ context mới
 
 const HeaderComponent = () => {
   const router = useRouter();
   const { employee, logout } = useAuthContext();
+  const { notifications, markAllAsRead } = useNotifications(); // Sử dụng từ context
+  const [isVisible, setIsVisible] = useState(false);
 
   const menuItems = [
     {
@@ -44,6 +49,20 @@ const HeaderComponent = () => {
     ? `${employee.firstName ?? ""} ${employee.lastName ?? ""}`.trim()
     : "Unknown User";
 
+  // Tính số notification chưa đọc
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  const handlePopoverOpenChange = (visible: boolean) => {
+    setIsVisible(visible);
+
+    // Khi mở popover, tự động đánh dấu tất cả là đã đọc
+    if (visible && unreadCount > 0) {
+      markAllAsRead();
+    }
+  };
+
+  const content = <NotificationTab />;
+
   return (
     <Layout.Header
       style={{ backgroundColor: "#FB860D", height: "68px" }}
@@ -54,31 +73,53 @@ const HeaderComponent = () => {
       </div>
 
       <div className="flex items-center gap-3 md:gap-4">
-        <Button
-          type="default"
-          shape="circle"
-          variant="filled"
-          icon={
-            <BellTwoTone
-              style={{ fontSize: "26px", color: "#4F5152", marginTop: "22px" }}
+        <Popover
+          content={content}
+          trigger="click"
+          open={isVisible}
+          onOpenChange={handlePopoverOpenChange}
+          placement="bottomRight"
+        >
+          <Badge count={unreadCount} offset={[-5, 5]} showZero={false}>
+            <Button
+              type="default"
+              shape="circle"
+              variant="filled"
+              icon={
+                <BellTwoTone
+                  twoToneColor={
+                    isVisible
+                      ? "#1890ff"
+                      : unreadCount > 0
+                      ? "#1890ff"
+                      // : "#a69ca0"
+                      : "#b2c6db"
+                  }
+                  style={{
+                    fontSize: "26px",
+                  }}
+                />
+              }
+              className={`p-2 cursor-pointer !bg-white shadow-none hover:shadow-md flex items-center justify-center transition ${
+                unreadCount > 0 ? "ring-2 ring-red-300" : ""
+              }`}
+              size="large"
             />
-          }
-          className="p-2 text-gray-600 cursor-pointer hover:text-blue-800 !bg-white shadow-none hover:shadow-md flex items-center justify-center transition"
-          size="large"
-        />
+          </Badge>
+        </Popover>
 
         <Dropdown
           menu={{ items: menuItems }}
           trigger={["click"]}
           placement="bottomRight"
         >
-          <div className="flex items-center gap-2 px-2 md:px-3 py-1 text-white bg-white/20 rounded-full cursor-pointer !bg-opacity-80">
+          <div className="flex items-center gap-2 px-2 md:px-3 py-1 text-white bg-white/20 rounded-full cursor-pointer !bg-opacity-80 hover:bg-white/30 transition-colors">
             <Avatar
               size={50}
               src={employee?.imageUrl || undefined}
               icon={!employee?.imageUrl ? <UserOutlined /> : undefined}
+              className="border-2 border-white/50"
             />
-            {/* hiden for phone screen */}
             <span className="hidden text-sm font-medium md:inline whitespace-nowrap">
               {fullName}
             </span>
