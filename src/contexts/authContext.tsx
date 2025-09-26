@@ -12,6 +12,7 @@ import { API_ENDPOINTS } from "@/services/apiService";
 import Cookies from "js-cookie";
 import { CreateEmployeeDto } from "@/hooks/employees/CreateEmployeeDto";
 import { useRouter } from "next/navigation";
+import { socketService } from "@/services/web-socketService";
 
 interface AuthContextType {
   userId: string | null;
@@ -30,6 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const [employee, setEmployee] = useState<CreateEmployeeDto | null>(null);
   const router = useRouter();
+  const [socketConnected, setSocketConnected] = useState(false);
 
   useEffect(() => {
     const token = Cookies.get("access_token");
@@ -49,13 +51,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           const employeeResponse = await axiosInstance.get(
             `${API_ENDPOINTS.GET_EMPLOYEE_DETAILS_BY_USER_ID}/${fetchedUserId}`
           );
-          setEmployee(employeeResponse.data);
+          const employeeData: CreateEmployeeDto = employeeResponse.data;
+          setEmployee(employeeData);
+
+          socketService.connect(token, employeeData.id || "");
+          setSocketConnected(true);
         }
       } catch (err) {
         console.error("Failed to fetch user info or employee:", err);
         setUserId(null);
         setUserRoles([]);
         setEmployee(null);
+        socketService.disconnect(); // close websocket nếu có lỗi
+        setSocketConnected(false);
       }
     };
 
@@ -70,6 +78,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUserId(null);
     setUserRoles([]);
     setEmployee(null);
+    socketService.disconnect();
 
     router.push("/auth");
   };

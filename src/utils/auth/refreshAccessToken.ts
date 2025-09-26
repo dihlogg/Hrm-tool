@@ -7,7 +7,7 @@ export async function refreshAccessToken(): Promise<string | null> {
 
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/Auth/RefreshToken`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/hrm-api/Auth/RefreshToken`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -15,9 +15,6 @@ export async function refreshAccessToken(): Promise<string | null> {
         credentials: "include",
       }
     );
-
-    if (!response.ok) return null;
-
     const data = await response.json();
     setAuthCookies(data.access_token, data.refresh_token);
     return data.access_token;
