@@ -1,26 +1,36 @@
 "use client";
-
-import { socketService } from "@/services/web-socketService";
 import { useEffect, useState } from "react";
+import { socketService } from "@/services/web-socketService";
+import { Socket } from "socket.io-client";
 
 export function useSocket() {
-  const [connected, setConnected] = useState(false);
+  const [socket, setSocket] = useState<Socket | null>(socketService.getSocket());
+  const [connected, setConnected] = useState(socketService.isConnected());
 
   useEffect(() => {
-    const socket = socketService.connect();
+    const handleConnected = (socketInstance: Socket) => {
+      setSocket(socketInstance);
+      setConnected(true);
+    };
 
-    const onConnect = () => setConnected(true);
-    const onDisconnect = () => setConnected(false);
+    const handleDisconnected = () => {
+      setConnected(false);
+    };
 
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
+    // Subscribe to socket events
+    socketService.on('connected', handleConnected);
+    socketService.on('disconnected', handleDisconnected);
+
+    if (socketService.getSocket() && !socket) {
+      setSocket(socketService.getSocket());
+      setConnected(socketService.isConnected());
+    }
 
     return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-      socketService.disconnect(); // cleanup
+      socketService.off('connected', handleConnected);
+      socketService.off('disconnected', handleDisconnected);
     };
   }, []);
 
-  return { socket: socketService.getSocket(), connected };
+  return { socket, connected };
 }
