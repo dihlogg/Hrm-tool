@@ -3,6 +3,7 @@ import { REFUSED } from "dns";
 export const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const API_ENDPOINTS = {
+  //hrm-api
   //auth
   LOGIN: `${API_URL}/hrm-api/Auth/Login`,
   REFRESH_TOKEN: `${API_URL}/hrm-api/Auth/RefreshToken`,
@@ -52,4 +53,7 @@ export const API_ENDPOINTS = {
   GET_ALL_LEAVE_REASON: `${API_URL}/hrm-api/LeaveReasons/GetAllLeaveReasons`,
   //leave request type
   GET_ALL_LEAVE_REQUEST_TYPE: `${API_URL}/hrm-api/LeaveRequestTypes/GetAllLeaveRequestTypes`,
+
+  //hrm-notify
+  GET_LEAVE_REQUEST_NOTIFY: `${API_URL}/hrm-notify/Notifications/GetNotificationsByEmployeeId`,
 };

@@ -54,8 +54,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           const employeeData: CreateEmployeeDto = employeeResponse.data;
           setEmployee(employeeData);
 
-          socketService.connect(token, employeeData.id || "");
-          setSocketConnected(true);
+        socketService.disconnect();
+        socketService.connect(token, employeeData.id || "");
+        setSocketConnected(true);
         }
       } catch (err) {
         console.error("Failed to fetch user info or employee:", err);
@@ -68,7 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     fetchUser();
-  }, []);
+  }, [Cookies.get("access_token")]);
   const logout = () => {
     // clear token fr cookies
     Cookies.remove("access_token");
