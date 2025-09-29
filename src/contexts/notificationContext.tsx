@@ -1,6 +1,8 @@
 "use client";
 
 import { useSocket } from "@/hooks/socket/useWebSocket";
+import { API_ENDPOINTS } from "@/services/apiService";
+import axiosInstance from "@/utils/auth/axiosInstance";
 import React, {
   createContext,
   useContext,
@@ -9,15 +11,8 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-
-export interface NotificationPayload {
-  id: string;
-  type: string;
-  message: string;
-  payload?: any;
-  read: boolean;
-  createdAt: string;
-}
+import { useAuthContext } from "./authContext";
+import { NotificationPayload } from "@/types/notifications/notificationPayload";
 
 interface NotificationContextType {
   notifications: NotificationPayload[];
@@ -32,6 +27,30 @@ const NotificationContext = createContext<NotificationContextType | undefined>(
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const { socket } = useSocket();
   const [notifications, setNotifications] = useState<NotificationPayload[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { employee } = useAuthContext();
+
+  useEffect(() => {
+    if (!employee?.id) return;
+    const getNotify = async () => {
+      setLoading(true);
+      try {
+        const response = await axiosInstance.get(
+          `${API_ENDPOINTS.GET_LEAVE_REQUEST_NOTIFY}/${employee.id}`
+        );
+        setNotifications(
+          Array.isArray(response.data) ? response.data : [response.data]
+        );
+      } catch (err: any) {
+        console.error(
+          err.response?.data?.message || "Failed to load notifications"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+    getNotify();
+  }, [!employee?.id]);
 
   useEffect(() => {
     if (!socket) return;
