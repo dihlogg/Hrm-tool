@@ -16,9 +16,7 @@ export function useGetLeaveRequestByEmployeeId(
   filters: LeaveRequestFilters = {},
   hotReload: number = 0
 ) {
-  const [leaveRequests, setLeaveRequests] = useState<LeaveRequestDto[]>(
-    []
-  );
+  const [leaveRequests, setLeaveRequests] = useState<LeaveRequestDto[]>([]);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,17 +26,18 @@ export function useGetLeaveRequestByEmployeeId(
     async function loadLeaveRequestByEmployeeId(employeeId: string) {
       setLoading(true);
 
-      const cleanedFilters: Record<string, string> = Object.fromEntries(
-        Object.entries(filters)
-          .filter(
-            ([_, value]) =>
-              value !== undefined && value !== null && value !== ""
-          )
-          .map(([key, value]) => [
-            key,
-            value instanceof Date ? value.toISOString() : value,
-          ])
-      );
+      const cleanedFilters: Record<string, string | number> =
+        Object.fromEntries(
+          Object.entries(filters)
+            .filter(
+              ([_, value]) =>
+                value !== undefined && value !== null && value !== ""
+            )
+            .map(([key, value]) => [
+              key,
+              value instanceof Date ? value.toISOString() : String(value),
+            ])
+        );
 
       const params: any = {
         page,

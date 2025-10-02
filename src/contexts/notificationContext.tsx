@@ -7,17 +7,26 @@ import React, {
   createContext,
   useContext,
   useState,
+  useEffect,
   useCallback,
   ReactNode,
-  useEffect,
 } from "react";
 import { useAuthContext } from "./authContext";
 import { NotificationPayload } from "@/types/notifications/notificationPayload";
+import { notification } from "antd";
 
 interface NotificationContextType {
   notifications: NotificationPayload[];
-  markAsRead: (id: string) => void;
-  markAllAsRead: () => void;
+  refreshNotifications: (
+    page?: number,
+    pageSize?: number
+  ) => Promise<{
+    data: NotificationPayload[];
+    total: number;
+    currentPage: number;
+    totalPages: number;
+    pageSize: number;
+  }>;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(
@@ -27,73 +36,60 @@ const NotificationContext = createContext<NotificationContextType | undefined>(
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const { socket } = useSocket();
   const [notifications, setNotifications] = useState<NotificationPayload[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState({
+    total: 0,
+    currentPage: 1,
+    pageSize: 5,
+    totalPages: 0,
+  });
   const { employee } = useAuthContext();
 
-  useEffect(() => {
-    if (!employee?.id) return;
-    const getNotify = async () => {
-      setLoading(true);
-      try {
-        const response = await axiosInstance.get(
-          `${API_ENDPOINTS.GET_LEAVE_REQUEST_NOTIFY}/${employee.id}`
-        );
-        setNotifications(
-          Array.isArray(response.data) ? response.data : [response.data]
-        );
-      } catch (err: any) {
-        console.error(
-          err.response?.data?.message || "Failed to load notifications"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-    getNotify();
-  }, [!employee?.id]);
+  // get notify from mongo by employee id
+  const refreshNotifications = useCallback(
+    async (page = 1, pageSize = 5) => {
+      if (!employee?.id) return { data: [], totalPages: 0, currentPage: 1 };
 
+      const response = await axiosInstance.get(
+        `${API_ENDPOINTS.GET_LEAVE_REQUEST_NOTIFY}/${employee.id}`,
+        { params: { page, pageSize } }
+      );
+      if (page === 1) {
+        setNotifications(response.data.data);
+      } else {
+        setNotifications((prev) => [...prev, ...response.data.data]);
+      }
+
+      return response.data; // { data, total, currentPage, totalPages, pageSize }
+    },
+    [employee?.id]
+  );
+
+  useEffect(() => {
+    refreshNotifications();
+  }, [refreshNotifications]);
+
+  // socket nhận notify, show toast và refresh lại notify
   useEffect(() => {
     if (!socket) return;
 
-    const handleNewNotification = (data: any) => {
-      const notification = {
-        id: data.id || data._id || `temp-${Date.now()}`,
-        type: data.type || "LEAVE_REQUEST_CREATED",
-        message: data.message || "New notification",
-        payload: data.payload || data,
-        read: false,
-        createdAt: data.createdAt || new Date().toISOString(),
-      };
-
-      setNotifications((prev) =>
-        prev.some((n) => n.id === notification.id)
-          ? prev
-          : [notification, ...prev]
-      );
+    const handleNotification = (data: NotificationPayload) => {
+      notification.success({
+        message: "New Notification",
+        description: data.message ?? "You have a new notification",
+        placement: "bottomLeft",
+      });
+      refreshNotifications();
     };
 
-    socket.on("notification", handleNewNotification);
-    socket.on("LEAVE_REQUEST_CREATED", handleNewNotification);
-
+    socket.on("notification", handleNotification);
     return () => {
-      socket.off("notification", handleNewNotification);
-      socket.off("LEAVE_REQUEST_CREATED", handleNewNotification);
+      socket.off("notification", handleNotification);
     };
-  }, [socket]);
-
-  const markAsRead = useCallback((id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
-  }, []);
-
-  const markAllAsRead = useCallback(() => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-  }, []);
+  }, [socket, refreshNotifications]);
 
   return (
     <NotificationContext.Provider
-      value={{ notifications, markAsRead, markAllAsRead }}
+      value={{ notifications, refreshNotifications }}
     >
       {children}
     </NotificationContext.Provider>
@@ -102,7 +98,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
 export function useNotifications() {
   const context = useContext(NotificationContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error(
       "useNotifications must be used within a NotificationProvider"
     );

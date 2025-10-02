@@ -2,7 +2,6 @@ import "@ant-design/v5-patch-for-react-19";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/authContext";
-import HeaderComponent from "@/components/common/header";
 import { NotificationProvider } from "@/contexts/notificationContext";
 
 export const metadata = {
