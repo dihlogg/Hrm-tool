@@ -10,15 +10,22 @@ import {
 } from "@ant-design/icons";
 import { useAuthContext } from "@/contexts/authContext";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NotificationTab from "../notifications/NotificationTab";
-import { useNotifications } from "@/contexts/notificationContext"; // Import từ context mới
+import { useNotifications } from "@/contexts/notificationContext";
+import { useGetUnSeenCountByActorId } from "@/hooks/notifications/useGetUnSeenCountByActorId";
+import { usePatchMarkAsAllSeen } from "@/hooks/notifications/usePatchMarkAsAllSeen";
 
 const HeaderComponent = () => {
   const router = useRouter();
   const { employee, logout } = useAuthContext();
-  const { notifications, markAllAsRead } = useNotifications(); // Sử dụng từ context
+  const { notifications, refreshNotifications } = useNotifications(); // sử dụng từ context
   const [isVisible, setIsVisible] = useState(false);
+  const { unSeenCount: serverUnSeenCount } = useGetUnSeenCountByActorId(
+    employee?.id || ""
+  );
+  const [unSeenCount, setUnSeenCount] = useState(serverUnSeenCount);
+  const { markAsAllSeen } = usePatchMarkAsAllSeen();
 
   const menuItems = [
     {
@@ -49,15 +56,17 @@ const HeaderComponent = () => {
     ? `${employee.firstName ?? ""} ${employee.lastName ?? ""}`.trim()
     : "Unknown User";
 
-  // Tính số notification chưa đọc
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  useEffect(() => {
+    setUnSeenCount(serverUnSeenCount);
+  }, [serverUnSeenCount]);
 
-  const handlePopoverOpenChange = (visible: boolean) => {
+  const handlePopoverOpenChange = async (visible: boolean) => {
     setIsVisible(visible);
 
-    // Khi mở popover, tự động đánh dấu tất cả là đã đọc
-    if (visible && unreadCount > 0) {
-      markAllAsRead();
+    if (visible && unSeenCount > 0 && employee?.id) {
+      await markAsAllSeen(employee.id);
+      await refreshNotifications(1, 5);
+      setUnSeenCount(0);
     }
   };
 
@@ -80,7 +89,7 @@ const HeaderComponent = () => {
           onOpenChange={handlePopoverOpenChange}
           placement="bottomRight"
         >
-          <Badge count={unreadCount} offset={[-5, 5]} showZero={false}>
+          <Badge count={unSeenCount} offset={[-5, 5]} showZero={false}>
             <Button
               type="default"
               shape="circle"
@@ -90,9 +99,8 @@ const HeaderComponent = () => {
                   twoToneColor={
                     isVisible
                       ? "#1890ff"
-                      : unreadCount > 0
+                      : unSeenCount > 0
                       ? "#1890ff"
-                      // : "#a69ca0"
                       : "#b2c6db"
                   }
                   style={{
@@ -101,7 +109,7 @@ const HeaderComponent = () => {
                 />
               }
               className={`p-2 cursor-pointer !bg-white shadow-none hover:shadow-md flex items-center justify-center transition ${
-                unreadCount > 0 ? "ring-2 ring-red-300" : ""
+                unSeenCount > 0 ? "ring-2 ring-red-300" : ""
               }`}
               size="large"
             />
