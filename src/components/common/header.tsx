@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, Badge, Button, Dropdown, Layout, Popover } from "antd";
+import { Avatar, Badge, Button, Dropdown, Layout, Popover, Drawer } from "antd";
 import {
   BellTwoTone,
   DownOutlined,
@@ -19,22 +19,31 @@ import { usePatchMarkAsAllSeen } from "@/hooks/notifications/usePatchMarkAsAllSe
 const HeaderComponent = () => {
   const router = useRouter();
   const { employee, logout } = useAuthContext();
-  const { notifications, refreshNotifications } = useNotifications(); // sử dụng từ context
-  const [isVisible, setIsVisible] = useState(false);
+  const { refreshNotifications } = useNotifications();
+
+  const [isPopoverVisible, setIsPopoverVisible] = useState(false);
+  const [isDrawerVisible, setIsDrawerVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth < 768 : false
+  );
+
   const { unSeenCount: serverUnSeenCount } = useGetUnSeenCountByActorId(
     employee?.id || ""
   );
-  const [unSeenCount, setUnSeenCount] = useState(serverUnSeenCount);
   const { markAsAllSeen } = usePatchMarkAsAllSeen();
+
+  const [localUnSeenCount, setLocalUnSeenCount] = useState(0);
+
+  useEffect(() => {
+    setLocalUnSeenCount(serverUnSeenCount);
+  }, [serverUnSeenCount]);
 
   const menuItems = [
     {
       key: "profile",
       label: "Profile",
       icon: <UserOutlined />,
-      onClick: () => {
-        router.push("/profile");
-      },
+      onClick: () => router.push("/profile"),
     },
     {
       key: "changePassword",
@@ -57,24 +66,64 @@ const HeaderComponent = () => {
     : "Unknown User";
 
   useEffect(() => {
-    setUnSeenCount(serverUnSeenCount);
-  }, [serverUnSeenCount]);
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      if (!mobile && isMobile && isDrawerVisible) {
+        setIsDrawerVisible(false);
+      }
+      if (mobile && !isMobile && isPopoverVisible) {
+        setIsPopoverVisible(false);
+      }
+      setIsMobile(mobile);
+    };
 
-  const handlePopoverOpenChange = async (visible: boolean) => {
-    setIsVisible(visible);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, [isMobile, isDrawerVisible, isPopoverVisible]);
 
-    if (visible && unSeenCount > 0 && employee?.id) {
+  // mark all seen + refresh notifications + refetch count
+  const handleMarkAsSeenAndRefresh = async () => {
+    if (localUnSeenCount > 0 && employee?.id) {
       await markAsAllSeen(employee.id);
       await refreshNotifications(1, 5);
-      setUnSeenCount(0);
+      setLocalUnSeenCount(0);
     }
   };
 
-  const content = <NotificationTab />;
+  const handlePopoverOpenChange = async (visible: boolean) => {
+    setIsPopoverVisible(visible);
+    if (visible) await handleMarkAsSeenAndRefresh();
+  };
+
+  const handleDrawerOpen = async () => {
+    setIsDrawerVisible(true);
+    await handleMarkAsSeenAndRefresh();
+  };
+
+  const handleDrawerClose = () => setIsDrawerVisible(false);
+
+  const handleNotificationClick = () => {
+    if (isMobile) {
+      handleDrawerOpen();
+    } else {
+      handlePopoverOpenChange(!isPopoverVisible);
+    }
+  };
+
+  const notificationContent = (
+    <NotificationTab
+      onClose={() => {
+        setIsDrawerVisible(false);
+        setIsPopoverVisible(false);
+      }}
+      isMobile={isMobile}
+    />
+  );
 
   return (
     <Layout.Header
-      style={{ backgroundColor: "#FB860D", height: "68px" }}
+      style={{ backgroundColor: "#FB860D", height: "70px" }}
       className="flex items-center justify-between !px-8 shadow-md"
     >
       <div className="text-xl font-extrabold text-transparent transition-all duration-300 cursor-pointer md:text-3xl bg-clip-text bg-gradient-to-r from-white to-yellow-200 hover:from-yellow-200 hover:to-white drop-shadow-md animate-fade-in">
@@ -82,14 +131,38 @@ const HeaderComponent = () => {
       </div>
 
       <div className="flex items-center gap-3 md:gap-4">
-        <Popover
-          content={content}
-          trigger="click"
-          open={isVisible}
-          onOpenChange={handlePopoverOpenChange}
-          placement="bottomRight"
-        >
-          <Badge count={unSeenCount} offset={[-5, 5]} showZero={false}>
+        <Badge count={localUnSeenCount} offset={[-5, 5]} showZero={false}>
+          {!isMobile ? (
+            <Popover
+              content={notificationContent}
+              trigger="click"
+              open={isPopoverVisible}
+              onOpenChange={handlePopoverOpenChange}
+              placement="bottomRight"
+            >
+              <Button
+                type="default"
+                shape="circle"
+                variant="filled"
+                icon={
+                  <BellTwoTone
+                    twoToneColor={
+                      isPopoverVisible
+                        ? "#1890ff"
+                        : localUnSeenCount > 0
+                        ? "#1890ff"
+                        : "#b2c6db"
+                    }
+                    style={{ fontSize: "26px" }}
+                  />
+                }
+                className={`p-2 cursor-pointer !bg-white shadow-none hover:shadow-md flex items-center justify-center transition ${
+                  localUnSeenCount > 0 ? "ring-2 ring-red-300" : ""
+                }`}
+                size="large"
+              />
+            </Popover>
+          ) : (
             <Button
               type="default"
               shape="circle"
@@ -97,24 +170,40 @@ const HeaderComponent = () => {
               icon={
                 <BellTwoTone
                   twoToneColor={
-                    isVisible
+                    isDrawerVisible
                       ? "#1890ff"
-                      : unSeenCount > 0
+                      : localUnSeenCount > 0
                       ? "#1890ff"
                       : "#b2c6db"
                   }
-                  style={{
-                    fontSize: "26px",
-                  }}
+                  style={{ fontSize: "26px" }}
                 />
               }
+              onClick={handleNotificationClick}
               className={`p-2 cursor-pointer !bg-white shadow-none hover:shadow-md flex items-center justify-center transition ${
-                unSeenCount > 0 ? "ring-2 ring-red-300" : ""
+                localUnSeenCount > 0 ? "ring-2 ring-red-300" : ""
               }`}
               size="large"
             />
-          </Badge>
-        </Popover>
+          )}
+        </Badge>
+
+        {/* Mobile Drawer */}
+        <Drawer
+          title="Thông báo"
+          placement="right"
+          open={isDrawerVisible}
+          onClose={handleDrawerClose}
+          width={isMobile ? "85%" : 400}
+          styles={{
+            body: {
+              padding: "16px",
+              height: "100%",
+            },
+          }}
+        >
+          {notificationContent}
+        </Drawer>
 
         <Dropdown
           menu={{ items: menuItems }}
