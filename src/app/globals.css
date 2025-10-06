@@ -34,9 +34,9 @@ body {
 html, body {
   margin: 0;
   padding: 0;
-  min-height: 100vh;
   height: 100%;
 }
+
 .custom-select .ant-select-selection-placeholder .ant-select-item-option-content {
   color: #6B7280 !important;
 }
@@ -44,3 +44,10 @@ html, body {
   color: #000000 !important;
 }
 
+.ant-layout {
+  height: 100% !important;
+}
+
+.ant-layout-content {
+  height: 100% !important;
+}

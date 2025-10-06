@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import React from "react";
 import MainLayout from "@/components/common/main-layout";
-import "@ant-design/v5-patch-for-react-19";
 import { useIdleLogout } from "@/hooks/auth/useIdleLogout";
 
 const navItems = [
@@ -15,8 +14,9 @@ const navItems = [
 export default function PimLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   useIdleLogout(15);
+
   return (
-    <MainLayout>
+    <MainLayout >
       <div className="flex flex-col h-full">
         <div className="flex gap-2 ml-3">
           {navItems.map((item) => {
@@ -32,6 +32,7 @@ export default function PimLayout({ children }: { children: React.ReactNode }) {
                 pathname === item.href || pathname.startsWith(item.href + "/")
               );
             })();
+
             const baseClass =
               "px-4 py-2 text-xs font-medium rounded-full border transition-colors !bg-[#F9FAFB]";
             const activeClass =

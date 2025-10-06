@@ -14,19 +14,17 @@ import React, {
 import { useAuthContext } from "./authContext";
 import { NotificationPayload } from "@/types/notifications/notificationPayload";
 import { notification } from "antd";
+import { PaginatedResponse } from "@/types/pagination";
 
 interface NotificationContextType {
   notifications: NotificationPayload[];
   refreshNotifications: (
     page?: number,
     pageSize?: number
-  ) => Promise<{
-    data: NotificationPayload[];
-    total: number;
-    currentPage: number;
-    totalPages: number;
-    pageSize: number;
-  }>;
+  ) => Promise<PaginatedResponse<NotificationPayload>>;
+  unSeenCount: number;
+  refreshUnSeenCount: () => Promise<void>;
+  pagination: Omit<PaginatedResponse<NotificationPayload>, "data">;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(
@@ -42,6 +40,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     pageSize: 5,
     totalPages: 0,
   });
+  const [unSeenCount, setUnSeenCount] = useState(0);
   const { employee } = useAuthContext();
 
   // get notify from mongo by employee id
@@ -53,43 +52,71 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         `${API_ENDPOINTS.GET_LEAVE_REQUEST_NOTIFY}/${employee.id}`,
         { params: { page, pageSize } }
       );
+
       if (page === 1) {
         setNotifications(response.data.data);
       } else {
         setNotifications((prev) => [...prev, ...response.data.data]);
       }
+      setPagination({
+        total: response.data.total,
+        currentPage: response.data.currentPage,
+        pageSize: response.data.pageSize,
+        totalPages: response.data.totalPages,
+      });
 
-      return response.data; // { data, total, currentPage, totalPages, pageSize }
+      return response.data;
     },
     [employee?.id]
   );
 
+  // Get unseen count
+  const refreshUnSeenCount = useCallback(async () => {
+    if (!employee?.id) return;
+    const res = await axiosInstance.get(
+      `${API_ENDPOINTS.GET_UNSEEN_COUNT_BY_RECIPIENT_ID}/${employee.id}`
+    );
+    setUnSeenCount(res.data);
+  }, [employee?.id]);
+
   useEffect(() => {
-    refreshNotifications();
-  }, [refreshNotifications]);
+    if (employee?.id) {
+      refreshNotifications();
+      refreshUnSeenCount();
+    }
+  }, [employee?.id]);
 
   // socket nhận notify, show toast và refresh lại notify
   useEffect(() => {
     if (!socket) return;
 
-    const handleNotification = (data: NotificationPayload) => {
+    const handleNotification = async (data: NotificationPayload) => {
       notification.success({
         message: "New Notification",
         description: data.message ?? "You have a new notification",
         placement: "bottomLeft",
       });
-      refreshNotifications();
+
+      // Refresh notify + unseen count
+      await refreshNotifications();
+      await refreshUnSeenCount();
     };
 
     socket.on("notification", handleNotification);
     return () => {
       socket.off("notification", handleNotification);
     };
-  }, [socket, refreshNotifications]);
+  }, [socket, refreshNotifications, refreshUnSeenCount]);
 
   return (
     <NotificationContext.Provider
-      value={{ notifications, refreshNotifications }}
+      value={{
+        notifications,
+        unSeenCount,
+        refreshNotifications,
+        refreshUnSeenCount,
+        pagination,
+      }}
     >
       {children}
     </NotificationContext.Provider>

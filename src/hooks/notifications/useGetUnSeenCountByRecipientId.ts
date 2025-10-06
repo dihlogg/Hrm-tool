@@ -2,7 +2,7 @@ import { API_ENDPOINTS } from "@/services/apiService";
 import axiosInstance from "@/utils/auth/axiosInstance";
 import { useEffect, useState, useCallback } from "react";
 
-export function useGetUnSeenCountByActorId(id: string) {
+export function useGetUnSeenCountByRecipientId(id: string) {
   const [unSeenCount, setUnSeenCount] = useState<number>(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -13,7 +13,7 @@ export function useGetUnSeenCountByActorId(id: string) {
     setLoading(true);
     try {
       const response = await axiosInstance.get(
-        `${API_ENDPOINTS.GET_UNSEEN_COUNT_BY_ACTOR_ID}/${id}`
+        `${API_ENDPOINTS.GET_UNSEEN_COUNT_BY_RECIPIENT_ID}/${id}`
       );
       setUnSeenCount(response.data);
       setError("");

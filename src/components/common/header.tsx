@@ -13,30 +13,19 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import NotificationTab from "../notifications/NotificationTab";
 import { useNotifications } from "@/contexts/notificationContext";
-import { useGetUnSeenCountByActorId } from "@/hooks/notifications/useGetUnSeenCountByActorId";
 import { usePatchMarkAsAllSeen } from "@/hooks/notifications/usePatchMarkAsAllSeen";
 
 const HeaderComponent = () => {
   const router = useRouter();
   const { employee, logout } = useAuthContext();
-  const { refreshNotifications } = useNotifications();
-
+  const { unSeenCount, refreshNotifications, refreshUnSeenCount } =
+    useNotifications();
+  const { markAsAllSeen } = usePatchMarkAsAllSeen();
   const [isPopoverVisible, setIsPopoverVisible] = useState(false);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(
     typeof window !== "undefined" ? window.innerWidth < 768 : false
   );
-
-  const { unSeenCount: serverUnSeenCount } = useGetUnSeenCountByActorId(
-    employee?.id || ""
-  );
-  const { markAsAllSeen } = usePatchMarkAsAllSeen();
-
-  const [localUnSeenCount, setLocalUnSeenCount] = useState(0);
-
-  useEffect(() => {
-    setLocalUnSeenCount(serverUnSeenCount);
-  }, [serverUnSeenCount]);
 
   const menuItems = [
     {
@@ -84,10 +73,10 @@ const HeaderComponent = () => {
 
   // mark all seen + refresh notifications + refetch count
   const handleMarkAsSeenAndRefresh = async () => {
-    if (localUnSeenCount > 0 && employee?.id) {
+    if (unSeenCount > 0 && employee?.id) {
       await markAsAllSeen(employee.id);
       await refreshNotifications(1, 5);
-      setLocalUnSeenCount(0);
+      await refreshUnSeenCount();
     }
   };
 
@@ -131,7 +120,7 @@ const HeaderComponent = () => {
       </div>
 
       <div className="flex items-center gap-3 md:gap-4">
-        <Badge count={localUnSeenCount} offset={[-5, 5]} showZero={false}>
+        <Badge count={unSeenCount} offset={[-5, 5]} showZero={false}>
           {!isMobile ? (
             <Popover
               content={notificationContent}
@@ -149,7 +138,7 @@ const HeaderComponent = () => {
                     twoToneColor={
                       isPopoverVisible
                         ? "#1890ff"
-                        : localUnSeenCount > 0
+                        : unSeenCount > 0
                         ? "#1890ff"
                         : "#b2c6db"
                     }
@@ -157,7 +146,7 @@ const HeaderComponent = () => {
                   />
                 }
                 className={`p-2 cursor-pointer !bg-white shadow-none hover:shadow-md flex items-center justify-center transition ${
-                  localUnSeenCount > 0 ? "ring-2 ring-red-300" : ""
+                  unSeenCount > 0 ? "ring-2 ring-red-300" : ""
                 }`}
                 size="large"
               />
@@ -172,7 +161,7 @@ const HeaderComponent = () => {
                   twoToneColor={
                     isDrawerVisible
                       ? "#1890ff"
-                      : localUnSeenCount > 0
+                      : unSeenCount > 0
                       ? "#1890ff"
                       : "#b2c6db"
                   }
@@ -181,7 +170,7 @@ const HeaderComponent = () => {
               }
               onClick={handleNotificationClick}
               className={`p-2 cursor-pointer !bg-white shadow-none hover:shadow-md flex items-center justify-center transition ${
-                localUnSeenCount > 0 ? "ring-2 ring-red-300" : ""
+                unSeenCount > 0 ? "ring-2 ring-red-300" : ""
               }`}
               size="large"
             />
