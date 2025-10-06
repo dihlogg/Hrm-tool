@@ -217,11 +217,11 @@ export default function CreateNewRequestPage() {
             </div>
 
             {/* Approver */}
-            <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-baseline">
+            <div className="flex flex-col items-start min-w-0 gap-2 mb-4 sm:flex-row sm:items-baseline">
               <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
                 Approver*:
               </label>
-              <div className="flex flex-col w-full">
+              <div className="flex flex-col w-full min-w-0">
                 <Select
                   placeholder="--Select--"
                   className="w-full"
@@ -250,11 +250,11 @@ export default function CreateNewRequestPage() {
             </div>
 
             {/* From Date */}
-            <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-baseline">
+            <div className="flex flex-col items-start min-w-0 gap-2 mb-4 sm:flex-row sm:items-baseline">
               <label className="w-full text-sm text-gray-500 sm:w-24 shrink-0">
                 From Date:
               </label>
-              <div className="flex flex-col w-full">
+              <div className="flex flex-col w-full min-w-0">
                 <DatePicker
                   format={(value) =>
                     value ? value.format("DD-MMM-YYYY").toUpperCase() : ""
@@ -276,11 +276,11 @@ export default function CreateNewRequestPage() {
             </div>
 
             {/* To Date */}
-            <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-baseline">
+            <div className="flex flex-col items-start min-w-0 gap-2 mb-4 sm:flex-row sm:items-baseline">
               <label className="w-full text-sm text-gray-500 sm:w-24 shrink-0">
                 To Date:
               </label>
-              <div className="flex flex-col w-full">
+              <div className="flex flex-col w-full min-w-0">
                 <DatePicker
                   format={(value) =>
                     value ? value.format("DD-MMM-YYYY").toUpperCase() : ""
@@ -305,11 +305,11 @@ export default function CreateNewRequestPage() {
             </div>
 
             {/* Partial Days */}
-            <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-baseline">
+            <div className="flex flex-col items-start min-w-0 gap-2 mb-4 sm:flex-row sm:items-baseline">
               <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
                 Partial Days*:
               </label>
-              <div className="flex flex-col w-full">
+              <div className="flex flex-col w-full min-w-0">
                 <Select
                   className="w-full"
                   placeholder="--Select"
@@ -338,11 +338,11 @@ export default function CreateNewRequestPage() {
             </div>
 
             {/* Duration */}
-            <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-baseline">
+            <div className="flex flex-col items-start min-w-0 gap-2 mb-4 sm:flex-row sm:items-baseline">
               <label className="w-full text-sm text-gray-500 sm:w-24 shrink-0">
                 Duration:
               </label>
-              <div className="flex flex-col w-full">
+              <div className="flex flex-col w-full min-w-0">
                 <input
                   className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none"
                   type="text"
@@ -365,11 +365,11 @@ export default function CreateNewRequestPage() {
             </div>
 
             {/* Confirm */}
-            <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-baseline">
+            <div className="flex flex-col items-start min-w-0 gap-2 mb-4 sm:flex-row sm:items-baseline">
               <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
                 Confirm*:
               </label>
-              <div className="flex flex-col w-full">
+              <div className="flex flex-col w-full min-w-0">
                 <Select
                   placeholder="--Select--"
                   className="w-full"
@@ -398,11 +398,11 @@ export default function CreateNewRequestPage() {
             </div>
 
             {/* Inform To */}
-            <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-baseline">
+            <div className="flex flex-col items-start min-w-0 gap-2 mb-4 sm:flex-row sm:items-baseline">
               <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
                 Inform To:
               </label>
-              <div className="flex flex-col w-full">
+              <div className="flex flex-col w-full min-w-0">
                 <Select
                   placeholder="--Select--"
                   className="w-full"
@@ -431,8 +431,8 @@ export default function CreateNewRequestPage() {
             </div>
 
             {/* Reason */}
-            <div className="flex flex-col items-start gap-2 mb-4 sm:flex-row sm:items-baseline">
-              <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
+            <div className="flex flex-col items-start min-w-0 gap-2 mb-4 sm:flex-row sm:items-baseline">
+              <label className="w-full min-w-0 text-sm text-gray-500 font-small sm:w-24 shrink-0">
                 Reason*:
               </label>
               <div className="flex flex-col w-full">
@@ -465,10 +465,10 @@ export default function CreateNewRequestPage() {
 
             {/* Reason Details */}
             <div className="sm:col-span-2">
-              <label className="w-full text-sm text-gray-500 font-small sm:w-24 shrink-0">
+              <label className="w-full min-w-0 text-sm text-gray-500 font-small sm:w-24 shrink-0">
                 Reason Details:
               </label>
-              <div className="flex flex-col w-full">
+              <div className="flex flex-col w-full min-w-0">
                 <textarea
                   id="message"
                   rows={4}

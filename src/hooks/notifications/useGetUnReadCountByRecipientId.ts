@@ -2,7 +2,7 @@ import { API_ENDPOINTS } from "@/services/apiService";
 import axiosInstance from "@/utils/auth/axiosInstance";
 import { useEffect, useState } from "react";
 
-export function useGetUnReadCountByActorId(id: string) {
+export function useGetUnReadCountByRecipientId(id: string) {
   const [unReadCount, setUnReadCount] = useState<number>(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -13,7 +13,7 @@ export function useGetUnReadCountByActorId(id: string) {
       setLoading(true);
       try {
         const response = await axiosInstance.get(
-          `${API_ENDPOINTS.GET_UNREAD_COUNT_BY_ACTOR_ID}/${id}`
+          `${API_ENDPOINTS.GET_UNREAD_COUNT_BY_RECIPIENT_ID}/${id}`
         );
         setUnReadCount(response.data);
       } catch (err: any) {

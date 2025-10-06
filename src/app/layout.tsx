@@ -15,10 +15,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className="h-full">
         <AntdRegistry>
           <AuthProvider>
-            <NotificationProvider>{children}</NotificationProvider>
+            <NotificationProvider>
+              <div className="h-full">{children}</div>
+            </NotificationProvider>
           </AuthProvider>
         </AntdRegistry>
       </body>

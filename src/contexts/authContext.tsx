@@ -13,6 +13,7 @@ import Cookies from "js-cookie";
 import { CreateEmployeeDto } from "@/hooks/employees/CreateEmployeeDto";
 import { useRouter } from "next/navigation";
 import { socketService } from "@/services/web-socketService";
+import { Spin } from "antd";
 
 interface AuthContextType {
   userId: string | null;
@@ -32,10 +33,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [employee, setEmployee] = useState<CreateEmployeeDto | null>(null);
   const router = useRouter();
   const [socketConnected, setSocketConnected] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = Cookies.get("access_token");
-    if (!token) return;
+    if (!token) {
+      setLoading(false);
+      return;
+    }
     const fetchUser = async () => {
       try {
         // Fetch user info
@@ -54,9 +59,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           const employeeData: CreateEmployeeDto = employeeResponse.data;
           setEmployee(employeeData);
 
-        socketService.disconnect();
-        socketService.connect(token, employeeData.id || "");
-        setSocketConnected(true);
+          socketService.disconnect();
+          socketService.connect(token, employeeData.id || "");
+          setSocketConnected(true);
         }
       } catch (err) {
         console.error("Failed to fetch user info or employee:", err);
@@ -65,11 +70,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setEmployee(null);
         socketService.disconnect(); // close websocket nếu có lỗi
         setSocketConnected(false);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUser();
   }, [Cookies.get("access_token")]);
+
+  //config hydration context delay
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        <Spin
+          tip={<span className="text-base text-gray-600">Loading...</span>}
+          size="large"
+        />
+      </div>
+    );
+
   const logout = () => {
     // clear token fr cookies
     Cookies.remove("access_token");

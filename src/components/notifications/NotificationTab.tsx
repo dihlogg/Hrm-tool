@@ -14,7 +14,8 @@ export default function NotificationTab({
   onClose,
   isMobile = false,
 }: NotificationTabProps) {
-  const { notifications, refreshNotifications } = useNotifications();
+  const { notifications, refreshNotifications, pagination } =
+    useNotifications();
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -150,14 +151,14 @@ export default function NotificationTab({
             </div>
           )}
 
-          {page < totalPages && !loading && (
+          {pagination.currentPage < pagination.totalPages && !loading && (
             <div className="px-2 py-4 text-center">
               <Button
                 type="primary"
                 size="middle"
                 shape="round"
                 style={{ width: "100%" }}
-                onClick={() => fetchNotifications(page + 1)}
+                onClick={() => fetchNotifications(pagination.currentPage + 1)}
                 className="text-white bg-blue-500 hover:bg-blue-600"
               >
                 Xem thêm thông báo
@@ -166,21 +167,6 @@ export default function NotificationTab({
           )}
         </div>
       )}
-
-      <div
-        className={`justify-between block text-right border-t ${
-          isMobile ? "pt-3 mt-3" : "pt-2 mt-2 sm:pt-3 sm:mt-3"
-        }`}
-      >
-        <Button
-          type="link"
-          size={isMobile ? "middle" : "small"}
-          onClick={handleViewAll}
-          className={isMobile ? "text-sm" : "text-xs sm:text-sm"}
-        >
-          Xem tất cả
-        </Button>
-      </div>
     </div>
   );
 }

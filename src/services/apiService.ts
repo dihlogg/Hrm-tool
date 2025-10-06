@@ -56,8 +56,8 @@ export const API_ENDPOINTS = {
 
   //hrm-notify
   GET_LEAVE_REQUEST_NOTIFY: `${API_URL}/hrm-notify/Notifications/GetNotificationsByEmployeeId`,
-  GET_UNSEEN_COUNT_BY_ACTOR_ID: `${API_URL}/hrm-notify/Notifications/GetUnSeenCountByActorId`,
-  GET_UNREAD_COUNT_BY_ACTOR_ID: `${API_URL}/hrm-notify/Notifications/GetUnReadCountByActorId`,
-  PATCH_MARK_AS_ALL_SEEN: `${API_URL}/hrm-notify/Notifications/MarkAllAsSeenByActorId`,
+  GET_UNSEEN_COUNT_BY_RECIPIENT_ID: `${API_URL}/hrm-notify/Notifications/GetUnSeenCountByRecipientId`,
+  GET_UNREAD_COUNT_BY_RECIPIENT_ID: `${API_URL}/hrm-notify/Notifications/GetUnReadCountByRecipientId`,
+  PATCH_MARK_AS_ALL_SEEN: `${API_URL}/hrm-notify/Notifications/MarkAllAsSeenByRecipientId`,
   PATCH_MARK_AS_READ: `${API_URL}/hrm-notify/Notifications/MarkAsRead`,
 };
