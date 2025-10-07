@@ -10,7 +10,7 @@ import { useGetLeaveRequestByEmployeeId } from "@/hooks/leave/useGetLeaveRequest
 import { antdSortOrderToApiOrder } from "@/utils/tableSorting";
 import { Button, DatePicker, Pagination, Select, Table } from "antd";
 import { ColumnsType, SortOrder } from "antd/es/table/interface";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -18,6 +18,9 @@ import { LeaveRequestDto } from "@/hooks/leave/LeaveRequestDto";
 import { useGetLeaveRequestType } from "@/hooks/leave/leave-request-types/useGetLeaveRequestTypes";
 import { useGetLeaveStatus } from "@/hooks/leave/leave-statuses/useGetLeaveStatus";
 import { useGetLeaveBalanceByEmployeeId } from "@/hooks/leave/useGetLeaveBalanceByEmployeeId";
+import { useRouter, useSearchParams } from "next/navigation";
+import { EditOutlined } from "@ant-design/icons";
+import LeaveBalanceModal from "@/components/leave/LeaveBalanceModal";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -29,9 +32,10 @@ export default function MyRequestPage() {
   const pageSize = 5;
   const [hotReload, setHotReload] = useState(0);
   const { userId } = useAuthContext();
-  const { employee, loading: loadingEmployee } = useGetEmployeeDetailsByUserId(
-    userId ?? ""
-  );
+  const { employee } = useGetEmployeeDetailsByUserId(userId ?? "");
+  const searchParams = useSearchParams();
+  const empId = searchParams.get("id") || undefined;
+  const [employeeId, setEmployeeId] = useState(empId || "");
   const { leaveRequestTypes, error: leaveRequestTypeError } =
     useGetLeaveRequestType();
   const { leaveStatuses, error: leaveStatusError } = useGetLeaveStatus();
@@ -54,6 +58,17 @@ export default function MyRequestPage() {
     filters,
     hotReload
   );
+  //leave balance modal
+  const [modalVisible, setModalVisible] = useState(false);
+  const { leaveBalance, loading: loadingModal } =
+    useGetLeaveBalanceByEmployeeId(employeeId);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (employee) {
+      setEmployeeId(employee.id ?? "");
+    }
+  }, [employee]);
 
   function mapSorterFieldToApiField(
     field: string | undefined
@@ -154,6 +169,26 @@ export default function MyRequestPage() {
       sortOrder: sortBy === "leaveStatus" ? sortOrder : undefined,
       render: (_, record) => record.leaveStatus?.name || "N/A",
     },
+    {
+      title: (
+        <span className="text-sm font-semibold text-gray-600 select-none">
+          Actions
+        </span>
+      ),
+      key: "actions",
+      render: (_: any, record: LeaveRequestDto) => (
+        <div className="flex gap-4">
+          <Button
+            type="default"
+            shape="circle"
+            onClick={() => router.push(`/leave/update-leave?id=${record.id}`)}
+            className="p-2 text-gray-600 cursor-pointer hover:text-blue-800"
+          >
+            <EditOutlined style={{ fontSize: "16px", color: "#6B7280" }} />
+          </Button>
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -163,9 +198,21 @@ export default function MyRequestPage() {
         <h2 className="pb-2 text-xl font-semibold text-gray-500 border-b border-b-gray-400">
           My Request
         </h2>
-        <a className="inline-block mb-2 text-sm text-blue-600 cursor-pointer hover:underline">
+        <a
+          className="inline-block mb-4 text-sm text-blue-600 hover:underline"
+          onClick={() => setModalVisible(true)}
+        >
           Time Off (Leave) Requests and Balances
         </a>
+        <LeaveBalanceModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          leaveBalance={leaveBalance}
+          loading={loadingModal}
+          employeeName={`${employee?.firstName ?? ""} ${
+            employee?.lastName ?? ""
+          }`}
+        />
         <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <label className="w-full text-sm text-gray-500 font-small">

@@ -40,6 +40,8 @@ export const API_ENDPOINTS = {
   GET_ALL_USER_STAUSES: `${API_URL}/hrm-api/UserStatuses/GetAllUserStatuses`,
   //leave request
   POST_LEAVE_REQUEST: `${API_URL}/hrm-api/LeaveRequests/PostLeaveRequest`,
+  PUT_LEAVE_REQUEST: `${API_URL}/hrm-api/LeaveRequests/PutLeaveRequest`,
+  GET_LEAVE_REQUEST_DETAIL_BY_ID: `${API_URL}/hrm-api/LeaveRequests/GetLeaveRequestById`,
   GET_LEAVE_REQUEST_BY_EMPLOYEE_ID: `${API_URL}/hrm-api/LeaveRequests/GetLeaveRequestListByEmployeeId`,
   GET_LEAVE_BALANCE_BY_EMPLOYEE_ID: `${API_URL}/hrm-api/LeaveRequests/GetLeaveBalancesByEmployeeId`,
   GET_LEAVE_REQUEST_FOR_SUPERVISOR: `${API_URL}/hrm-api/LeaveRequests/GetLeaveRequestsForSupervisor`,

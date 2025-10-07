@@ -517,7 +517,7 @@ export default function ReceiveRequestPage() {
                 Requester
               </label>
               <Select
-                                className="w-full !mt-2 custom-select"
+                className="w-full !mt-2 custom-select"
                 placeholder="--Select--"
                 allowClear
                 value={filterDrafts.employeeId}
@@ -650,36 +650,60 @@ export default function ReceiveRequestPage() {
             xl: "50%",
             xxl: "40%",
           }}
-          footer={[
-            isManager && (
-              <Button
-                key="pending"
-                color="orange"
-                variant="text"
-                onClick={() => {
-                  setIsPendingModalOpen(true);
-                  setIsOpenModal(false);
-                }}
-              >
-                Pending
-              </Button>
-            ),
-            <Button
-              key="reject"
-              color="danger"
-              variant="filled"
-              onClick={handleReject}
-            >
-              Reject
-            </Button>,
-            <Button
-              key="ok"
-              type="primary"
-              onClick={isManager ? handleConfirm : handleApprove}
-            >
-              {isManager ? "Confirm" : "Approve"}
-            </Button>,
-          ]}
+          footer={() => {
+            const status =
+              selectedLeaveRequest?.leaveStatus?.name?.toUpperCase();
+            // for manager role, is leave request status is SUBMITED or PENDING => show footer
+            // if leave request is CONFIRMED or REJECTED => no footer
+            if (isManager && (status === "SUBMITTED" || status === "PENDING")) {
+              return [
+                <Button
+                  key="pending"
+                  color="orange"
+                  variant="text"
+                  onClick={() => {
+                    setIsPendingModalOpen(true);
+                    setIsOpenModal(false);
+                  }}
+                >
+                  Pending
+                </Button>,
+                <Button
+                  key="reject"
+                  color="danger"
+                  variant="filled"
+                  onClick={handleReject}
+                >
+                  Reject
+                </Button>,
+                <Button key="ok" type="primary" onClick={handleConfirm}>
+                  Confirm
+                </Button>,
+              ];
+            }
+
+            // for director or ceo role, if leave request status is REJECTED => no footer
+            if (
+              isDirectorOrCeo &&
+              (status === "SUBMITTED" ||
+                status === "PENDING" ||
+                status === "CONFIRMED")
+            ) {
+              return [
+                <Button
+                  key="reject"
+                  color="danger"
+                  variant="filled"
+                  onClick={handleReject}
+                >
+                  Reject
+                </Button>,
+                <Button key="approve" type="primary" onClick={handleApprove}>
+                  Approve
+                </Button>,
+              ];
+            }
+          }}
         >
           {selectedLeaveRequest && (
             <Descriptions column={1} size="small" bordered>
@@ -777,6 +801,7 @@ export default function ReceiveRequestPage() {
             </Descriptions>
           )}
         </Modal>
+
         {/* Modal Pending */}
         <Modal
           title="Pending Request"
