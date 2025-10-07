@@ -26,7 +26,7 @@ export default function EditEmployeePage() {
   const { updateEmployee } = useUpdateEmployee();
   const searchParams = useSearchParams();
   const employeeId = searchParams.get("id") || undefined;
-  const { employee, loading } = useGetEmployeeById(employeeId ?? "");
+  const { employee } = useGetEmployeeById(employeeId ?? "");
   const [api, contextHolder] = notification.useNotification();
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -41,12 +41,12 @@ export default function EditEmployeePage() {
   const [gender, setGender] = useState<string | null>(null);
   const [dateOfBirth, setDateOfBirth] = useState<Dayjs | null>(null);
 
-  const { employeeStatuses, error: employeeStatusesEror } =
+  const { employeeStatuses} =
     useGetEmployeeStatus();
   const [employeeStatusId, setEmployeeStatusId] = useState<string | null>(null);
-  const { jobTitles, error: jobTitleError } = useJobTitles();
+  const { jobTitles} = useJobTitles();
   const [jobTitleId, setJobTitleId] = useState<string | null>(null);
-  const { subUnits, error: subUnitError } = useSubUnits();
+  const { subUnits} = useSubUnits();
   const [subUnitId, setSubUnitId] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<{
     firstName?: string;
@@ -124,8 +124,6 @@ export default function EditEmployeePage() {
       });
     }
   };
-
-  if (loading) return <div className="p-4">Loading...</div>;
 
   return (
     <>

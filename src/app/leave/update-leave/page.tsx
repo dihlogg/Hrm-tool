@@ -6,9 +6,7 @@ import { CreateLeaveRequestDto } from "@/hooks/leave/CreateLeaveRequestDto";
 import { useGetLeaveReason } from "@/hooks/leave/leave-reasons/useGetLeaveReason";
 import { useGetLeaveRequestType } from "@/hooks/leave/leave-request-types/useGetLeaveRequestTypes";
 import { useGetPartialDay } from "@/hooks/leave/partial-days/useGetPartialDay";
-import { useAddLeaveRequest } from "@/hooks/leave/useAddLeaveRequest";
 import { Button, DatePicker, message, notification, Select } from "antd";
-import { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useGetEmployeeBySubUnit } from "@/hooks/employees/useGetEmployeeBySubUnit";
@@ -16,11 +14,14 @@ import { useGetSupervisorEmployee } from "@/hooks/employees/useGetSupervisorEmpl
 import { useGetLeaveBalanceByEmployeeId } from "@/hooks/leave/useGetLeaveBalanceByEmployeeId";
 import LeaveBalanceModal from "@/components/leave/LeaveBalanceModal";
 import { useGetDirectorBySubUnit } from "@/hooks/employees/useGetDirectorBySubUnit";
+import { useUpdateLeaveRequest } from "@/hooks/leave/useUpdateLeaveRequest";
+import { useGetleaveRequestDetailById } from "@/hooks/leave/useGetLeaveRequestDetailById";
+import dayjs, { Dayjs } from "dayjs";
 
 const { Option } = Select;
 
-export default function CreateNewRequestPage() {
-  const { addLeaveRequest } = useAddLeaveRequest();
+export default function UpdateLeaveRequestPage() {
+  const { updateLeaveRequest } = useUpdateLeaveRequest();
   const { leaveReasons } = useGetLeaveReason();
   const { leaveRequestTypes } = useGetLeaveRequestType();
   const { partialDays } = useGetPartialDay();
@@ -30,6 +31,8 @@ export default function CreateNewRequestPage() {
   const searchParams = useSearchParams();
   const empId = searchParams.get("id") || undefined;
   const subId = searchParams.get("subUnitId") || undefined;
+  const leaveId = searchParams.get("id");
+  const { leaveRequest } = useGetleaveRequestDetailById(leaveId ?? "");
 
   const [api, contextHolder] = notification.useNotification();
   const [employeeId, setEmployeeId] = useState(empId || "");
@@ -101,18 +104,20 @@ export default function CreateNewRequestPage() {
     }
   }, [partialDayId, partialDays]);
 
-  const resetForm = () => {
-    setFromDate(null);
-    setToDate(null);
-    setDuration("");
-    setReasonDetails("");
-    setLeaveReasonId(undefined);
-    setLeaveRequestTypeId(undefined);
-    setPartialDayId(undefined);
-    setExpectedApproverId(undefined);
-    setExpectedConfirmId(undefined);
-    setExpectedInformToId(undefined);
-  };
+  useEffect(() => {
+    if (leaveRequest) {
+      setFromDate(leaveRequest.fromDate ? dayjs(leaveRequest.fromDate) : null);
+      setToDate(leaveRequest.toDate ? dayjs(leaveRequest.toDate) : null);
+      setDuration(leaveRequest.duration || "");
+      setReasonDetails(leaveRequest.reasonDetails || "");
+      setLeaveReasonId(leaveRequest.leaveReasonId || undefined);
+      setLeaveRequestTypeId(leaveRequest.leaveRequestTypeId || undefined);
+      setPartialDayId(leaveRequest.partialDayId || undefined);
+      setExpectedApproverId(leaveRequest.expectedApproverId || undefined);
+      setExpectedConfirmId(leaveRequest.expectedConfirmId || undefined);
+      setExpectedInformToId(leaveRequest.expectedInformToId || undefined);
+    }
+  }, [leaveRequest]);
 
   const handleSubmit = async () => {
     const errors: typeof formErrors = {};
@@ -168,19 +173,22 @@ export default function CreateNewRequestPage() {
         expectedConfirmId,
         expectedInformToId,
       };
-      await addLeaveRequest(payload);
-      console.log("Leave Request created successfully!");
+      await updateLeaveRequest(leaveId!, payload);
+      console.log("Leave Request updated successfully!");
       api.success({
         message: "Leave Request created successfully!",
-        description: `Leave Request has been added.`,
+        description: `Leave Request information has been updated.`,
         placement: "bottomLeft",
+        duration: 3,
+        pauseOnHover: true,
       });
-      resetForm();
     } catch (err: any) {
       api.error({
-        message: "Leave Request created failed!",
+        message: "Update failed!",
         description: err?.message || "An unknown error occurred.",
         placement: "bottomLeft",
+        duration: 3,
+        pauseOnHover: true,
       });
     }
   };
@@ -191,7 +199,7 @@ export default function CreateNewRequestPage() {
       <div className="flex-1 w-full p-4 mt-2 space-y-6">
         <div className="flex-col px-8 py-4 bg-white border-gray-200 rounded-lg shadow-sm sm:flex-row">
           <h2 className="pb-2 text-xl font-semibold text-gray-500 border-b border-b-gray-400">
-            Create New Request
+            Update Leave Request
           </h2>
           <a
             className="inline-block mb-4 text-sm text-blue-600 hover:underline"
@@ -524,26 +532,15 @@ export default function CreateNewRequestPage() {
             <span className="text-sm italic font-medium text-gray-500">
               * Required
             </span>
-            <div className="flex justify-end gap-3">
-              <Button
-                type="primary"
-                shape="round"
-                size="middle"
-                ghost
-                className="text-blue-500 border-blue-500 hover:bg-blue-50"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="primary"
-                shape="round"
-                size="middle"
-                className="text-white bg-blue-500 hover:bg-blue-600"
-                onClick={handleSubmit}
-              >
-                + Apply
-              </Button>
-            </div>
+            <Button
+              type="primary"
+              shape="round"
+              size="middle"
+              className="text-white bg-blue-500 hover:bg-blue-600"
+              onClick={handleSubmit}
+            >
+              + Save
+            </Button>
           </div>
         </div>
       </div>

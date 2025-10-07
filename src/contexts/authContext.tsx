@@ -34,6 +34,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const [socketConnected, setSocketConnected] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     const token = Cookies.get("access_token");
@@ -79,13 +84,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [Cookies.get("access_token")]);
 
   //config hydration context delay
+  if (!isClient) return null;
+
   if (loading)
     return (
       <div className="flex items-center justify-center h-screen bg-gray-50">
         <Spin
-          tip={<span className="text-base text-gray-600">Loading...</span>}
+          tip={<span className="text-base text-gray-600"></span>}
           size="large"
-        />
+          spinning={true}
+        >
+          <div className="w-0 h-0" />
+        </Spin>
       </div>
     );
 
