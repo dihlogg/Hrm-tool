@@ -42,15 +42,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const token = Cookies.get("access_token");
-    if (!token) {
+    const refreshToken = Cookies.get("refresh_token");
+    if (!token && !refreshToken) {
+      Cookies.remove("access_token");
+      Cookies.remove("refresh_token");
       setLoading(false);
+      router.push("/auth");
       return;
     }
     const fetchUser = async () => {
       try {
         // Fetch user info
         const userResponse = await axiosInstance.get(
-          API_ENDPOINTS.GET_USER_INFOR
+          API_ENDPOINTS.GET_USER_INFOR,
         );
         const fetchedUserId = userResponse.data.userId;
         setUserId(fetchedUserId);
@@ -59,13 +63,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // Fetch employee details sau khi có userId
         if (fetchedUserId) {
           const employeeResponse = await axiosInstance.get(
-            `${API_ENDPOINTS.GET_EMPLOYEE_DETAILS_BY_USER_ID}/${fetchedUserId}`
+            `${API_ENDPOINTS.GET_EMPLOYEE_DETAILS_BY_USER_ID}/${fetchedUserId}`,
           );
           const employeeData: CreateEmployeeDto = employeeResponse.data;
           setEmployee(employeeData);
 
           socketService.disconnect();
-          socketService.connect(token, employeeData.id || "");
+          socketService.connect(token!, employeeData.id || "");
           setSocketConnected(true);
         }
       } catch (err) {
