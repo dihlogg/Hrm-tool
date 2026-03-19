@@ -53,10 +53,10 @@ export default function NotificationTab({
     fetchNotifications(1);
   }, []);
 
-  const handleViewAll = () => {
-    if (onClose) onClose();
-    window.location.href = "/notifications";
-  };
+  // const handleViewAll = () => {
+  //   if (onClose) onClose();
+  //   window.location.href = "/notifications";
+  // };
 
   return (
     <div

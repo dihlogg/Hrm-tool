@@ -18,7 +18,7 @@ export default function EditJobTitlePage() {
   const [description, setDescription] = useState("");
   const searchParams = useSearchParams();
   const jobTitleId = searchParams.get("id") || undefined;
-  const { jobTitles, loading } = useGetJobTitleById(jobTitleId ?? "");
+  const { jobTitles } = useGetJobTitleById(jobTitleId ?? "");
 
   useEffect(() => {
     if (jobTitles) {

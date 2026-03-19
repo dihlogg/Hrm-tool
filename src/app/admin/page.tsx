@@ -21,7 +21,7 @@ export default function UserManagementPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 5;
   const [api, contextHolder] = notification.useNotification();
-  const [hotReload, setHotReload] = useState(0);
+  const [hotReload] = useState(0);
   const [sortBy, setSortBy] = useState<string | undefined>(undefined);
   const [sortOrder, setSortOrder] = useState<SortOrder | undefined>(undefined);
 
@@ -33,7 +33,7 @@ export default function UserManagementPage() {
   const [filterDrafts, setFilterDrafts] =
     useState<UserFilters>(getInitialFilters);
 
-  const { users, total, loading } = useGetUsers(
+  const { users, total } = useGetUsers(
     currentPage,
     pageSize,
     sortBy,
@@ -54,17 +54,17 @@ export default function UserManagementPage() {
     }
   }
 
-  const handleExportExcel = async () => {
-    try {
-      const response = await axiosInstance.get(API_ENDPOINTS.GET_USER_LIST, {
-        params: { page: 1, pageSize: total },
-      });
-      const allUsers = response.data.data;
-      exportExcel(columns, allUsers, "User_List.xlsx", "User List");
-    } catch (err) {
-      console.error("Export Excel failed:", err);
-    }
-  };
+  // const handleExportExcel = async () => {
+  //   try {
+  //     const response = await axiosInstance.get(API_ENDPOINTS.GET_USER_LIST, {
+  //       params: { page: 1, pageSize: total },
+  //     });
+  //     const allUsers = response.data.data;
+  //     exportExcel(columns, allUsers, "User_List.xlsx", "User List");
+  //   } catch (err) {
+  //     console.error("Export Excel failed:", err);
+  //   }
+  // };
   const router = useRouter();
 
   const columns: ColumnsType<UserDto> = [
