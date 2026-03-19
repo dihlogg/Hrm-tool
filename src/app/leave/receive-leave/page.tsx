@@ -82,8 +82,6 @@ export default function ReceiveRequestPage() {
 
   const {
     patchLeaveRequestStatus,
-    loading: patchLoading,
-    error: patchError,
   } = usePatchLeaveRequestStatus();
 
   // check role

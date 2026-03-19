@@ -1,7 +1,6 @@
 "use client";
 
-import { mockMyRequests } from "@/utils/admin/mock-data-admin-page";
-import { Button, Modal, notification, Pagination, Select, Table } from "antd";
+import { Button, Modal, notification, Table } from "antd";
 import { useState } from "react";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
@@ -39,7 +38,7 @@ export default function JobTitlePage() {
           duration: 3,
           pauseOnHover: true,
         });
-      } catch (err: any) {
+      } catch {
         api.error({
           message: "Delete Job Title failed!",
           description: "Job Title information has not been deleted",

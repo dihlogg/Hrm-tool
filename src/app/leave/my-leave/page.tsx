@@ -30,7 +30,7 @@ const { Option } = Select;
 export default function MyRequestPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 5;
-  const [hotReload, setHotReload] = useState(0);
+  const [hotReload] = useState(0);
   const { userId } = useAuthContext();
   const { employee } = useGetEmployeeDetailsByUserId(userId ?? "");
   const searchParams = useSearchParams();

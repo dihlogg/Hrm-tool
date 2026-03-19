@@ -17,7 +17,7 @@ export default function BuzzLayout({
   return (
     <MainLayout>
       <div className="flex flex-col h-full">
-        <div className="flex items-center justify-center flex-1">
+        <div className="flex flex-1 w-full">
           {children}
         </div>
       </div>

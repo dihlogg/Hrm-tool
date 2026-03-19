@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, Upload, Select, notification, message } from "antd";
+import { Button, Upload, Select, notification, message, Image } from "antd";
 import { UploadOutlined, UserAddOutlined } from "@ant-design/icons";
 import { Switch } from "@headlessui/react";
 import { useAddEmployee } from "@/hooks/employees/useAddEmployee";
@@ -21,8 +21,7 @@ export default function AddEmployeePage() {
   const { subUnits } = useSubUnits();
   const { employeeStatuses } = useGetEmployeeStatus();
   const { userStatuses, error: userStatusError } = useUserStatuses();
-  const { parentEmployee, error: parentEmployeeError } =
-    useGetParentForEmployee();
+  const { parentEmployee } = useGetParentForEmployee();
   const [fieldErrors, setFieldErrors] = useState<{ confirmPassword?: string }>(
     {}
   );
@@ -139,9 +138,11 @@ export default function AddEmployeePage() {
             <div className="flex flex-col items-center">
               <div className="w-[200px] h-[200px] rounded-full overflow-hidden bg-gray-100 flex items-center justify-center text-gray-400 text-5xl">
                 {imageUrl ? (
-                  <img
+                  <Image
                     src={imageUrl}
                     alt="Avatar"
+                    width={200}
+                    height={200}
                     className="object-cover w-full h-full"
                   />
                 ) : (

@@ -16,7 +16,7 @@ export default function EditUserPage() {
   const searchParams = useSearchParams();
   const userId = searchParams.get("id") || undefined;
   const { user } = useGetUserById(userId ?? "");
-  const { userStatuses, error: userStatusesError } = useUserStatuses();
+  const { userStatuses } = useUserStatuses();
   const [api, contextHolder] = notification.useNotification();
 
   const [changePassword, setChangePassword] = useState(false);

@@ -8,6 +8,7 @@ import {
   notification,
   DatePicker,
   message,
+  Image,
 } from "antd";
 import { UploadOutlined, UserAddOutlined } from "@ant-design/icons";
 import { CreateEmployeeDto } from "@/hooks/employees/CreateEmployeeDto";
@@ -41,12 +42,11 @@ export default function EditEmployeePage() {
   const [gender, setGender] = useState<string | null>(null);
   const [dateOfBirth, setDateOfBirth] = useState<Dayjs | null>(null);
 
-  const { employeeStatuses} =
-    useGetEmployeeStatus();
+  const { employeeStatuses } = useGetEmployeeStatus();
   const [employeeStatusId, setEmployeeStatusId] = useState<string | null>(null);
-  const { jobTitles} = useJobTitles();
+  const { jobTitles } = useJobTitles();
   const [jobTitleId, setJobTitleId] = useState<string | null>(null);
-  const { subUnits} = useSubUnits();
+  const { subUnits } = useSubUnits();
   const [subUnitId, setSubUnitId] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<{
     firstName?: string;
@@ -138,10 +138,12 @@ export default function EditEmployeePage() {
             <div className="flex flex-col items-center">
               <div className="w-[200px] h-[200px] rounded-full overflow-hidden bg-gray-100 flex items-center justify-center text-gray-400 text-5xl">
                 {imageUrl ? (
-                  <img
+                  <Image
                     src={imageUrl}
                     alt="Avatar"
-                    className="object-cover w-full h-full"
+                    width={200}
+                    height={200}
+                    className="object-cover"
                   />
                 ) : (
                   <span>

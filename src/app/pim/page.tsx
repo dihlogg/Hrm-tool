@@ -49,7 +49,7 @@ export default function EmployeeListPage() {
   const { subUnits, error: subUnitError } = useSubUnits();
   const { employeeStatuses, error: employeeStatusError } =
     useGetEmployeeStatus();
-  const { updateEmployeeStatus, loading: updateLoading } =
+  const { updateEmployeeStatus } =
     usePatchEmployeeStatus();
 
   //filter
@@ -76,10 +76,6 @@ export default function EmployeeListPage() {
   };
 
   const [isOpenModalChangeStatus, setIsOpenModalChangeStatus] = useState(false);
-  const handleCancelModalChangeStatus = () => {
-    setSelectedEmployee(null);
-    setIsOpenModalChangeStatus(false);
-  };
 
   const handleOkChangeStatus = async () => {
     if (selectedEmployee?.id) {

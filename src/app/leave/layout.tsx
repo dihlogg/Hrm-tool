@@ -23,7 +23,7 @@ export default function LeaveLayout({
   return (
     <MainLayout>
       <div className="flex flex-col h-full">
-        <div className="flex gap-2 ml-3">
+        <div className="flex flex-wrap gap-2 ml-3 sm:gap-3 sm:ml-4">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             const baseClass =
