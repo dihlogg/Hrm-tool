@@ -3,7 +3,6 @@
 import {
   Avatar,
   Button,
-  Dropdown,
   Empty,
   Pagination,
   message,
@@ -14,10 +13,8 @@ import {
   Input,
 } from "antd";
 import {
-  MoreOutlined,
   ClockCircleOutlined,
   MessageOutlined,
-  ShareAltOutlined,
   CameraFilled,
   VideoCameraFilled,
   HeartFilled,
@@ -32,33 +29,27 @@ import { useDeletePostById } from "@/hooks/social/post/useDeletePostById";
 import { useUpdatePost } from "@/hooks/social/post/useUpdatePost";
 import { uploadImageToCloudinary } from "@/services/cloudinaryService";
 import { PostDto } from "@/hooks/social/post/PostDto";
+import PostCard from "@/components/buzz/post/PostCard";
 
 const { confirm } = Modal;
 const { TextArea } = Input;
 
 export default function BuzzPage() {
   const [activeTab, setActiveTab] = useState("recent");
-
-  // State phân trang & re-fetch
   const [page, setPage] = useState(1);
   const pageSize = 5;
   const [hotReload, setHotReload] = useState(0);
 
-  // State input tạo bài viết
   const [postContent, setPostContent] = useState("");
-
-  // State quản lý upload ảnh tạo bài viết
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [uploadLoading, setUploadLoading] = useState(false);
 
-  // State quản lý chỉnh sửa bài viết
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<PostDto | null>(null);
   const [editContent, setEditContent] = useState("");
   const [editImageUrl, setEditImageUrl] = useState<string | null>(null);
   const [editUploadLoading, setEditUploadLoading] = useState(false);
 
-  // Hooks
   const { employee } = useAuthContext();
   const {
     posts,
@@ -69,7 +60,6 @@ export default function BuzzPage() {
   const { deletePost } = useDeletePostById();
   const { updatePost, loading: updatingPost } = useUpdatePost();
 
-  // Xử lý tạo bài viết
   const handleCreatePost = async () => {
     if (!postContent.trim() && !imageUrl) {
       message.warning(
@@ -93,7 +83,6 @@ export default function BuzzPage() {
     }
   };
 
-  // Mở modal Edit
   const openEditModal = (post: PostDto) => {
     setEditingPost(post);
     setEditContent(post.content);
@@ -101,7 +90,6 @@ export default function BuzzPage() {
     setIsEditModalOpen(true);
   };
 
-  // Xử lý lưu bài viết đang edit
   const handleEditPost = async () => {
     if (!editingPost) return;
     if (!editContent.trim() && !editImageUrl) {
@@ -122,7 +110,6 @@ export default function BuzzPage() {
     }
   };
 
-  // Xử lý xoá bài viết
   const handleDeletePost = (postId: string) => {
     confirm({
       title: "Delete Post",
@@ -142,15 +129,6 @@ export default function BuzzPage() {
     });
   };
 
-  // Hàm phụ trợ đếm số Like từ mảng reactionCounts
-  const getLikesCount = (reactionCounts?: any[]) => {
-    if (!reactionCounts) return 0;
-    const likeReaction = reactionCounts.find(
-      (r) => r.reactionType.toUpperCase() === "LIKE",
-    );
-    return likeReaction ? likeReaction.count : 0;
-  };
-
   return (
     <div className="flex flex-col justify-center w-full max-w-[1600px] gap-6 px-4 lg:px-8 mx-auto mt-6 lg:flex-row">
       {/* Left Sidebar - Navigation */}
@@ -163,8 +141,7 @@ export default function BuzzPage() {
               : "bg-[#E5E7EB] text-gray-500 hover:bg-gray-300"
           }`}
         >
-          <ClockCircleOutlined className="text-lg" />
-          Most Recent Posts
+          <ClockCircleOutlined className="text-lg" /> Most Recent Posts
         </button>
         <button
           onClick={() => setActiveTab("liked")}
@@ -174,8 +151,7 @@ export default function BuzzPage() {
               : "bg-[#E5E7EB] text-gray-500 hover:bg-gray-300"
           }`}
         >
-          <HeartFilled className="text-lg" />
-          Most Liked Posts
+          <HeartFilled className="text-lg" /> Most Liked Posts
         </button>
         <button
           onClick={() => setActiveTab("commented")}
@@ -185,12 +161,10 @@ export default function BuzzPage() {
               : "bg-[#E5E7EB] text-gray-500 hover:bg-gray-300"
           }`}
         >
-          <MessageOutlined className="text-lg" />
-          Most Commented Posts
+          <MessageOutlined className="text-lg" /> Most Commented Posts
         </button>
       </div>
 
-      {/* Center - Main Feed */}
       <div className="flex flex-col w-full gap-4 lg:w-[53%] flex-1">
         <h2 className="text-lg font-bold text-gray-500">Buzz Newsfeed</h2>
 
@@ -203,7 +177,6 @@ export default function BuzzPage() {
               size={48}
               className="flex-shrink-0 mt-1"
             />
-            {/* Input & Preview wrapper */}
             <div className="flex flex-col flex-1 gap-3">
               <div className="flex items-center w-full py-1.5 pl-4 pr-1.5 border border-gray-200 rounded-full bg-gray-50 focus-within:bg-white focus-within:border-orange-300 transition-colors">
                 <input
@@ -228,7 +201,6 @@ export default function BuzzPage() {
                 </Button>
               </div>
 
-              {/* Image Preview */}
               {imageUrl && (
                 <div className="relative inline-block w-max">
                   <AntImage
@@ -260,7 +232,6 @@ export default function BuzzPage() {
                   setImageUrl(url);
                   message.success("Image uploaded successfully!");
                 } catch (err) {
-                  console.error(err);
                   message.error("Image upload failed!");
                 } finally {
                   setUploadLoading(false);
@@ -273,14 +244,12 @@ export default function BuzzPage() {
                 type="text"
                 className="flex items-center justify-center h-auto gap-2 px-6 py-2 text-sm font-semibold text-gray-600 transition-colors rounded-full bg-gray-50 hover:bg-gray-100"
               >
-                <CameraFilled className="text-xl text-green-500" />
-                Share Photos
+                <CameraFilled className="text-xl text-green-500" /> Share Photos
               </Button>
             </Upload>
-
             <button className="flex items-center justify-center gap-2 px-6 py-2 text-sm font-semibold text-gray-600 transition-colors rounded-full bg-gray-50 hover:bg-gray-100">
-              <VideoCameraFilled className="text-xl text-orange-400" />
-              Share Video
+              <VideoCameraFilled className="text-xl text-orange-400" /> Share
+              Video
             </button>
           </div>
         </div>
@@ -296,115 +265,14 @@ export default function BuzzPage() {
               <Empty description="No posts available" />
             </div>
           ) : (
-            posts.map((post) => {
-              const likesCount = getLikesCount(post.reactionCounts);
-              const commentsCount = post.postComments?.length || 0;
-              const sharesCount = 0;
-
-              return (
-                <div key={post.id} className="bg-white shadow-sm rounded-2xl">
-                  {/* Post Header */}
-                  <div className="flex items-start justify-between p-5">
-                    <div className="flex items-center gap-3">
-                      <Avatar
-                        src={post.employeeAvatarUrl || undefined}
-                        icon={!post.employeeAvatarUrl && <UserOutlined />}
-                        size={48}
-                        className="cursor-pointer"
-                      />
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-gray-600 cursor-pointer hover:underline">
-                          {post.employeeFullName || "Unknown Employee"}
-                        </span>
-                        <span className="text-xs text-gray-400">
-                          {new Date(post.createDate)
-                            .toLocaleString("en-CA", {
-                              year: "numeric",
-                              month: "2-digit",
-                              day: "2-digit",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: true,
-                            })
-                            .replace(",", "")}
-                        </span>
-                      </div>
-                    </div>
-
-                    <Dropdown
-                      trigger={["click"]}
-                      placement="bottomRight"
-                      menu={{
-                        items: [
-                          {
-                            key: "edit",
-                            label: <span>Edit Post</span>,
-                            onClick: () => openEditModal(post),
-                          },
-                          {
-                            key: "delete",
-                            label: (
-                              <span className="text-red-500">Delete Post</span>
-                            ),
-                            onClick: () => handleDeletePost(post.id),
-                          },
-                        ],
-                      }}
-                    >
-                      <Button
-                        type="text"
-                        shape="circle"
-                        className="flex items-center justify-center"
-                        icon={
-                          <MoreOutlined className="text-xl text-gray-400" />
-                        }
-                      />
-                    </Dropdown>
-                  </div>
-
-                  {/* Post Content */}
-                  <div className="px-5 pb-4 text-sm text-gray-600 whitespace-pre-wrap">
-                    {post.content}
-                  </div>
-
-                  {/* Hiển thị hình ảnh của Post */}
-                  {post.imageUrl && (
-                    <div className="px-5 pb-4">
-                      <AntImage
-                        src={post.imageUrl}
-                        alt="post image"
-                        className="object-cover rounded-xl max-h-[400px] w-auto"
-                      />
-                    </div>
-                  )}
-
-                  {/* Post Footer */}
-                  <div className="flex items-center justify-between px-5 pt-2 pb-5 mt-2 border-t border-gray-50">
-                    <div className="flex gap-3">
-                      <button className="flex items-center justify-center transition-colors bg-gray-100 rounded-full w-9 h-9 hover:bg-gray-200">
-                        <HeartFilled className="text-gray-600" />
-                      </button>
-                      <button className="flex items-center justify-center transition-colors bg-gray-100 rounded-full w-9 h-9 hover:bg-gray-200">
-                        <MessageOutlined className="text-gray-600" />
-                      </button>
-                      <button className="flex items-center justify-center transition-colors bg-gray-100 rounded-full w-9 h-9 hover:bg-gray-200">
-                        <ShareAltOutlined className="text-gray-600" />
-                      </button>
-                    </div>
-
-                    <div className="flex flex-col items-end">
-                      <div className="flex items-center gap-1.5 text-sm font-bold text-gray-600">
-                        <HeartFilled className="text-red-500" />
-                        <span>{likesCount} Likes</span>
-                      </div>
-                      <div className="text-[11px] text-gray-400 mt-0.5">
-                        {commentsCount} Comments, {sharesCount} Shares
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })
+            posts.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                onEdit={openEditModal}
+                onDelete={handleDeletePost}
+              />
+            ))
           )}
 
           {/* Pagination */}
@@ -461,7 +329,6 @@ export default function BuzzPage() {
             placeholder="Edit your post content..."
             className="rounded-lg"
           />
-
           {editImageUrl && (
             <div className="relative inline-block w-max">
               <AntImage
@@ -480,7 +347,6 @@ export default function BuzzPage() {
               />
             </div>
           )}
-
           <div>
             <Upload
               showUploadList={false}
@@ -491,7 +357,6 @@ export default function BuzzPage() {
                   setEditImageUrl(url);
                   message.success("Image uploaded successfully!");
                 } catch (err) {
-                  console.error(err);
                   message.error("Image upload failed!");
                 } finally {
                   setEditUploadLoading(false);

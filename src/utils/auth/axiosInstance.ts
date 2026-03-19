@@ -19,7 +19,7 @@ instance.interceptors.request.use((config) => {
   return config;
 });
 
-// Response: handle 401 → refresh → retry
+// Response: handle 401 -> refresh -> retry
 let isRefreshing = false;
 let refreshSubscribers: ((token: string) => void)[] = [];
 
