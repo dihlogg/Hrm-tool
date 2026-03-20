@@ -1,12 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Avatar, Button, Dropdown, Image as AntImage, Tooltip } from "antd";
+import {
+  Avatar,
+  Button,
+  Dropdown,
+  Image as AntImage,
+  Tooltip,
+  Carousel,
+} from "antd";
 import {
   MoreOutlined,
   HeartFilled,
   MessageOutlined,
-  ShareAltOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { PostDto } from "@/hooks/social/post/PostDto";
@@ -16,6 +22,7 @@ import {
   REACTION_MAP,
   normalizeReactionType,
 } from "../reaction/ReactionConstants";
+import { CustomNextArrow, CustomPrevArrow } from "../common/CarouselArrows";
 
 interface PostCardProps {
   post: PostDto;
@@ -159,13 +166,29 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
         {post.content}
       </div>
 
-      {post.imageUrl && (
-        <div className="px-5 pb-4">
-          <AntImage
-            src={post.imageUrl}
-            alt="post image"
-            className="object-cover rounded-xl max-h-[400px] w-auto"
-          />
+      {/* Image Carousel */}
+      {post.imageUrls && post.imageUrls.length > 0 && (
+        <div className="relative px-5 pb-4 group">
+          <Carousel
+            arrows={post.imageUrls.length > 1}
+            dots={post.imageUrls.length > 1}
+            infinite={false}
+            prevArrow={<CustomPrevArrow />}
+            nextArrow={<CustomNextArrow />}
+            className="w-full overflow-hidden bg-gray-100 rounded-md"
+          >
+            {post.imageUrls.map((url, index) => (
+              <div key={index}>
+                <div className="flex items-center justify-center w-full h-[400px] sm:h-[500px]">
+                  <AntImage
+                    src={url}
+                    alt={`post-image-${index}`}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+              </div>
+            ))}
+          </Carousel>
         </div>
       )}
 

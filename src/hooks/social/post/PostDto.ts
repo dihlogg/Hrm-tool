@@ -4,7 +4,7 @@ export interface PostDto {
   employeeFullName: string | null;
   employeeAvatarUrl: string | null;
   content: string;
-  imageUrl?: string | null;
+  imageUrls?: string[] | null;
   status: string;
   createDate: string;
   updateDate: string;

@@ -1,5 +1,5 @@
 export interface UpdatePostDto {
   content?: string;
-  imageUrl?: string;
+  imageUrls?: string[];
   status?: string;
 }
