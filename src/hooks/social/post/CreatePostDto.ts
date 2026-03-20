@@ -1,5 +1,5 @@
 export interface CreatePostDto {
   content: string;
-  imageUrl?: string;
+  imageUrls?: string[];
   status: string;
 }
