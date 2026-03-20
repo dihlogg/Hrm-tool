@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Avatar, Button, Dropdown, Image as AntImage } from "antd";
+import { Avatar, Button, Dropdown, Image as AntImage, Tooltip } from "antd";
 import {
   MoreOutlined,
   HeartFilled,
@@ -12,6 +12,10 @@ import {
 import { PostDto } from "@/hooks/social/post/PostDto";
 import { useAuthContext } from "@/contexts/authContext";
 import { PostReaction } from "./PostReaction";
+import {
+  REACTION_MAP,
+  normalizeReactionType,
+} from "../reaction/ReactionConstants";
 
 interface PostCardProps {
   post: PostDto;
@@ -48,7 +52,6 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
   }, [post, currentUserId]);
 
   const commentsCount = post.postComments?.length || 0;
-  const sharesCount = 0;
 
   const handleReactionChanged = (newReactionType: string | null) => {
     if (newReactionType && !myReaction) {
@@ -59,6 +62,40 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
 
     setMyReaction(newReactionType);
   };
+
+  const validReactions = (post.reactionCounts || []).filter((r) => r.count > 0);
+  const topReactions = [...validReactions]
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 3);
+
+  const reactionTooltipContent = (
+    <div className="flex flex-col gap-1 text-sm">
+      {validReactions.length > 0 ? (
+        validReactions.map((r) => {
+          const type = normalizeReactionType(r.reactionType);
+          const reactInfo = type ? REACTION_MAP[type] : null;
+          return (
+            <div
+              key={r.reactionType}
+              className="flex items-center justify-between gap-4"
+            >
+              <span className="flex items-center gap-1.5">
+                <span className="flex items-center justify-center [&>img]:!w-4 [&>img]:!h-4">
+                  {reactInfo?.icon || <HeartFilled className="text-gray-400" />}
+                </span>
+                <span className="text-gray-100">
+                  {reactInfo?.label || r.reactionType}
+                </span>
+              </span>
+              <span className="font-bold">{r.count}</span>
+            </div>
+          );
+        })
+      ) : (
+        <span>No reactions yet</span>
+      )}
+    </div>
+  );
 
   return (
     <div className="bg-white shadow-sm rounded-2xl">
@@ -144,18 +181,41 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
           <button className="flex items-center justify-center w-10 h-10 ml-2 transition-colors bg-gray-100 rounded-full hover:bg-gray-200">
             <MessageOutlined className="text-lg text-gray-600" />
           </button>
-          <button className="flex items-center justify-center w-10 h-10 transition-colors bg-gray-100 rounded-full hover:bg-gray-200">
-            <ShareAltOutlined className="text-lg text-gray-600" />
-          </button>
         </div>
 
         <div className="flex flex-col items-end">
-          <div className="flex items-center gap-1.5 text-sm font-bold text-gray-600">
-            <HeartFilled className="text-red-500" />
-            <span>{totalReactions} Reactions</span>
-          </div>
+          {totalReactions > 0 ? (
+            <Tooltip title={reactionTooltipContent} placement="top" arrow>
+              <div className="flex items-center gap-1.5 cursor-pointer hover:underline decoration-gray-400">
+                <div className="flex items-center -space-x-1.5">
+                  {topReactions.map((r, index) => {
+                    const type = normalizeReactionType(r.reactionType);
+                    const reactInfo = type ? REACTION_MAP[type] : null;
+                    return (
+                      <div
+                        key={r.reactionType}
+                        className={`flex items-center justify-center w-[22px] h-[22px] rounded-full border-2 border-white bg-white z-[${3 - index}] [&>img]:!w-full [&>img]:!h-full [&>img]:!object-contain`}
+                      >
+                        {reactInfo?.icon || (
+                          <HeartFilled className="w-full h-full text-gray-400" />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                <span className="text-sm font-semibold text-gray-500">
+                  {totalReactions}
+                </span>
+              </div>
+            </Tooltip>
+          ) : (
+            <div className="flex items-center gap-1 text-sm font-semibold text-gray-400">
+              <span>0 Reactions</span>
+            </div>
+          )}
+
           <div className="text-[11px] text-gray-400 mt-0.5">
-            {commentsCount} Comments, {sharesCount} Shares
+            {commentsCount} Comments
           </div>
         </div>
       </div>

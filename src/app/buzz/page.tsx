@@ -24,6 +24,8 @@ import {
 import { useState } from "react";
 import { useAuthContext } from "@/contexts/authContext";
 import { useGetPostList } from "@/hooks/social/post/useGetPostList";
+import { useGetTopReactedPost } from "@/hooks/social/post/useGetTopReactedPost";
+import { useGetTopCommentedPost } from "@/hooks/social/post/useGetTopCommentedPost";
 import { useAddPost } from "@/hooks/social/post/useAddPost";
 import { useDeletePostById } from "@/hooks/social/post/useDeletePostById";
 import { useUpdatePost } from "@/hooks/social/post/useUpdatePost";
@@ -51,14 +53,59 @@ export default function BuzzPage() {
   const [editUploadLoading, setEditUploadLoading] = useState(false);
 
   const { employee } = useAuthContext();
+
   const {
-    posts,
-    total,
-    loading: loadingPosts,
+    posts: recentPosts,
+    total: recentTotal,
+    loading: loadingRecent,
   } = useGetPostList(page, pageSize, "createDate", "DESC", {}, hotReload);
+
+  const {
+    posts: likedPosts,
+    total: likedTotal,
+    loading: loadingLiked,
+  } = useGetTopReactedPost(page, pageSize, "createDate", "DESC", {}, hotReload);
+
+  const {
+    posts: commentedPosts,
+    total: commentedTotal,
+    loading: loadingCommented,
+  } = useGetTopCommentedPost(
+    page,
+    pageSize,
+    "createDate",
+    "DESC",
+    {},
+    hotReload,
+  );
+
+  const posts =
+    activeTab === "recent"
+      ? recentPosts
+      : activeTab === "liked"
+        ? likedPosts
+        : commentedPosts;
+  const total =
+    activeTab === "recent"
+      ? recentTotal
+      : activeTab === "liked"
+        ? likedTotal
+        : commentedTotal;
+  const loadingPosts =
+    activeTab === "recent"
+      ? loadingRecent
+      : activeTab === "liked"
+        ? loadingLiked
+        : loadingCommented;
+
   const { addPost, loading: creatingPost } = useAddPost();
   const { deletePost } = useDeletePostById();
   const { updatePost, loading: updatingPost } = useUpdatePost();
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setPage(1);
+  };
 
   const handleCreatePost = async () => {
     if (!postContent.trim() && !imageUrl) {
@@ -78,6 +125,7 @@ export default function BuzzPage() {
       setImageUrl(null);
       setHotReload((prev) => prev + 1);
       setPage(1);
+      setActiveTab("recent");
     } catch (error: any) {
       message.error(error.message || "Failed to create post");
     }
@@ -134,8 +182,8 @@ export default function BuzzPage() {
       {/* Left Sidebar - Navigation */}
       <div className="flex flex-col w-full gap-3 mt-8 lg:w-[22%] shrink-0">
         <button
-          onClick={() => setActiveTab("recent")}
-          className={`flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-full transition-colors ${
+          onClick={() => handleTabChange("recent")}
+          className={`cursor-pointer flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-full transition-colors ${
             activeTab === "recent"
               ? "bg-[#FFA940] text-white shadow-sm"
               : "bg-[#E5E7EB] text-gray-500 hover:bg-gray-300"
@@ -144,20 +192,20 @@ export default function BuzzPage() {
           <ClockCircleOutlined className="text-lg" /> Most Recent Posts
         </button>
         <button
-          onClick={() => setActiveTab("liked")}
-          className={`flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-full transition-colors ${
+          onClick={() => handleTabChange("liked")}
+          className={`cursor-pointer flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-full transition-colors ${
             activeTab === "liked"
-              ? "bg-[#E2E8F0] text-gray-600 shadow-sm"
+              ? "bg-[#FFA940] text-white shadow-sm"
               : "bg-[#E5E7EB] text-gray-500 hover:bg-gray-300"
           }`}
         >
           <HeartFilled className="text-lg" /> Most Liked Posts
         </button>
         <button
-          onClick={() => setActiveTab("commented")}
-          className={`flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-full transition-colors ${
+          onClick={() => handleTabChange("commented")}
+          className={`cursor-pointer flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-full transition-colors ${
             activeTab === "commented"
-              ? "bg-[#E2E8F0] text-gray-600 shadow-sm"
+              ? "bg-[#FFA940] text-white shadow-sm"
               : "bg-[#E5E7EB] text-gray-500 hover:bg-gray-300"
           }`}
         >
