@@ -74,6 +74,8 @@ export const API_ENDPOINTS = {
   GET_POST_BY_ID: `${HRM_SOCIAL_API_URL}/Posts/GetPostById`,
   UPDATE_POST: `${HRM_SOCIAL_API_URL}/Posts/UpdatePost`,
   DELETE_POST: `${HRM_SOCIAL_API_URL}/Posts/DeletePost`,
+  GET_TOP_REACTED_POST: `${HRM_SOCIAL_API_URL}/Posts/GetTopReactedPosts`,
+  GET_TOP_COMMENTED_POST: `${HRM_SOCIAL_API_URL}/Posts/GetTopCommentedPosts`,
 
   //comments
   CREATE_COMMENT: `${HRM_SOCIAL_API_URL}/Comments/CreateNewComment`,
