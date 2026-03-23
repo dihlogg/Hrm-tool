@@ -80,6 +80,7 @@ export const API_ENDPOINTS = {
   //comments
   CREATE_COMMENT: `${HRM_SOCIAL_API_URL}/Comments/CreateNewComment`,
   GET_COMMENTS_BY_POST: `${HRM_SOCIAL_API_URL}/Comments/GetCommentsByPost`,
+  GET_REPLIES_BY_COMMENT: `${HRM_SOCIAL_API_URL}/Comments/GetReplies`,
   UPDATE_COMMENT: `${HRM_SOCIAL_API_URL}/Comments/UpdateComment`,
   DELETE_COMMENT: `${HRM_SOCIAL_API_URL}/Comments/DeleteComment`,
 

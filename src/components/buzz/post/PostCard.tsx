@@ -23,6 +23,7 @@ import {
   normalizeReactionType,
 } from "../reaction/ReactionConstants";
 import { CustomNextArrow, CustomPrevArrow } from "../common/CarouselArrows";
+import PostComments from "../comment/PostComments";
 
 interface PostCardProps {
   post: PostDto;
@@ -48,6 +49,11 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
     initialTotalReactions,
   );
 
+  const [showComments, setShowComments] = useState(false);
+  const [localCommentsCount, setLocalCommentsCount] = useState(
+    post.commentCount || 0
+  );
+
   useEffect(() => {
     setMyReaction(
       post.reactions?.find((r) => r.employeeId === currentUserId)
@@ -57,8 +63,6 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
       post.reactionCounts?.reduce((sum, item) => sum + item.count, 0) || 0,
     );
   }, [post, currentUserId]);
-
-  const commentsCount = post.postComments?.length || 0;
 
   const handleReactionChanged = (newReactionType: string | null) => {
     if (newReactionType && !myReaction) {
@@ -201,7 +205,10 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
             onReactionChanged={handleReactionChanged}
           />
 
-          <button className="flex items-center justify-center w-10 h-10 ml-2 transition-colors bg-gray-100 rounded-full hover:bg-gray-200">
+          <button
+            className={`flex items-center justify-center w-10 h-10 ml-2 transition-colors rounded-full hover:bg-gray-200 ${showComments ? "bg-gray-200" : "bg-gray-100"}`}
+            onClick={() => setShowComments(!showComments)}
+          >
             <MessageOutlined className="text-lg text-gray-600" />
           </button>
         </div>
@@ -237,11 +244,23 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
             </div>
           )}
 
-          <div className="text-[11px] text-gray-400 mt-0.5">
-            {commentsCount} Comments
+          <div
+            className="text-[11px] text-gray-400 mt-0.5 cursor-pointer hover:underline"
+            onClick={() => setShowComments(true)}
+          >
+            {localCommentsCount} Comments
           </div>
         </div>
       </div>
+      {showComments && (
+        <PostComments
+          postId={post.id}
+          onCommentAdded={() => setLocalCommentsCount((prev) => prev + 1)}
+          onCommentDeleted={() =>
+            setLocalCommentsCount((prev) => Math.max(0, prev - 1))
+          }
+        />
+      )}
     </div>
   );
 }
