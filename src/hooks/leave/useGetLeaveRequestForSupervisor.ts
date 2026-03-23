@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { API_ENDPOINTS } from "@/services/apiService";
-import { PaginatedResponse } from "@/types/pagination";
+import { PaginatedResponse } from "@/types/pagination/offset-pagination";
 import axiosInstance from "@/utils/auth/axiosInstance";
 import { LeaveRequestFilters } from "./LeaveRequestFilterDto";
 import { LeaveRequestDto } from "./LeaveRequestDto";

@@ -1,63 +1,77 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { API_ENDPOINTS } from "@/services/apiService";
-import { PaginatedResponse } from "@/types/pagination";
 import axiosInstance from "@/utils/auth/axiosInstance";
 import { PostDto } from "./PostDto";
 import { PostFilters } from "./PostFiltersDto";
+import { CursorPaginatedResponse } from "@/types/pagination/cursor-pagination";
 
 export function useGetTopCommentedPost(
-  page: number,
-  pageSize: number,
-  sortBy?: string,
-  sortOrder?: "ASC" | "DESC",
+  limit: number,
   filters: PostFilters = {},
   hotReload: number = 0,
 ) {
   const [posts, setPosts] = useState<PostDto[]>([]);
-  const [total, setTotal] = useState(0);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [hasNextPage, setHasNextPage] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    async function loadPosts() {
+  const fetchPosts = useCallback(
+    async (cursor: string | null = null, isRefresh: boolean = false) => {
       setLoading(true);
+      setError("");
 
-      const cleanedFilters: Record<string, string> = Object.fromEntries(
+      const cleanedFilters = Object.fromEntries(
         Object.entries(filters).filter(
           ([_, value]) => value && value.trim() !== "",
         ),
       );
 
-      const params: any = {
-        page,
-        pageSize,
+      const params = {
+        limit,
+        ...(cursor ? { cursor } : {}),
         ...cleanedFilters,
       };
 
-      if (sortBy && sortOrder) {
-        params.sortBy = sortBy;
-        params.sortOrder = sortOrder;
-      }
-
       try {
-        const response = await axiosInstance.get<PaginatedResponse<PostDto>>(
-          API_ENDPOINTS.GET_TOP_COMMENTED_POST,
-          { params },
-        );
+        const response = await axiosInstance.get<
+          CursorPaginatedResponse<PostDto>
+        >(API_ENDPOINTS.GET_TOP_COMMENTED_POST, { params });
 
-        setPosts(response.data.data);
-        setTotal(response.data.total);
+        if (isRefresh) {
+          setPosts(response.data.data);
+        } else {
+          setPosts((prev) => {
+            const existingIds = new Set(prev.map((item) => item.id));
+            const uniqueNewItems = response.data.data.filter(
+              (item) => !existingIds.has(item.id),
+            );
+            return [...prev, ...uniqueNewItems];
+          });
+        }
+
+        setNextCursor(response.data.nextCursor);
+        setHasNextPage(response.data.hasNextPage);
       } catch (err: any) {
         setError(err.message || "Failed to load posts");
       } finally {
         setLoading(false);
       }
+    },
+    [limit, JSON.stringify(filters)],
+  );
+
+  useEffect(() => {
+    fetchPosts(null, true);
+  }, [fetchPosts, hotReload]);
+
+  const loadMore = () => {
+    if (hasNextPage && !loading && nextCursor) {
+      fetchPosts(nextCursor, false);
     }
+  };
 
-    loadPosts();
-  }, [page, pageSize, sortBy, sortOrder, JSON.stringify(filters), hotReload]);
-
-  return { posts, total, error, loading, hotReload };
+  return { posts, hasNextPage, error, loading, loadMore };
 }

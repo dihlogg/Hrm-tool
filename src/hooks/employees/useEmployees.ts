@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { API_ENDPOINTS } from "@/services/apiService";
 import { CreateEmployeeDto } from "./CreateEmployeeDto";
-import { PaginatedResponse } from "@/types/pagination";
+import { PaginatedResponse } from "@/types/pagination/offset-pagination";
 import axiosInstance from "@/utils/auth/axiosInstance";
 import { EmployeeFilters } from "./EmployeeFiltersDto";
 
