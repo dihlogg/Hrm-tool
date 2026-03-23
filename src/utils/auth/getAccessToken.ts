@@ -16,7 +16,7 @@ export const setAuthCookies = (
 
   Cookies.set(REFRESH_TOKEN_KEY, refreshToken, {
     path: "/",
-    expires: 1,
+    expires: 1 / 24, //1h
     sameSite: "Lax",
     secure: process.env.NODE_ENV === 'production',
   });

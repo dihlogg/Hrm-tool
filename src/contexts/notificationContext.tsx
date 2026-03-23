@@ -14,7 +14,7 @@ import React, {
 import { useAuthContext } from "./authContext";
 import { NotificationPayload } from "@/types/notifications/notificationPayload";
 import { notification } from "antd";
-import { PaginatedResponse } from "@/types/pagination";
+import { PaginatedResponse } from "@/types/pagination/offset-pagination";
 
 interface NotificationContextType {
   notifications: NotificationPayload[];

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { LeaveRequestFilters } from "./LeaveRequestFilterDto";
 import { LeaveRequestDto } from "./LeaveRequestDto";
 import axiosInstance from "@/utils/auth/axiosInstance";
-import { PaginatedResponse } from "@/types/pagination";
+import { PaginatedResponse } from "@/types/pagination/offset-pagination";
 import { API_ENDPOINTS } from "@/services/apiService";
 
 export function useGetLeaveRequestForDirector(

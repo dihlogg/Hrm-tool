@@ -4,7 +4,6 @@ import {
   Avatar,
   Button,
   Empty,
-  Pagination,
   message,
   Spin,
   Modal,
@@ -22,7 +21,7 @@ import {
   PlusOutlined,
   PictureOutlined,
 } from "@ant-design/icons";
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuthContext } from "@/contexts/authContext";
 import { useGetPostList } from "@/hooks/social/post/useGetPostList";
 import { useGetTopReactedPost } from "@/hooks/social/post/useGetTopReactedPost";
@@ -37,15 +36,14 @@ import {
   CustomNextArrow,
   CustomPrevArrow,
 } from "@/components/buzz/common/CarouselArrows";
-// Import các mũi tên dùng chung
 
 const { confirm } = Modal;
 const { TextArea } = Input;
+type BuzzTab = "recent" | "liked" | "commented";
 
 export default function BuzzPage() {
-  const [activeTab, setActiveTab] = useState("recent");
-  const [page, setPage] = useState(1);
-  const pageSize = 5;
+  const [activeTab, setActiveTab] = useState<BuzzTab>("recent");
+  const pageSize = 10;
   const [hotReload, setHotReload] = useState(0);
 
   const [postContent, setPostContent] = useState("");
@@ -62,41 +60,37 @@ export default function BuzzPage() {
 
   const {
     posts: recentPosts,
-    total: recentTotal,
+    hasNextPage: hasNextRecentPage,
     loading: loadingRecent,
-  } = useGetPostList(page, pageSize, "createDate", "DESC", {}, hotReload);
+    loadMore: loadMoreRecentPosts,
+  } = useGetPostList(pageSize, {}, hotReload);
 
   const {
     posts: likedPosts,
-    total: likedTotal,
+    hasNextPage: hasNextLikedPage,
     loading: loadingLiked,
-  } = useGetTopReactedPost(page, pageSize, "createDate", "DESC", {}, hotReload);
+    loadMore: loadMoreLikedPosts,
+  } = useGetTopReactedPost(pageSize, {}, hotReload);
 
   const {
     posts: commentedPosts,
-    total: commentedTotal,
+    hasNextPage: hasNextCommentedPage,
     loading: loadingCommented,
-  } = useGetTopCommentedPost(
-    page,
-    pageSize,
-    "createDate",
-    "DESC",
-    {},
-    hotReload,
-  );
+    loadMore: loadMoreCommentedPosts,
+  } = useGetTopCommentedPost(pageSize, {}, hotReload);
 
-  const posts =
-    activeTab === "recent"
-      ? recentPosts
-      : activeTab === "liked"
-        ? likedPosts
-        : commentedPosts;
-  const total =
-    activeTab === "recent"
-      ? recentTotal
-      : activeTab === "liked"
-        ? likedTotal
-        : commentedTotal;
+  const posts = useMemo(() => {
+    if (activeTab === "recent") return recentPosts;
+    if (activeTab === "liked") return likedPosts;
+    return commentedPosts;
+  }, [activeTab, recentPosts, likedPosts, commentedPosts]);
+
+  const hasMorePosts = useMemo(() => {
+    if (activeTab === "recent") return hasNextRecentPage;
+    if (activeTab === "liked") return hasNextLikedPage;
+    return hasNextCommentedPage;
+  }, [activeTab, hasNextRecentPage, hasNextLikedPage, hasNextCommentedPage]);
+
   const loadingPosts =
     activeTab === "recent"
       ? loadingRecent
@@ -104,13 +98,53 @@ export default function BuzzPage() {
         ? loadingLiked
         : loadingCommented;
 
+  const loadMorePosts = useCallback(() => {
+    if (loadingPosts || !hasMorePosts) return;
+
+    if (activeTab === "recent") {
+      loadMoreRecentPosts();
+      return;
+    }
+
+    if (activeTab === "liked") {
+      loadMoreLikedPosts();
+      return;
+    }
+
+    loadMoreCommentedPosts();
+  }, [
+    activeTab,
+    hasMorePosts,
+    loadMoreCommentedPosts,
+    loadMoreLikedPosts,
+    loadMoreRecentPosts,
+    loadingPosts,
+  ]);
+
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!loadMoreRef.current || !hasMorePosts) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          loadMorePosts();
+        }
+      },
+      { rootMargin: "220px 0px", threshold: 0.1 },
+    );
+
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [hasMorePosts, loadMorePosts]);
+
   const { addPost, loading: creatingPost } = useAddPost();
   const { deletePost } = useDeletePostById();
   const { updatePost, loading: updatingPost } = useUpdatePost();
 
-  const handleTabChange = (tab: string) => {
+  const handleTabChange = (tab: BuzzTab) => {
     setActiveTab(tab);
-    setPage(1);
   };
 
   const handleCreatePost = async () => {
@@ -130,7 +164,6 @@ export default function BuzzPage() {
       setPostContent("");
       setImageUrls([]);
       setHotReload((prev) => prev + 1);
-      setPage(1);
       setActiveTab("recent");
     } catch (error: any) {
       message.error(error.message || "Failed to create post");
@@ -330,7 +363,7 @@ export default function BuzzPage() {
 
         {/* Post List */}
         <div className="flex flex-col gap-4 pb-8">
-          {loadingPosts ? (
+          {loadingPosts && posts.length === 0 ? (
             <div className="flex items-center justify-center p-10 bg-white shadow-sm rounded-2xl">
               <Spin size="large" />
             </div>
@@ -349,15 +382,17 @@ export default function BuzzPage() {
             ))
           )}
 
-          {posts.length > 0 && (
-            <div className="flex justify-center mt-2">
-              <Pagination
-                current={page}
-                pageSize={pageSize}
-                total={total}
-                onChange={(p) => setPage(p)}
-                showSizeChanger={false}
-              />
+          {posts.length > 0 && <div ref={loadMoreRef} className="h-1" />}
+
+          {posts.length > 0 && loadingPosts && (
+            <div className="flex items-center justify-center py-4">
+              <Spin />
+            </div>
+          )}
+
+          {posts.length > 0 && !hasMorePosts && !loadingPosts && (
+            <div className="py-2 text-sm font-medium text-center text-gray-400">
+              You have reached the end of the feed.
             </div>
           )}
         </div>
