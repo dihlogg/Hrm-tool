@@ -22,4 +22,5 @@ export interface PostDto {
   }[];
 
   postComments?: any[];
+  commentCount?: number;
 }
