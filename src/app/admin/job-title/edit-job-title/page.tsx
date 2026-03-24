@@ -56,10 +56,15 @@ export default function EditJobTitlePage() {
         duration: 3,
         pauseOnHover: true,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
+      let message = "An unknown error occurred.";
+
+      if (err instanceof Error) {
+        message = err.message;
+      }
       api.error({
         message: "Job Title Update failed!",
-        description: err?.message || "An unknown error occurred.",
+        description: message,
         placement: "bottomLeft",
         duration: 3,
         pauseOnHover: true,
@@ -73,7 +78,7 @@ export default function EditJobTitlePage() {
       <div className="flex-1 w-full p-4 mt-2 space-y-6">
         <div className="flex-col px-8 py-4 bg-white border-gray-200 rounded-lg shadow-sm sm:flex-row">
           <h2 className="pb-2 text-xl font-semibold text-gray-500 border-b border-gray-400">
-            Add Job Title
+            Edit Job Title
           </h2>
           <div className="flex flex-col gap-6 md:flex-row">
             <div className="flex-col w-full py-4 border-gray-200 rounded-lg sm:flex-row">

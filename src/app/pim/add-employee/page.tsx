@@ -23,7 +23,7 @@ export default function AddEmployeePage() {
   const { userStatuses, error: userStatusError } = useUserStatuses();
   const { parentEmployee } = useGetParentForEmployee();
   const [fieldErrors, setFieldErrors] = useState<{ confirmPassword?: string }>(
-    {}
+    {},
   );
   const [formErrors, setFormErrors] = useState<{
     firstName?: string;
@@ -44,7 +44,7 @@ export default function AddEmployeePage() {
   const [jobTitleId, setJobTitleId] = useState<string | undefined>(undefined);
   const [subUnitId, setSubUnitId] = useState<string | undefined>(undefined);
   const [employeeStatusId, setEmployeeStatusId] = useState<string | undefined>(
-    undefined
+    undefined,
   );
   const [parentId, setParentId] = useState<string | undefined>(undefined);
   const [username, setUsername] = useState("");
@@ -116,10 +116,15 @@ export default function AddEmployeePage() {
         placement: "bottomLeft",
       });
       resetForm();
-    } catch (err: any) {
+    } catch (err: unknown) {
+      let message = "An unknown error occurred.";
+
+      if (err instanceof Error) {
+        message = err.message;
+      }
       api.error({
         message: "Employee created failed!",
-        description: err?.message || "An unknown error occurred.",
+        description: message,
         placement: "bottomLeft",
       });
     }
@@ -410,7 +415,7 @@ export default function AddEmployeePage() {
                             checked={userStatus === status.name}
                             onChange={(e) =>
                               setUserStatus(
-                                e.target.value as "Active" | "Inactive"
+                                e.target.value as "Active" | "Inactive",
                               )
                             }
                             className="w-4 h-4"

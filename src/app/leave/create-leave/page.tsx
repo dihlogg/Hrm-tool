@@ -42,13 +42,13 @@ export default function CreateNewRequestPage() {
   const [duration, setDuration] = useState("");
   const [reasonDetails, setReasonDetails] = useState("");
   const [leaveReasonId, setLeaveReasonId] = useState<string | undefined>(
-    undefined
+    undefined,
   );
   const [leaveRequestTypeId, setLeaveRequestTypeId] = useState<
     string | undefined
   >(undefined);
   const [partialDayId, setPartialDayId] = useState<string | undefined>(
-    undefined
+    undefined,
   );
   const [expectedApproverId, setExpectedApproverId] = useState<
     string | undefined
@@ -138,7 +138,7 @@ export default function CreateNewRequestPage() {
     }
 
     const selectedReason = leaveReasons.find(
-      (reason) => reason.id === leaveReasonId
+      (reason) => reason.id === leaveReasonId,
     );
     if (selectedReason?.name === "Others" && !reasonDetails.trim()) {
       errors.reasonDetails = "Required";
@@ -148,7 +148,7 @@ export default function CreateNewRequestPage() {
 
     if (Object.keys(errors).length > 0) {
       message.warning(
-        "Please fill in all required fields correctly and completely before submitting!"
+        "Please fill in all required fields correctly and completely before submitting!",
       );
       setFormErrors(errors);
       return;
@@ -176,10 +176,15 @@ export default function CreateNewRequestPage() {
         placement: "bottomLeft",
       });
       resetForm();
-    } catch (err: any) {
+    } catch (err: unknown) {
+      let message = "An unknown error occurred.";
+
+      if (err instanceof Error) {
+        message = err.message;
+      }
       api.error({
         message: "Leave Request created failed!",
-        description: err?.message || "An unknown error occurred.",
+        description: message,
         placement: "bottomLeft",
       });
     }

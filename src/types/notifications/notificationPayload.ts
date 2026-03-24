@@ -12,6 +12,8 @@ export interface NotificationPayload {
     id: string;
     firstName: string;
     lastName: string;
+    fullName?: string;
+    avatarUrl?: string;
   };
   previousStatus?: string;
   newStatus?: string;

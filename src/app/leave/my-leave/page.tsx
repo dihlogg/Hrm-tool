@@ -176,7 +176,7 @@ export default function MyRequestPage() {
         </span>
       ),
       key: "actions",
-      render: (_: any, record: LeaveRequestDto) => (
+      render: (_: unknown, record: LeaveRequestDto) => (
         <div className="flex gap-4">
           <Button
             type="default"

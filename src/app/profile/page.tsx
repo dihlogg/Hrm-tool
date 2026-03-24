@@ -116,10 +116,15 @@ export default function ProfilePage() {
         duration: 3,
         pauseOnHover: true,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
+      let message = "An unknown error occurred.";
+
+      if (err instanceof Error) {
+        message = err.message;
+      }
       api.error({
         message: "Update failed!",
-        description: err?.message || "An unknown error occurred.",
+        description: message,
         placement: "bottomLeft",
         duration: 3,
         pauseOnHover: true,
