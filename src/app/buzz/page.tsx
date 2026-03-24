@@ -11,6 +11,7 @@ import {
   Image as AntImage,
   Input,
   Carousel,
+  Mentions,
 } from "antd";
 import {
   ClockCircleOutlined,
@@ -36,6 +37,7 @@ import {
   CustomNextArrow,
   CustomPrevArrow,
 } from "@/components/buzz/common/CarouselArrows";
+import { useGetAllEmployees } from "@/hooks/employees/useGetAllEmployees";
 
 const { confirm } = Modal;
 const { TextArea } = Input;
@@ -57,6 +59,7 @@ export default function BuzzPage() {
   const [editUploadLoading, setEditUploadLoading] = useState(false);
 
   const { employee } = useAuthContext();
+  const { employees } = useGetAllEmployees();
 
   const {
     posts: recentPosts,
@@ -147,6 +150,36 @@ export default function BuzzPage() {
     setActiveTab(tab);
   };
 
+  const mentionOptions = useMemo(() => {
+    if (!employees) return [];
+
+    return employees.map((emp) => {
+      const isValidImage =
+        emp.imageUrl && emp.imageUrl.trim() !== "" && emp.imageUrl !== "string";
+
+      return {
+        value: `${emp.firstName || ""}${emp.lastName || ""}`.replace(
+          /\s+/g,
+          "",
+        ),
+        label: (
+          <div className="flex items-center h-10 gap-2 overflow-hidden">
+            <Avatar
+              src={isValidImage ? emp.imageUrl : undefined}
+              size="small"
+              icon={<UserOutlined />}
+              className="flex-shrink-0"
+            />
+            <span className="font-medium text-gray-700 truncate">
+              {emp.firstName} {emp.lastName}
+            </span>
+          </div>
+        ),
+        key: emp.id,
+      };
+    });
+  }, [employees]);
+
   const handleCreatePost = async () => {
     if (!postContent.trim() && imageUrls.length === 0) {
       message.warning(
@@ -154,11 +187,22 @@ export default function BuzzPage() {
       );
       return;
     }
+    const mentionedIds: string[] = [];
+    employees.forEach((emp) => {
+      const mentionValue =
+        `${emp.firstName || ""}${emp.lastName || ""}`.replace(/\s+/g, "");
+      const mentionTag = `@${mentionValue}`;
+
+      if (postContent.includes(mentionTag) && emp.id) {
+        mentionedIds.push(emp.id);
+      }
+    });
     try {
       await addPost({
         content: postContent,
         imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
         status: "Active",
+        mentionedEmployeeIds: mentionedIds,
       });
       message.success("Post created successfully!");
       setPostContent("");
@@ -265,16 +309,20 @@ export default function BuzzPage() {
                 size={44}
                 className="flex-shrink-0"
               />
-              <input
-                type="text"
+              <Mentions
                 value={postContent}
-                onChange={(e) => setPostContent(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleCreatePost();
-                }}
+                onChange={(text) => setPostContent(text)}
+                options={mentionOptions}
                 placeholder={`What's on your mind${employee?.firstName ? `, ${employee.firstName}` : ""}?`}
-                className="flex-1 w-full text-base font-medium text-gray-700 placeholder-gray-500 bg-transparent border-none focus:outline-none focus:ring-0"
+                variant="borderless"
+                autoSize={{ minRows: 1, maxRows: 4 }}
+                className="flex-1 w-full text-base font-medium text-gray-700 placeholder-gray-500 bg-transparent focus:outline-none focus:ring-0 shadow-none !p-0"
                 disabled={creatingPost}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                    handleCreatePost();
+                  }
+                }}
               />
             </div>
             <Button

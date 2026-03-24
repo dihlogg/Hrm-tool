@@ -51,8 +51,27 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
 
   const [showComments, setShowComments] = useState(false);
   const [localCommentsCount, setLocalCommentsCount] = useState(
-    post.commentCount || 0
+    post.commentCount || 0,
   );
+
+  const renderPostContent = (content: string) => {
+    const mentionRegex = /(@\w+)/g;
+    const parts = content.split(mentionRegex);
+
+    return parts.map((part, i) => {
+      if (part.match(mentionRegex)) {
+        return (
+          <span
+            key={i}
+            className="font-semibold text-blue-600 cursor-pointer hover:underline"
+          >
+            {part}
+          </span>
+        );
+      }
+      return part;
+    });
+  };
 
   useEffect(() => {
     setMyReaction(
@@ -167,7 +186,7 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
 
       {/* Post Content */}
       <div className="px-5 pb-4 text-sm text-gray-600 whitespace-pre-wrap">
-        {post.content}
+        {renderPostContent(post.content)}
       </div>
 
       {/* Image Carousel */}
