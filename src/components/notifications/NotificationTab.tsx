@@ -53,11 +53,6 @@ export default function NotificationTab({
     fetchNotifications(1);
   }, []);
 
-  // const handleViewAll = () => {
-  //   if (onClose) onClose();
-  //   window.location.href = "/notifications";
-  // };
-
   return (
     <div
       className={`w-full bg-white ${
@@ -74,7 +69,7 @@ export default function NotificationTab({
 
       {notifications.length === 0 && !loading ? (
         <div className="py-4 text-sm text-center text-gray-400 sm:text-base sm:py-6">
-          Không có thông báo
+          No notifications yet
         </div>
       ) : (
         <div
@@ -86,6 +81,7 @@ export default function NotificationTab({
         >
           {notifications.map((notification) => {
             const avatarUrl =
+              notification.actor?.avatarUrl ||
               notification.payload?.employee?.imageUrl ||
               notification.payload?.imageUrl;
 
@@ -110,7 +106,10 @@ export default function NotificationTab({
                       {notification.message}
                     </div>
 
-                    {notification.payload?.fromDate &&
+                    {(notification.type === "LEAVE_REQUEST_CREATED" ||
+                      notification.type === "LEAVE_REQUEST_STATUS_UPDATED" ||
+                      notification.type === "LEAVE_REQUEST_UPDATED") &&
+                      notification.payload?.fromDate &&
                       notification.payload?.toDate && (
                         <div className="mb-1 text-xs text-gray-600 break-words sm:text-sm">
                           <div className="mb-0.5">
@@ -124,6 +123,12 @@ export default function NotificationTab({
                               {notification.payload.duration} ngày
                             </div>
                           )}
+                        </div>
+                      )}
+
+                    {notification.type === "USER_MENTIONED" &&
+                      notification.payload?.content && (
+                        <div className="mb-1 text-xs italic text-gray-500 break-words sm:text-sm line-clamp-1">
                         </div>
                       )}
 
@@ -161,7 +166,7 @@ export default function NotificationTab({
                 onClick={() => fetchNotifications(pagination.currentPage + 1)}
                 className="text-white bg-blue-500 hover:bg-blue-600"
               >
-                Xem thêm thông báo
+                Load More
               </Button>
             </div>
           )}

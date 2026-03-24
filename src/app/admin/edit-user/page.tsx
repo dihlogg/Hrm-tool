@@ -24,7 +24,7 @@ export default function EditUserPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{ confirmPassword?: string }>(
-    {}
+    {},
   );
   const [userStatusId, setUserStatusId] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<{
@@ -72,10 +72,15 @@ export default function EditUserPage() {
         duration: 3,
         pauseOnHover: true,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
+      let message = "An unknown error occurred.";
+
+      if (err instanceof Error) {
+        message = err.message;
+      }
       api.error({
         message: "Update failed!",
-        description: err?.message || "An unknown error occurred.",
+        description: message,
         placement: "bottomLeft",
         duration: 3,
         pauseOnHover: true,

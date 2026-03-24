@@ -49,14 +49,12 @@ export default function EmployeeListPage() {
   const { subUnits, error: subUnitError } = useSubUnits();
   const { employeeStatuses, error: employeeStatusError } =
     useGetEmployeeStatus();
-  const { updateEmployeeStatus } =
-    usePatchEmployeeStatus();
+  const { updateEmployeeStatus } = usePatchEmployeeStatus();
 
   //filter
   const [filters, setFilters] = useState<EmployeeFilters>(getInitialFilters());
-  const [filterDrafts, setFilterDrafts] = useState<EmployeeFilters>(
-    getInitialFilters()
-  );
+  const [filterDrafts, setFilterDrafts] =
+    useState<EmployeeFilters>(getInitialFilters());
 
   const { employees, total, loading } = useEmployees(
     currentPage,
@@ -64,7 +62,7 @@ export default function EmployeeListPage() {
     sortBy,
     sortOrder ? antdSortOrderToApiOrder(sortOrder) : undefined,
     filters,
-    hotReload
+    hotReload,
   );
 
   //modal
@@ -92,7 +90,12 @@ export default function EmployeeListPage() {
           pauseOnHover: true,
         });
         setIsOpenModalChangeStatus(false);
-      } catch (err: any) {
+      } catch (err: unknown) {
+        let message = "An unknown error occurred.";
+
+        if (err instanceof Error) {
+          message = err.message;
+        }
         console.error("Failed to update employee status:", err);
         api.error({
           message: "Update failed!",
@@ -108,7 +111,7 @@ export default function EmployeeListPage() {
   const router = useRouter();
 
   function mapSorterFieldToApiField(
-    field: string | undefined
+    field: string | undefined,
   ): string | undefined {
     if (!field) return undefined;
     switch (field) {
@@ -129,7 +132,7 @@ export default function EmployeeListPage() {
         API_ENDPOINTS.GET_EMPLOYEE_LIST,
         {
           params: { page: 1, pageSize: total },
-        }
+        },
       );
 
       const allEmployees = response.data.data;
@@ -146,7 +149,7 @@ export default function EmployeeListPage() {
         API_ENDPOINTS.GET_EMPLOYEE_LIST,
         {
           params: { page: 1, pageSize: total },
-        }
+        },
       );
       const allEmployees = response.data.data;
       exportExcel(columns, allEmployees, "Employee_List.xlsx", "Employee List");
@@ -216,7 +219,7 @@ export default function EmployeeListPage() {
         </span>
       ),
       key: "actions",
-      render: (_: any, record: CreateEmployeeDto) => (
+      render: (_: unknown, record: CreateEmployeeDto) => (
         <div className="flex gap-4">
           <Button
             type="default"

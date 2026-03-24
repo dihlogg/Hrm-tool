@@ -46,10 +46,15 @@ export default function AddJobTitlePage() {
         placement: "bottomLeft",
       });
       resetForm();
-    } catch (err: any) {
+    } catch (err: unknown) {
+      let message = "An unknown error occurred.";
+
+      if (err instanceof Error) {
+        message = err.message;
+      }
       api.error({
         message: "Job Title created failed!",
-        description: err?.message || "An unknown error occurred.",
+        description: message,
         placement: "bottomLeft",
       });
     }

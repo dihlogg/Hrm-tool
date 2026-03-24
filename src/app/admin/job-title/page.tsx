@@ -69,7 +69,7 @@ export default function JobTitlePage() {
     {
       title: <span className="select-none">Actions</span>,
       key: "actions",
-      render: (_: any, record: CreateJobTitleDto) => (
+      render: (_: unknown, record: CreateJobTitleDto) => (
         <div className="flex gap-4">
           <Button
             type="default"

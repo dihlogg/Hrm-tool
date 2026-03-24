@@ -135,7 +135,12 @@ export default function ReceiveRequestPage() {
           duration: 3,
           pauseOnHover: true,
         });
-      } catch (err: any) {
+      } catch (err: unknown) {
+  let message = "An unknown error occurred.";
+
+  if (err instanceof Error) {
+    message = err.message;
+  }
         console.error("Failed to set leave request to pending:", err);
         api.error({
           message: "Update failed!",
@@ -171,7 +176,12 @@ export default function ReceiveRequestPage() {
           pauseOnHover: true,
         });
         setIsOpenModal(false);
-      } catch (err: any) {
+      } catch (err: unknown) {
+  let message = "An unknown error occurred.";
+
+  if (err instanceof Error) {
+    message = err.message;
+  }
         console.error("Failed to reject leave request:", err);
         api.error({
           message: "Update failed!",
@@ -199,7 +209,12 @@ export default function ReceiveRequestPage() {
           pauseOnHover: true,
         });
         setIsOpenModal(false);
-      } catch (err: any) {
+      } catch (err: unknown) {
+  let message = "An unknown error occurred.";
+
+  if (err instanceof Error) {
+    message = err.message;
+  }
         console.error("Failed to approved leave request:", err);
         api.error({
           message: "Update failed!",
@@ -226,7 +241,12 @@ export default function ReceiveRequestPage() {
           duration: 3,
           pauseOnHover: true,
         });
-      } catch (err: any) {
+      } catch (err: unknown) {
+  let message = "An unknown error occurred.";
+
+  if (err instanceof Error) {
+    message = err.message;
+  }
         console.error("Failed to confirm leave request:", err);
         api.error({
           message: "Update failed!",
@@ -361,7 +381,7 @@ export default function ReceiveRequestPage() {
           {
             title: "Confirm By",
             dataIndex: "expectedConfirmId",
-            render: (_: any, record: { participantsRequests: any[] }) => {
+            render: (_: unknown, record: { participantsRequests: any[] }) => {
               const confirm = record.participantsRequests?.find(
                 (p) => p.type === "confirm"
               );
@@ -392,7 +412,7 @@ export default function ReceiveRequestPage() {
         </span>
       ),
       key: "actions",
-      render: (_: any, record: LeaveRequestDto) => (
+      render: (_: unknown, record: LeaveRequestDto) => (
         <div className="flex gap-4">
           <Button
             type="default"
