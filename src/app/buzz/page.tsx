@@ -319,8 +319,32 @@ export default function BuzzPage() {
                 className="flex-1 w-full text-base font-medium text-gray-700 placeholder-gray-500 bg-transparent focus:outline-none focus:ring-0 shadow-none !p-0"
                 disabled={creatingPost}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-                    handleCreatePost();
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    const mentionPopup = document.querySelector(
+                      ".ant-mentions-dropdown",
+                    );
+                    const isPopupOpen =
+                      mentionPopup &&
+                      (mentionPopup as HTMLElement).offsetParent !== null;
+
+                    if (!isPopupOpen) {
+                      e.preventDefault();
+                      handleCreatePost();
+                    }
+                  }
+
+                  if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                    setTimeout(() => {
+                      const activeItem = document.querySelector(
+                        '[class*="-menu-item-active"]',
+                      );
+                      if (activeItem) {
+                        activeItem.scrollIntoView({
+                          block: "nearest",
+                          behavior: "auto",
+                        });
+                      }
+                    }, 10);
                   }
                 }}
               />
