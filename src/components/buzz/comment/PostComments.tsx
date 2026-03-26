@@ -7,7 +7,6 @@ import { useGetCommentsByPost } from "@/hooks/social/comment/useGetCommentsByPos
 import { useCreateComment } from "@/hooks/social/comment/useCreateComment";
 import { useDeleteComment } from "@/hooks/social/comment/useDeleteComment";
 import { useUpdateComment } from "@/hooks/social/comment/useUpdateComment";
-
 import { CommentItem } from "./CommentItem";
 import { CommentInput } from "./CommentInput";
 
@@ -52,9 +51,17 @@ export default function PostComments({
     }
   }, [comments, loading, onTotalCalculated]);
 
-  const handleSendComment = async (content: string) => {
+  const handleSendComment = async (
+    content: string,
+    mentionedEmployeeIds: string[],
+  ) => {
     try {
-      await createComment({ postId, content, parentId: null });
+      await createComment({
+        postId,
+        content,
+        parentId: null,
+        mentionedEmployeeIds,
+      });
       setHotReload((prev) => prev + 1);
       if (onCommentAdded) onCommentAdded();
     } catch (error) {
@@ -62,9 +69,13 @@ export default function PostComments({
     }
   };
 
-  const handleSendReply = async (parentId: string, content: string) => {
+  const handleSendReply = async (
+    parentId: string,
+    content: string,
+    mentionedEmployeeIds: string[],
+  ) => {
     try {
-      await createComment({ postId, content, parentId });
+      await createComment({ postId, content, parentId, mentionedEmployeeIds });
       setHotReload((prev) => prev + 1);
       if (onCommentAdded) onCommentAdded();
     } catch (error) {

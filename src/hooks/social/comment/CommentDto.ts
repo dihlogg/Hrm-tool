@@ -24,6 +24,7 @@ export interface CreateCommentDto {
   postId: string;
   content: string;
   parentId?: string | null;
+  mentionedEmployeeIds?: string[];
 }
 
 export interface UpdateCommentDto {

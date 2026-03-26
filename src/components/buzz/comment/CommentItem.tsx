@@ -16,7 +16,7 @@ interface CommentItemProps {
   currentUserAvatar?: string | null;
   onDelete: (id: string) => void;
   onUpdate: (id: string, content: string) => Promise<void>;
-  onSendReply: (parentId: string, content: string) => Promise<void>;
+  onSendReply: (parentId: string, content: string, mentionedEmployeeIds: string[]) => Promise<void>;
   isReply?: boolean;
 }
 
@@ -118,11 +118,9 @@ export const CommentItem = ({
     setEditing(false);
   };
 
-  const handleSubmitReply = async (content: string) => {
-    const targetParentId = isReply
-      ? comment.parentId || comment.id
-      : comment.id;
-    await onSendReply(targetParentId, content);
+  const handleSubmitReply = async (content: string, mentionedEmployeeIds: string[]) => {
+    const targetParentId = isReply ? comment.parentId || comment.id : comment.id;
+    await onSendReply(targetParentId, content, mentionedEmployeeIds);
     setShowReplyInput(false);
 
     if (!isReply) {
@@ -132,11 +130,28 @@ export const CommentItem = ({
     }
   };
 
-  const handleChildSendReply = async (parentId: string, content: string) => {
-    await onSendReply(parentId, content);
+  const handleChildSendReply = async (parentId: string, content: string, mentionedEmployeeIds: string[]) => {
+    await onSendReply(parentId, content, mentionedEmployeeIds);
     setReplyPage(1);
     setShowReplies(true);
     setHotReload((prev) => prev + 1);
+  };
+
+  // Hàm render dùng để tô xanh Mention
+  const renderCommentContent = (content: string) => {
+    const mentionRegex = /(@\w+)/g;
+    const parts = content.split(mentionRegex);
+
+    return parts.map((part, i) => {
+      if (part.match(mentionRegex)) {
+        return (
+          <span key={i} className="font-semibold text-blue-600 cursor-pointer hover:underline">
+            {part}
+          </span>
+        );
+      }
+      return part;
+    });
   };
 
   const validReactions = localReactionCounts.filter((r) => r.count > 0);
@@ -157,11 +172,12 @@ export const CommentItem = ({
           src={comment.employeeAvatarUrl || undefined}
           icon={!comment.employeeAvatarUrl && <UserOutlined />}
           size={isReply ? 28 : 36}
-          className="mt-1 cursor-pointer"
+          className="mt-1 cursor-pointer shrink-0"
         />
         <div className="flex-1 max-w-[85%]">
           <div className="flex items-center gap-2">
-            <div className="relative flex-1">
+            {/* Đã bỏ flex-1 ở thẻ bọc bong bóng comment để Dropdown bám sát vào */}
+            <div className="relative">
               <div className="inline-block px-3 py-2 bg-[#F0F2F5] rounded-2xl relative min-w-[120px]">
                 <span className="block text-[13px] font-bold text-[#050505] cursor-pointer hover:underline">
                   {comment.employeeFullName || "Unknown"}
@@ -192,20 +208,32 @@ export const CommentItem = ({
                     </div>
                   </div>
                 ) : (
+                  // Đã gọi renderCommentContent để bôi xanh text
                   <span className="text-[15px] text-[#050505] break-words whitespace-pre-wrap leading-tight">
-                    {comment.content}
+                    {renderCommentContent(comment.content)}
                   </span>
                 )}
               </div>
             </div>
 
-            {/* Menu Dropdown */}
-            {comment.employeeId === currentUserId && (
-              <div className="self-center transition-opacity opacity-0 group-hover:opacity-100">
+            {/* Menu Dropdown - Đã thêm nút Edit vào đây */}
+            {comment.employeeId === currentUserId && !editing && (
+              <div className="self-center transition-opacity opacity-0 shrink-0 group-hover:opacity-100">
                 <Dropdown
                   trigger={["click"]}
                   menu={{
                     items: [
+                      {
+                        key: "edit",
+                        label: (
+                          <span 
+                            className="block w-full"
+                            onClick={() => setEditing(true)}
+                          >
+                            Edit
+                          </span>
+                        ),
+                      },
                       {
                         key: "delete",
                         label: (
@@ -250,14 +278,8 @@ export const CommentItem = ({
               >
                 Reply
               </span>
-              {comment.employeeId === currentUserId && (
-                <span
-                  className="cursor-pointer hover:underline"
-                  onClick={() => setEditing(true)}
-                >
-                  Edit
-                </span>
-              )}
+              {/* Đã bỏ nút Edit ở dưới cùng này vì đã dời lên Dropdown */}
+              
               {localTotalReactions > 0 && (
                 <div className="flex items-center bg-white rounded-full p-[2px] shadow-sm border border-gray-100">
                   <div className="flex items-center -space-x-1">
