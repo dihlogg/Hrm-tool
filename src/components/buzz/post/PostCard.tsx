@@ -81,6 +81,7 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
     setTotalReactions(
       post.reactionCounts?.reduce((sum, item) => sum + item.count, 0) || 0,
     );
+    setLocalCommentsCount(post.commentCount || 0);
   }, [post, currentUserId]);
 
   const handleReactionChanged = (newReactionType: string | null) => {
