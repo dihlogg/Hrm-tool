@@ -9,9 +9,6 @@ import { useUserStatuses } from "@/hooks/users/user-statuses/useUserStatuses";
 import { getInitialFilters, UserFilters } from "@/hooks/users/UserFiltersDto";
 import { useGetUsers } from "@/hooks/users/useGetUser";
 import { antdSortOrderToApiOrder } from "@/utils/tableSorting";
-import axiosInstance from "@/utils/auth/axiosInstance";
-import { API_ENDPOINTS } from "@/services/apiService";
-import { exportExcel } from "@/utils/exportExcel";
 import { UserDto } from "@/hooks/users/UserDto";
 import { useGetAllRoles } from "@/hooks/roles/useGetAllRoles";
 
@@ -54,17 +51,6 @@ export default function UserManagementPage() {
     }
   }
 
-  // const handleExportExcel = async () => {
-  //   try {
-  //     const response = await axiosInstance.get(API_ENDPOINTS.GET_USER_LIST, {
-  //       params: { page: 1, pageSize: total },
-  //     });
-  //     const allUsers = response.data.data;
-  //     exportExcel(columns, allUsers, "User_List.xlsx", "User List");
-  //   } catch (err) {
-  //     console.error("Export Excel failed:", err);
-  //   }
-  // };
   const router = useRouter();
 
   const columns: ColumnsType<UserDto> = [
