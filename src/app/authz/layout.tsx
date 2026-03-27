@@ -9,6 +9,7 @@ import { useIdleLogout } from "@/hooks/auth/useIdleLogout";
 const navItems = [
   { href: "/authz", label: "Role Management" },
   { href: "/authz/role-permissions", label: "Role & Permissions" },
+  { href: "/authz/user-roles", label: "User & Roles" },
 ];
 
 export default function AuthzLayout({
@@ -29,7 +30,8 @@ export default function AuthzLayout({
                 return (
                   pathname === "/authz" ||
                   (pathname.startsWith("/authz/") &&
-                    !pathname.startsWith("/authz/role-permissions"))
+                    !pathname.startsWith("/authz/role-permissions") &&
+                    !pathname.startsWith("/authz/user-roles"))
                 );
               }
               return (
