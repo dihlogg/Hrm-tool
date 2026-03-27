@@ -159,7 +159,7 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
   );
 
   return (
-    <div className="bg-white shadow-sm rounded-2xl">
+    <div className="bg-white border border-gray-200 shadow-sm rounded-xl">
       {/* Post Header */}
       <div className="flex items-start justify-between p-5">
         <div className="flex items-center gap-3">
