@@ -45,6 +45,7 @@ type BuzzTab = "recent" | "liked" | "commented";
 
 export default function BuzzPage() {
   const [activeTab, setActiveTab] = useState<BuzzTab>("recent");
+
   const pageSize = 10;
   const [hotReload, setHotReload] = useState(0);
 
@@ -125,6 +126,7 @@ export default function BuzzPage() {
   ]);
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const topRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!loadMoreRef.current || !hasMorePosts) return;
@@ -148,6 +150,9 @@ export default function BuzzPage() {
 
   const handleTabChange = (tab: BuzzTab) => {
     setActiveTab(tab);
+    setTimeout(() => {
+      topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 10);
   };
 
   const mentionOptions = useMemo(() => {
@@ -261,9 +266,12 @@ export default function BuzzPage() {
   };
 
   return (
-    <div className="flex flex-col justify-center w-full max-w-[1600px] gap-6 px-4 lg:px-8 mx-auto mt-2 lg:flex-row">
+    <div
+      ref={topRef}
+      className="flex flex-col justify-center w-full max-w-[1600px] gap-6 px-4 lg:px-8 mx-auto mt-2 lg:flex-row"
+    >
       {/* Left Sidebar - Navigation */}
-      <div className="flex flex-col w-full gap-3 mt-13 lg:w-[22%] shrink-0">
+      <div className="flex flex-col w-full gap-3 mt-13 lg:w-[22%] shrink-0 lg:sticky lg:top-4 self-start">
         <button
           onClick={() => handleTabChange("recent")}
           className={`cursor-pointer flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-full transition-colors ${
@@ -471,7 +479,7 @@ export default function BuzzPage() {
       </div>
 
       {/* Right Sidebar */}
-      <div className="flex flex-col w-full gap-4 mt-13 lg:w-[25%] shrink-0">
+      <div className="hidden lg:flex flex-col w-full gap-4 mt-13 lg:w-[25%] shrink-0">
         <h2 className="flex justify-center text-lg font-bold text-gray-500 align-center">
           Upcoming Anniversaries
         </h2>

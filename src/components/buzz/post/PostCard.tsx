@@ -1,14 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Avatar,
-  Button,
-  Dropdown,
-  Image as AntImage,
-  Tooltip,
-  Carousel,
-} from "antd";
+import { Avatar, Button, Dropdown, Tooltip, Carousel } from "antd";
 import {
   MoreOutlined,
   HeartFilled,
@@ -24,6 +17,7 @@ import {
 } from "../reaction/ReactionConstants";
 import { CustomNextArrow, CustomPrevArrow } from "../common/CarouselArrows";
 import PostComments from "../comment/PostComments";
+import PostDetailModal from "./PostDetailModal";
 
 interface PostCardProps {
   post: PostDto;
@@ -48,11 +42,15 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
   const [totalReactions, setTotalReactions] = useState<number>(
     initialTotalReactions,
   );
+  const [localReactionCounts, setLocalReactionCounts] = useState(
+    post.reactionCounts || [],
+  );
 
   const [showComments, setShowComments] = useState(false);
   const [localCommentsCount, setLocalCommentsCount] = useState(
     post.commentCount || 0,
   );
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   const renderPostContent = (content: string) => {
     const mentionRegex = /(@\w+)/g;
@@ -81,20 +79,52 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
     setTotalReactions(
       post.reactionCounts?.reduce((sum, item) => sum + item.count, 0) || 0,
     );
+    setLocalReactionCounts(post.reactionCounts || []);
     setLocalCommentsCount(post.commentCount || 0);
   }, [post, currentUserId]);
 
   const handleReactionChanged = (newReactionType: string | null) => {
-    if (newReactionType && !myReaction) {
-      setTotalReactions((prev) => prev + 1);
-    } else if (!newReactionType && myReaction) {
-      setTotalReactions((prev) => Math.max(0, prev - 1));
+    const prevReaction = myReaction;
+    let updatedCounts = [...localReactionCounts];
+
+    if (prevReaction) {
+      const prevIndex = updatedCounts.findIndex(
+        (r) => r.reactionType === prevReaction,
+      );
+      if (prevIndex > -1) {
+        updatedCounts[prevIndex] = {
+          ...updatedCounts[prevIndex],
+          count: updatedCounts[prevIndex].count - 1,
+        };
+      }
     }
 
+    if (newReactionType) {
+      const newIndex = updatedCounts.findIndex(
+        (r) => r.reactionType === newReactionType,
+      );
+      if (newIndex > -1) {
+        updatedCounts[newIndex] = {
+          ...updatedCounts[newIndex],
+          count: updatedCounts[newIndex].count + 1,
+        };
+      } else {
+        updatedCounts.push({
+          id: Date.now().toString(),
+          reactionType: newReactionType,
+          count: 1,
+        });
+      }
+    }
+
+    updatedCounts = updatedCounts.filter((r) => r.count > 0);
+
+    setLocalReactionCounts(updatedCounts);
+    setTotalReactions(updatedCounts.reduce((sum, item) => sum + item.count, 0));
     setMyReaction(newReactionType);
   };
 
-  const validReactions = (post.reactionCounts || []).filter((r) => r.count > 0);
+  const validReactions = localReactionCounts.filter((r) => r.count > 0);
   const topReactions = [...validReactions]
     .sort((a, b) => b.count - a.count)
     .slice(0, 3);
@@ -197,17 +227,21 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
             arrows={post.imageUrls.length > 1}
             dots={post.imageUrls.length > 1}
             infinite={false}
+            adaptiveHeight={true}
             prevArrow={<CustomPrevArrow />}
             nextArrow={<CustomNextArrow />}
-            className="w-full overflow-hidden bg-gray-100 rounded-md"
+            className="w-full overflow-hidden bg-[#F0F2F5] rounded-md"
           >
             {post.imageUrls.map((url, index) => (
               <div key={index}>
-                <div className="flex items-center justify-center w-full h-[400px] sm:h-[500px]">
-                  <AntImage
+                <div
+                  className="flex items-center justify-center w-full cursor-pointer"
+                  onClick={() => setShowDetailModal(true)}
+                >
+                  <img
                     src={url}
                     alt={`post-image-${index}`}
-                    className="object-cover w-full h-full"
+                    className="object-contain w-full max-h-[400px] sm:max-h-[500px]"
                   />
                 </div>
               </div>
@@ -226,7 +260,7 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
           />
 
           <button
-            className={`flex items-center justify-center w-10 h-10 ml-2 transition-colors rounded-full hover:bg-gray-200 ${showComments ? "bg-gray-200" : "bg-gray-100"}`}
+            className={`flex items-center justify-center cursor-pointer w-10 h-10 ml-2 transition-colors rounded-full hover:bg-gray-200 ${showComments ? "bg-gray-200" : "bg-gray-100"}`}
             onClick={() => setShowComments(!showComments)}
           >
             <MessageOutlined className="text-lg text-gray-600" />
@@ -281,6 +315,20 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
           }
         />
       )}
+
+      <PostDetailModal
+        open={showDetailModal}
+        onClose={() => setShowDetailModal(false)}
+        post={post}
+        myReaction={myReaction}
+        totalReactions={totalReactions}
+        localCommentsCount={localCommentsCount}
+        onReactionChanged={handleReactionChanged}
+        onCommentAdded={() => setLocalCommentsCount((prev) => prev + 1)}
+        onCommentDeleted={() =>
+          setLocalCommentsCount((prev) => Math.max(0, prev - 1))
+        }
+      />
     </div>
   );
 }
