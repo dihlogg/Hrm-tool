@@ -2,16 +2,10 @@
 import { API_ENDPOINTS } from "@/services/apiService";
 import axiosInstance from "@/utils/auth/axiosInstance";
 import { useEffect, useState } from "react";
+import { RoleDto } from "./CreateRoleDto";
 
-export interface Roles {
-  id: string;
-  name: string;
-  description: string;
-  displayOder: number;
-}
-
-export function useGetAllRoles() {
-  const [roles, setRoles] = useState<Roles[]>([]);
+export function useGetAllRoles(hotReload?: number) {
+  const [roles, setRoles] = useState<RoleDto[]>([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -24,6 +18,6 @@ export function useGetAllRoles() {
       }
     }
     loadAllRoles();
-  }, []);
+  }, [hotReload]);
   return { roles, error };
 }

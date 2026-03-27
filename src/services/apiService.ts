@@ -12,6 +12,10 @@ export const API_ENDPOINTS = {
   REFRESH_TOKEN: `${HRM_API_URL}/Auth/RefreshToken`,
   //role
   GET_ALL_ROLES: `${HRM_API_URL}/Roles/GetAllRoles`,
+  GET_ROLE_BY_ID: `${HRM_API_URL}/Roles/GetRoleById`,
+  POST_NEW_ROLE: `${HRM_API_URL}/Roles/PostNewRole`,
+  PUT_ROLE: `${HRM_API_URL}/Roles/PutRole`,
+  DELETE_ROLE: `${HRM_API_URL}/Roles/DeleteRole`,
   //employee
   GET_ALL_EMPLOYEES: `${HRM_API_URL}/Employees/GetAllEmployees`,
   GET_EMPLOYEE_BY_ID: `${HRM_API_URL}/Employees/GetEmployeeById`,

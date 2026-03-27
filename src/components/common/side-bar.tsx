@@ -26,6 +26,7 @@ const SidebarComponent = () => {
     if (pathname.startsWith("/time")) return "time";
     if (pathname.startsWith("/buzz")) return "buzz";
     if (pathname.startsWith("/profile")) return "profile";
+    if (pathname.startsWith("/authz")) return "authz";
     return "dashboard"; // Fallback
   };
 
@@ -80,6 +81,11 @@ const SidebarComponent = () => {
             icon: <WechatWorkOutlined style={iconStyle}/>,
             label: <Link href="/buzz" style={labelStyle}>Buzz</Link>,
           },
+          {
+            key: "authz",
+            icon: <AuditOutlined style={iconStyle}/>,
+            label: <Link href="/authz" style={labelStyle}>Authz</Link>,
+          }
         ]}
       />
     </Layout.Sider>
