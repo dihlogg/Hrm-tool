@@ -7,17 +7,22 @@ import { RoleDto } from "./CreateRoleDto";
 export function useGetAllRoles(hotReload?: number) {
   const [roles, setRoles] = useState<RoleDto[]>([]);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function loadAllRoles() {
+      setLoading(true);
       try {
         const response = await axiosInstance.get(API_ENDPOINTS.GET_ALL_ROLES);
         setRoles(response.data);
       } catch (err: any) {
         setError(err.message || "Failed to load roles");
+      } finally {
+        setLoading(false);
       }
     }
     loadAllRoles();
   }, [hotReload]);
-  return { roles, error };
+
+  return { roles, error, loading };
 }

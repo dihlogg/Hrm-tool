@@ -16,6 +16,19 @@ export const API_ENDPOINTS = {
   POST_NEW_ROLE: `${HRM_API_URL}/Roles/PostNewRole`,
   PUT_ROLE: `${HRM_API_URL}/Roles/PutRole`,
   DELETE_ROLE: `${HRM_API_URL}/Roles/DeleteRole`,
+  //permissions
+  GET_ALL_PERMISSIONS: `${HRM_API_URL}/Permissions/GetAllPermissions`,
+  POST_PERMISSION: `${HRM_API_URL}/Permissions/PostPermission`,
+  PUT_PERMISSION: `${HRM_API_URL}/Permissions/PutPermission`,
+  DELETE_PERMISSION: `${HRM_API_URL}/Permissions/DeletePermission`,
+  GET_PERMISSIONS_BY_ROLE_ID: `${HRM_API_URL}/Permissions/GetPermissionsByRoleId`,
+  // role-permissions
+  ASSIGN_PERMISSION_TO_ROLE: `${HRM_API_URL}/Role-permission/AssignPermissionToRole`,
+  DELETE_BY_ROLE_AND_PERMISSION: `${HRM_API_URL}/Role-permission/DeleteByRoleAndPermission`,
+  // user-permissions
+  ASSIGN_PERMISSION_TO_USER: `${HRM_API_URL}/User-permission/AssignPermissionToUser`,
+  CHANGE_USER_PERMISSION_STATUS: `${HRM_API_URL}/User-permission/changeStatusGranted`,
+  DELETE_PERMISSION_FROM_USER: `${HRM_API_URL}/User-permission/DeletePermissionFromUser`,
   //employee
   GET_ALL_EMPLOYEES: `${HRM_API_URL}/Employees/GetAllEmployees`,
   GET_EMPLOYEE_BY_ID: `${HRM_API_URL}/Employees/GetEmployeeById`,
