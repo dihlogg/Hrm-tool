@@ -274,41 +274,42 @@ export default function BuzzPage() {
       <div className="flex flex-col w-full gap-3 mt-13 lg:w-[22%] shrink-0 lg:sticky lg:top-4 self-start">
         <button
           onClick={() => handleTabChange("recent")}
-          className={`cursor-pointer flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-full transition-colors ${
+          className={`cursor-pointer flex items-center justify-start gap-3 px-5 py-3 text-sm rounded-full border transition-all duration-200 ${
             activeTab === "recent"
-              ? "bg-[#FFA940] text-white shadow-sm"
-              : "bg-[#E5E7EB] text-gray-500 hover:bg-gray-300"
+              ? "bg-[#FFF2E8] text-[#F66C13] border-[#FFF2E8] font-semibold shadow-sm"
+              : "bg-white text-gray-600 border-gray-200 hover:bg-[#FFF2E8] hover:text-[#F66C13] hover:border-[#FFF2E8]"
           }`}
         >
           <ClockCircleOutlined className="text-lg" /> Most Recent Posts
         </button>
         <button
           onClick={() => handleTabChange("liked")}
-          className={`cursor-pointer flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-full transition-colors ${
+          className={`cursor-pointer flex items-center justify-start gap-3 px-5 py-3 text-sm rounded-full border transition-all duration-200 ${
             activeTab === "liked"
-              ? "bg-[#FFA940] text-white shadow-sm"
-              : "bg-[#E5E7EB] text-gray-500 hover:bg-gray-300"
+              ? "bg-[#FFF2E8] text-[#F66C13] border-[#FFF2E8] font-semibold shadow-sm"
+              : "bg-white text-gray-600 border-gray-200 hover:bg-[#FFF2E8] hover:text-[#F66C13] hover:border-[#FFF2E8]"
           }`}
         >
           <HeartFilled className="text-lg" /> Most Liked Posts
         </button>
         <button
           onClick={() => handleTabChange("commented")}
-          className={`cursor-pointer flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-full transition-colors ${
+          className={`cursor-pointer flex items-center justify-start gap-3 px-5 py-3 text-sm rounded-full border transition-all duration-200 ${
             activeTab === "commented"
-              ? "bg-[#FFA940] text-white shadow-sm"
-              : "bg-[#E5E7EB] text-gray-500 hover:bg-gray-300"
+              ? "bg-[#FFF2E8] text-[#F66C13] border-[#FFF2E8] font-semibold shadow-sm"
+              : "bg-white text-gray-600 border-gray-200 hover:bg-[#FFF2E8] hover:text-[#F66C13] hover:border-[#FFF2E8]"
           }`}
         >
           <MessageOutlined className="text-lg" /> Most Commented Posts
         </button>
       </div>
-
       <div className="flex flex-col w-full gap-4 lg:w-[53%] flex-1">
-        <h2 className="text-lg font-bold text-gray-500">Buzz Newsfeed</h2>
+        <h2 className="mb-1 text-xl font-semibold text-gray-500">
+          Buzz Newsfeed
+        </h2>
 
         {/* Create Post Section */}
-        <div className="flex flex-col gap-4 p-5 bg-white shadow-sm rounded-2xl">
+        <div className="flex flex-col gap-4 p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center w-full gap-3">
               <Avatar
@@ -359,9 +360,11 @@ export default function BuzzPage() {
             </div>
             <Button
               type="primary"
+              shape="round"
+              size="middle"
               loading={creatingPost}
               onClick={handleCreatePost}
-              className="px-6 font-semibold text-white bg-[#859BBA] border-none rounded-lg hover:bg-[#6e85a5] shadow-sm h-10 flex-shrink-0"
+              className="flex-shrink-0 h-10 px-6 font-semibold text-white bg-blue-500 border-none shadow-sm hover:bg-blue-600"
             >
               Post
             </Button>
@@ -435,7 +438,7 @@ export default function BuzzPage() {
                 <div className="flex items-center justify-center w-5 h-5 text-white bg-blue-500 rounded-full">
                   <PlusOutlined className="text-xs font-bold" />
                 </div>
-                Add Photo/Video
+                Add Photo
               </button>
             </Upload>
           </div>
@@ -479,6 +482,7 @@ export default function BuzzPage() {
       </div>
 
       {/* Right Sidebar */}
+      {/* TODO: Replace with actual data when API is ready */}
       <div className="hidden lg:flex flex-col w-full gap-4 mt-13 lg:w-[25%] shrink-0">
         <h2 className="flex justify-center text-lg font-bold text-gray-500 align-center">
           Upcoming Anniversaries
