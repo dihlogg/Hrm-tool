@@ -29,6 +29,8 @@ export const API_ENDPOINTS = {
   ASSIGN_PERMISSION_TO_USER: `${HRM_API_URL}/User-permission/AssignPermissionToUser`,
   CHANGE_USER_PERMISSION_STATUS: `${HRM_API_URL}/User-permission/changeStatusGranted`,
   DELETE_PERMISSION_FROM_USER: `${HRM_API_URL}/User-permission/DeletePermissionFromUser`,
+  DELETE_BY_USER_AND_PERMISSION: `${HRM_API_URL}/User-permission/DeleteByUserAndPermission`,
+  GET_PERMISSIONS_BY_USER_ID: `${HRM_API_URL}/User-permission/GetPermissionsByUserId`,
   //role-user
   ASSIGN_ROLE_TO_USER: `${HRM_API_URL}/User-role/AssignRoleToUser`,
   DELETE_ROLE_FROM_USER: `${HRM_API_URL}/User-role/DeleteRoleFromUser`,

@@ -5,6 +5,10 @@ const protectedRoutes = ["/pim", "/leave"];
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/auth", req.url));
+  }
   
   const isProtected = protectedRoutes.some((route) =>
     pathname.startsWith(route)
