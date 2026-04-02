@@ -420,7 +420,7 @@ export default function BuzzPage() {
               beforeUpload={async (file) => {
                 try {
                   setUploadLoading(true);
-                  const url = await uploadImageToCloudinary(file);
+                  const url = await uploadImageToCloudinary(file, "posts/image");
                   setImageUrls((prev) => [...prev, url]);
                   message.success("Image uploaded successfully!");
                 } catch (err) {
@@ -571,7 +571,7 @@ export default function BuzzPage() {
               beforeUpload={async (file) => {
                 try {
                   setEditUploadLoading(true);
-                  const url = await uploadImageToCloudinary(file);
+                  const url = await uploadImageToCloudinary(file, "posts/image");
                   setEditImageUrls((prev) => [...prev, url]);
                   message.success("Image uploaded successfully!");
                 } catch (err) {

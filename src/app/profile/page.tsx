@@ -28,7 +28,11 @@ export default function ProfilePage() {
   const { updateEmployee } = useUpdateEmployee();
   const searchParams = useSearchParams();
   const employeeId = searchParams.get("id") || undefined;
-  const { userId } = useAuthContext();
+  const {
+    userId,
+    employee: contextEmployee,
+    setEmployee: setContextEmployee,
+  } = useAuthContext();
   const { employee, loading } = useGetEmployeeDetailsByUserId(userId ?? "");
   const [api, contextHolder] = notification.useNotification();
 
@@ -109,6 +113,14 @@ export default function ProfilePage() {
       }
 
       await updateEmployee(empId!, payload);
+      if (contextEmployee && contextEmployee.id === empId) {
+        setContextEmployee({
+          ...contextEmployee,
+          firstName: payload.firstName,
+          lastName: payload.lastName,
+          imageUrl: payload.imageUrl,
+        });
+      }
       api.success({
         message: "Employee Update Successfully!",
         description: `Employee information has been updated.`,
@@ -166,7 +178,10 @@ export default function ProfilePage() {
                 beforeUpload={async (file) => {
                   try {
                     setUploadLoading(true);
-                    const url = await uploadImageToCloudinary(file);
+                    const url = await uploadImageToCloudinary(
+                      file,
+                      "employees/image",
+                    );
                     setImageUrl(url);
                     message.success("Upload Image Success!");
                   } catch (err) {

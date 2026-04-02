@@ -81,7 +81,7 @@ export default function PostDetailModal({
       footer={null}
       closable={false}
       centered
-      destroyOnClose={true}
+      destroyOnHidden={true}
       width={hasImages ? 1100 : 550}
       className="post-detail-modal"
       afterOpenChange={handleAfterOpenChange}
