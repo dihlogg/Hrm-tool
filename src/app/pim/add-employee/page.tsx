@@ -162,7 +162,7 @@ export default function AddEmployeePage() {
                 beforeUpload={async (file) => {
                   try {
                     setLoading(true);
-                    const url = await uploadImageToCloudinary(file);
+                    const url = await uploadImageToCloudinary(file, "employees/image");
                     setImageUrl(url);
                     message.success("Upload Image Success!");
                   } catch (err) {

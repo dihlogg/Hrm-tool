@@ -20,11 +20,14 @@ import { useGetEmployeeStatus } from "@/hooks/employees/employee-statuses/useGet
 import { useJobTitles } from "@/hooks/employees/job-titles/useJobTitles";
 import { useSubUnits } from "@/hooks/employees/sub-units/useSubUnits";
 import { uploadImageToCloudinary } from "@/services/cloudinaryService";
+import { useAuthContext } from "@/contexts/authContext";
 
 const { Option } = Select;
 
 export default function EditEmployeePage() {
   const { updateEmployee } = useUpdateEmployee();
+  const { employee: contextEmployee, setEmployee: setContextEmployee } =
+    useAuthContext();
   const searchParams = useSearchParams();
   const employeeId = searchParams.get("id") || undefined;
   const { employee } = useGetEmployeeById(employeeId ?? "");
@@ -107,6 +110,14 @@ export default function EditEmployeePage() {
       };
 
       await updateEmployee(employeeId!, payload);
+      if (contextEmployee && contextEmployee.id === empId) {
+        setContextEmployee({
+          ...contextEmployee,
+          firstName: payload.firstName,
+          lastName: payload.lastName,
+          imageUrl: payload.imageUrl,
+        });
+      }
       api.success({
         message: "Employee Update Successfully!",
         description: `Employee information has been updated.`,
@@ -162,7 +173,10 @@ export default function EditEmployeePage() {
                 beforeUpload={async (file) => {
                   try {
                     setUploadLoading(true);
-                    const url = await uploadImageToCloudinary(file);
+                    const url = await uploadImageToCloudinary(
+                      file,
+                      "employees/image",
+                    );
                     setImageUrl(url);
                     message.success("Upload Image Success!");
                   } catch (err) {

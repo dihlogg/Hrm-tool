@@ -80,6 +80,8 @@ export const API_ENDPOINTS = {
   GET_ALL_LEAVE_REASON: `${HRM_API_URL}/LeaveReasons/GetAllLeaveReasons`,
   //leave request type
   GET_ALL_LEAVE_REQUEST_TYPE: `${HRM_API_URL}/LeaveRequestTypes/GetAllLeaveRequestTypes`,
+  //cloudinary
+  GET_CLOUDINARY_SIGNATURE: `${HRM_API_URL}/Cloudinary/Signature`,
 
   //hrm-notify
   GET_LEAVE_REQUEST_NOTIFY: `${HRM_NOTIFY_API_URL}/Notifications/GetNotificationsByEmployeeId`,
