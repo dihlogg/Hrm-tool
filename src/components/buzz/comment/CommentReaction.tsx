@@ -9,7 +9,7 @@ import {
   ReactionType,
   normalizeReactionType,
 } from "../reaction/ReactionConstants";
-import "@/styles/reaction.css";
+import styles from "@/styles/reaction.module.css";
 
 interface CommentReactionProps {
   postCommentId: string;
@@ -84,7 +84,7 @@ export const CommentReaction: React.FC<CommentReactionProps> = ({
     >
       {/* Reaction Panel (Popup) */}
       {showPanel && (
-        <div className="reaction-panel absolute z-50 flex items-center gap-1.5 px-2 py-1 mb-1 bg-white border border-gray-100 rounded-[30px] shadow-lg bottom-full -left-4 animate-pop-in">
+        <div className={`${styles.reactionPanel} absolute z-50 flex items-center gap-1.5 px-2 py-1 mb-1 bg-white border border-gray-100 rounded-[30px] shadow-lg bottom-full -left-4 ${styles.animatePopIn}`}>
           {REACTION_LIST.map((react) => (
             <button
               key={react.type}
@@ -92,7 +92,7 @@ export const CommentReaction: React.FC<CommentReactionProps> = ({
                 e.stopPropagation();
                 handleSelectReaction(react.type);
               }}
-              className="relative flex flex-col items-center justify-center transition-all duration-300 ease-out origin-bottom cursor-pointer reaction-icon-btn group"
+              className={`${styles.reactionIconBtn} relative flex flex-col items-center justify-center transition-all duration-300 ease-out origin-bottom cursor-pointer group`}
               title={react.label}
             >
               <div className="flex items-center justify-center pointer-events-none [&>img]:!w-8 [&>img]:!h-8">

@@ -10,7 +10,7 @@ import {
   normalizeReactionType,
 } from "../reaction/ReactionConstants";
 import { LikeOutlined } from "@ant-design/icons";
-import "@/styles/reaction.css";
+import styles from "@/styles/reaction.module.css";
 
 interface PostReactionProps {
   postId: string;
@@ -92,7 +92,7 @@ export const PostReaction: React.FC<PostReactionProps> = ({
       {showPanel && (
         <div
           ref={panelRef}
-          className="reaction-panel absolute z-10 flex items-center gap-1.5 px-3 py-2 mb-2 bg-white border border-gray-100 rounded-[30px] shadow-lg bottom-full left-0 animate-pop-in"
+          className={`${styles.reactionPanel} absolute z-10 flex items-center gap-1.5 px-3 py-2 mb-2 bg-white border border-gray-100 rounded-[30px] shadow-lg bottom-full left-0 ${styles.animatePopIn}`}
           onMouseEnter={() => {
             if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
           }}
@@ -104,7 +104,7 @@ export const PostReaction: React.FC<PostReactionProps> = ({
                 e.stopPropagation();
                 handleSelectReaction(react.type);
               }}
-              className="relative flex flex-col items-center justify-center transition-all duration-300 ease-out origin-bottom cursor-pointer reaction-icon-btn group"
+              className={`${styles.reactionIconBtn} relative flex flex-col items-center justify-center transition-all duration-300 ease-out origin-bottom cursor-pointer group`}
               title={react.label}
             >
               <div className="flex items-center justify-center pointer-events-none">
@@ -128,7 +128,7 @@ export const PostReaction: React.FC<PostReactionProps> = ({
         } ${showPanel ? "bg-gray-100" : ""}`}
       >
         {currentReactInfo ? (
-          <div className="flex items-center gap-2 btn-reacted animate-pushClick">
+          <div className={`${styles.btnReacted} flex items-center gap-2`}>
             <span
               className={`text-xl flex items-center [&>img]:!w-6 [&>img]:!h-6 [&>img]:!min-w-[24px] [&>img]:!min-h-[24px] ${currentReactInfo.color}`}
             >
