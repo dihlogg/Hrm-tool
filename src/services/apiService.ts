@@ -4,6 +4,8 @@ export const HRM_NOTIFY_API_URL =
   process.env.HRM_NOTIFY_API_BASE_URL || "http://localhost:3002";
 export const HRM_SOCIAL_API_URL =
   process.env.NEXT_PUBLIC_HRM_SOCIAL_API_BASE_URL || "http://localhost:3003";
+export const HRM_ATS_API_URL =
+  process.env.NEXT_PUBLIC_HRM_ATS_API_BASE_URL || "http://localhost:3004";
 
 export const API_ENDPOINTS = {
   //hrm-api
@@ -116,4 +118,11 @@ export const API_ENDPOINTS = {
   //reaction counts
   GET_REACTION_COUNT_BY_POST: `${HRM_SOCIAL_API_URL}/ReactionCounts/GetByPost`,
   GET_REACTION_COUNT_BY_COMMENT: `${HRM_SOCIAL_API_URL}/ReactionCounts/GetByComment`,
+
+  //hrm-ats
+  GET_ALL_JOBS: `${HRM_ATS_API_URL}/Jobs/GetAllJobs`,
+  GET_JOB_BY_ID: `${HRM_ATS_API_URL}/Jobs/GetJobById`,
+  POST_JOB: `${HRM_ATS_API_URL}/Jobs/CreateJob`,
+  PUT_JOB: `${HRM_ATS_API_URL}/Jobs/UpdateJob`,
+  DELETE_JOB: `${HRM_ATS_API_URL}/Jobs/DeleteJob`,
 };

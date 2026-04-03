@@ -9,6 +9,7 @@ import {
   FieldTimeOutlined,
   ReconciliationOutlined,
   ProfileOutlined,
+  PieChartOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -27,6 +28,7 @@ const SidebarComponent = () => {
     if (pathname.startsWith("/buzz")) return "buzz";
     if (pathname.startsWith("/profile")) return "profile";
     if (pathname.startsWith("/authz")) return "authz";
+    if (pathname.startsWith("/career")) return "career";
     return "dashboard"; // Fallback
   };
 
@@ -85,6 +87,11 @@ const SidebarComponent = () => {
             key: "authz",
             icon: <AuditOutlined style={iconStyle}/>,
             label: <Link href="/authz" style={labelStyle}>Authz</Link>,
+          },
+          {
+            key: "career",
+            icon: <PieChartOutlined style={iconStyle}/>,
+            label: <Link href="/career" style={labelStyle}>Career</Link>,
           }
         ]}
       />
