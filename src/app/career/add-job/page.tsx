@@ -13,7 +13,6 @@ import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/contexts/authContext";
 import { useJobTitles } from "@/hooks/employees/job-titles/useJobTitles";
 import { useSubUnits } from "@/hooks/employees/sub-units/useSubUnits";
-import Title from "antd/es/skeleton/Title";
 
 const { Option } = Select;
 
@@ -26,14 +25,14 @@ export default function AddJobPage() {
   const [api, contextHolder] = notification.useNotification();
 
   const [formErrors, setFormErrors] = useState<{
-    title?: string;
+    level?: string;
     employmentType?: string;
     status?: string;
     jobTitleId?: string;
     subUnitId?: string;
   }>({});
 
-  const [title, setTitle] = useState("");
+  const [level, setLevel] = useState<string | undefined>(undefined);
   const [employmentType, setEmploymentType] = useState<
     EmploymentType | undefined
   >(undefined);
@@ -54,7 +53,7 @@ export default function AddJobPage() {
   const [benefits, setBenefits] = useState("");
 
   const resetForm = () => {
-    setTitle("");
+    setLevel(undefined);
     setEmploymentType(undefined);
     setLocation("");
     setFromDate(null);
@@ -74,10 +73,10 @@ export default function AddJobPage() {
   const handleSubmit = async () => {
     const errors: typeof formErrors = {};
 
-    if (!title.trim()) errors.title = "*Required";
+    if (!jobTitleId) errors.jobTitleId = "*Required";
+    if (!level) errors.level = "*Required";
     if (!employmentType) errors.employmentType = "*Required";
     if (!status) errors.status = "*Required";
-    if (!jobTitleId) errors.jobTitleId = "*Required";
     if (!subUnitId) errors.subUnitId = "*Required";
 
     setFormErrors(errors);
@@ -94,7 +93,7 @@ export default function AddJobPage() {
         jobTitleName,
         subUnitId,
         subUnitName,
-        title,
+        level,
         employmentType,
         location,
         fromDate: fromDate ? fromDate.toISOString() : null,
@@ -108,8 +107,8 @@ export default function AddJobPage() {
 
       await createJob(payload);
       api.success({
-        message: "Job created successfully!",
-        description: `Position ${title} has been added by ${employee?.firstName} ${employee?.lastName}.`,
+        message: "Opportunity created successfully!",
+        description: `Position ${level} ${jobTitleName} has been added by ${employee?.firstName} ${employee?.lastName}.`,
         placement: "bottomLeft",
       });
       resetForm();
@@ -119,7 +118,7 @@ export default function AddJobPage() {
       let msg = "An unknown error occurred.";
       if (err instanceof Error) msg = err.message;
       api.error({
-        message: "Job created failed!",
+        message: "Failed to create opportunity!",
         description: msg,
         placement: "bottomLeft",
       });
@@ -129,266 +128,302 @@ export default function AddJobPage() {
   return (
     <>
       {contextHolder}
-      <div className="flex-1 w-full p-4 mt-2 space-y-6">
-        <div className="flex-col px-8 py-6 bg-white border-gray-200 rounded-lg shadow-sm sm:flex-row">
-          <div className="flex items-center justify-between pb-2 mb-6 border-b border-gray-400">
-            <h2 className="text-xl font-semibold text-gray-500">
-              Add New Job Opportunity
-            </h2>
-            <Button
-              type="primary"
-              shape="round"
-              ghost
-              onClick={() => router.push("/career")}
-            >
-              Back to List
-            </Button>
+      <div className="flex-1 w-full p-4 mt-2">
+        <div className="w-full px-6 py-8 bg-white border border-gray-100 shadow-sm rounded-2xl md:px-10 md:py-10">
+          {/* Header */}
+          <div className="mb-1">
+            <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 md:text-3xl">
+              Create Opportunity
+            </h1>
+            <p className="max-w-2xl text-sm leading-relaxed text-gray-500 md:text-base">
+              Define the requirements and responsibilities for your next great
+              hire.
+            </p>
           </div>
 
-          <div className="flex flex-col gap-6">
-            {/* General Info Section */}
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div className="flex flex-col items-start">
-                <label className="flex justify-between w-full pb-1 mb-1 text-sm font-medium text-gray-500">
-                  Job Title*
-                </label>
-                <Select
-                  className="w-full"
-                  placeholder="--Select--"
-                  allowClear
-                  value={jobTitleId}
-                  onChange={(value) => {
-                    setJobTitleId(value);
-                    const selectedJob = jobTitles.find(
-                      (job) => job.id === value,
-                    );
-                    setJobTitleName(selectedJob?.name || "");
-                    setFormErrors((prev) => ({
-                      ...prev,
-                      jobTitleId: undefined,
-                    }));
-                  }}
-                >
-                  {jobTitles.map((job) => (
-                    <Option key={job.id} value={job.id}>
-                      {job.name}
-                    </Option>
-                  ))}
-                </Select>
-                {formErrors.jobTitleId && (
-                  <span className="!mt-1 text-sm font-medium text-red-500">
-                    {formErrors.jobTitleId}
-                  </span>
-                )}
+          <div className="flex flex-col gap-8">
+            {/* Section 01: Job Details */}
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <span className="bg-orange-50 text-orange-600 font-bold px-2 py-0.5 rounded text-base tracking-wide">
+                  01
+                </span>
+                <h2 className="!mt-2 text-xl font-bold text-gray-800">
+                  Details
+                </h2>
               </div>
 
-              <div className="flex flex-col items-start">
-                <label className="flex justify-between w-full pb-1 mb-1 text-sm font-medium text-gray-500">
-                  Sub Unit*
-                </label>
-                <Select
-                  className="w-full"
-                  placeholder="--Select--"
-                  allowClear
-                  value={subUnitId}
-                  onChange={(value) => {
-                    setSubUnitId(value);
-                    const selectedSub = subUnits.find(
-                      (sub) => sub.id === value,
-                    );
-                    setSubUnitName(selectedSub?.name || "");
-                    setFormErrors((prev) => ({
-                      ...prev,
-                      subUnitId: undefined,
-                    }));
-                  }}
-                >
-                  {subUnits.map((sub) => (
-                    <Option key={sub.id} value={sub.id}>
-                      {sub.name}
-                    </Option>
-                  ))}
-                </Select>
-                {formErrors.subUnitId && (
-                  <span className="!mt-1 text-sm font-medium text-red-500">
-                    {formErrors.subUnitId}
-                  </span>
-                )}
-              </div>
+              <div className="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
+                {/* Job Title */}
+                <div className="flex flex-col items-start">
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
+                    Job Title*
+                    {formErrors.jobTitleId && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.jobTitleId}
+                      </span>
+                    )}
+                  </label>
+                  <Select
+                    value={jobTitleId}
+                    className="w-full"
+                    placeholder="--Select--"
+                    allowClear
+                    onChange={(value) => {
+                      setJobTitleId(value);
+                      const selectedJob = jobTitles.find(
+                        (job) => job.id === value,
+                      );
+                      setJobTitleName(selectedJob?.name || "");
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        jobTitleId: undefined,
+                      }));
+                    }}
+                  >
+                    {jobTitles.map((job) => (
+                      <Option key={job.id} value={job.id}>
+                        {job.name}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
 
-              <div className="flex flex-col items-start">
-                <label className="flex justify-between w-full pb-1 mb-1 text-sm font-medium text-gray-500">
-                  Title
-                </label>
-                <input
-                  className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
-                  type="text"
-                  placeholder="Welcome to become an employee at LTD!"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-              </div>
+                {/* Level */}
+                <div className="flex flex-col items-start">
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
+                    Level*
+                    {formErrors.level && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.level}
+                      </span>
+                    )}
+                  </label>
+                  <Select
+                    value={level}
+                    className="w-full"
+                    placeholder="--Select--"
+                    allowClear
+                    onChange={(value) => {
+                      setLevel(value);
+                      setFormErrors((prev) => ({ ...prev, level: undefined }));
+                    }}
+                  >
+                    <Option value="Intern-Fresher">Intern</Option>
+                    <Option value="Intern-Fresher">Fresher</Option>
+                    <Option value="Junior">Junior</Option>
+                    <Option value="Mid-Level">Mid-Level</Option>
+                    <Option value="Senior">Senior</Option>
+                  </Select>
+                </div>
 
-              <div className="flex flex-col items-start">
-                <label className="flex justify-between w-full pb-1 mb-1 text-sm font-medium text-gray-500">
-                  Location
-                </label>
-                <input
-                  className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
-                  type="text"
-                  placeholder="Da Nang City"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                />
-              </div>
+                {/* Location */}
+                <div className="flex flex-col items-start">
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
+                    Location
+                  </label>
+                  <input
+                    className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                    type="text"
+                    placeholder="Da Nang City"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                  />
+                </div>
 
-              <div className="flex flex-col items-start">
-                <label className="flex justify-between w-full pb-1 mb-1 text-sm font-medium text-gray-500">
-                  From Date
-                </label>
-                <DatePicker
-                  format={(value) =>
-                    value ? value.format("DD-MMM-YYYY").toUpperCase() : ""
-                  }
-                  className="w-full rounded-md"
-                  placeholder="Select Start Date"
-                  value={fromDate}
-                  onChange={(date) => setFromDate(date)}
-                />
-              </div>
+                {/* Sub Unit */}
+                <div className="flex flex-col items-start">
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
+                    Department*
+                    {formErrors.subUnitId && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.subUnitId}
+                      </span>
+                    )}
+                  </label>
+                  <Select
+                    value={subUnitId}
+                    className="w-full"
+                    placeholder="--Select--"
+                    allowClear
+                    onChange={(value) => {
+                      setSubUnitId(value);
+                      const selectedSub = subUnits.find(
+                        (sub) => sub.id === value,
+                      );
+                      setSubUnitName(selectedSub?.name || "");
+                      setFormErrors((prev) => ({
+                        ...prev,
+                        subUnitId: undefined,
+                      }));
+                    }}
+                  >
+                    {subUnits.map((sub) => (
+                      <Option key={sub.id} value={sub.id}>
+                        {sub.name}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
 
-              <div className="flex flex-col items-start">
-                <label className="flex justify-between w-full pb-1 mb-1 text-sm font-medium text-gray-500">
-                  To Date
-                </label>
-                <DatePicker
-                  format={(value) =>
-                    value ? value.format("DD-MMM-YYYY").toUpperCase() : ""
-                  }
-                  className="w-full rounded-md"
-                  placeholder="Select End Date"
-                  value={toDate}
-                  disabledDate={(current) =>
-                    fromDate ? current.isBefore(fromDate, "day") : false
-                  }
-                  onChange={(date) => setToDate(date)}
-                />
-              </div>
+                {/* Job Type */}
+                <div className="flex flex-col items-start w-full">
+                  <label className="flex justify-between w-full mb-2 text-sm text-gray-500 font-small">
+                    Job Type*
+                    {formErrors.employmentType && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.employmentType}
+                      </span>
+                    )}
+                  </label>
+                  <div className="flex gap-2">
+                    {[
+                      { label: "Full-Time", value: EmploymentType.FULL_TIME },
+                      { label: "Part-Time", value: EmploymentType.PART_TIME },
+                      { label: "Remote", value: EmploymentType.REMOTE },
+                    ].map((type) => {
+                      const isActive = employmentType === type.value;
+                      return (
+                        <button
+                          key={type.value}
+                          type="button"
+                          onClick={() => {
+                            setEmploymentType(type.value);
+                            setFormErrors((prev) => ({
+                              ...prev,
+                              employmentType: undefined,
+                            }));
+                          }}
+                          className={`px-5 py-2 text-sm rounded-full transition-colors cursor-pointer ${
+                            isActive
+                              ? "bg-orange-50 !text-orange-400 border border-orange-200 font-medium"
+                              : "bg-gray-50 text-black hover:bg-gray-100 border border-gray-200"
+                          }`}
+                        >
+                          {type.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
 
-              <div className="flex flex-col items-start">
-                <label className="flex justify-between w-full pb-1 mb-1 text-sm font-medium text-gray-500">
-                  Employment Type*
-                </label>
-                <Select
-                  className="w-full"
-                  placeholder="--Select--"
-                  allowClear
-                  value={employmentType}
-                  onChange={(value) => {
-                    setEmploymentType(value);
-                    setFormErrors((prev) => ({
-                      ...prev,
-                      employmentType: undefined,
-                    }));
-                  }}
-                >
-                  <Option value={EmploymentType.FULL_TIME}>Full Time</Option>
-                  <Option value={EmploymentType.PART_TIME}>Part Time</Option>
-                  <Option value={EmploymentType.REMOTE}>Remote</Option>
-                </Select>
-                {formErrors.employmentType && (
-                  <span className="!mt-1 text-sm font-medium text-red-500">
-                    {formErrors.employmentType}
-                  </span>
-                )}
-              </div>
+                {/* Status */}
+                <div className="flex flex-col items-start">
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
+                    Status*
+                    {formErrors.status && (
+                      <span className="!mt-1 text-sm text-red-500">
+                        {formErrors.status}
+                      </span>
+                    )}
+                  </label>
+                  <Select
+                    value={status}
+                    className="w-full"
+                    placeholder="--Select--"
+                    allowClear
+                    onChange={(value) => {
+                      setStatus(value);
+                      setFormErrors((prev) => ({ ...prev, status: undefined }));
+                    }}
+                  >
+                    <Option value={JobStatus.OPEN}>Open</Option>
+                    <Option value={JobStatus.CLOSED}>Closed</Option>
+                  </Select>
+                </div>
 
-              <div className="flex flex-col items-start">
-                <label className="flex justify-between w-full pb-1 mb-1 text-sm font-medium text-gray-500">
-                  Status*
-                </label>
-                <Select
-                  className="w-full"
-                  placeholder="--Select--"
-                  allowClear
-                  value={status}
-                  onChange={(value) => {
-                    setStatus(value);
-                    setFormErrors((prev) => ({ ...prev, status: undefined }));
-                  }}
-                >
-                  <Option value={JobStatus.OPEN}>Open</Option>
-                  <Option value={JobStatus.CLOSED}>Closed</Option>
-                </Select>
-                {formErrors.status && (
-                  <span className="!mt-1 text-sm font-medium text-red-500">
-                    {formErrors.status}
-                  </span>
-                )}
+                {/* Valid From */}
+                <div className="flex flex-col items-start">
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
+                    From Date
+                  </label>
+                  <DatePicker
+                    format={(value) =>
+                      value ? value.format("DD-MMM-YYYY").toUpperCase() : ""
+                    }
+                    className="w-full px-3 py-1 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400 custom-select"
+                    placeholder="--Select--"
+                    value={fromDate}
+                    onChange={(date) => setFromDate(date)}
+                  />
+                </div>
+
+                {/* Valid Until */}
+                <div className="flex flex-col items-start">
+                  <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
+                    To Date
+                  </label>
+                  <DatePicker
+                    format={(value) =>
+                      value ? value.format("DD-MMM-YYYY").toUpperCase() : ""
+                    }
+                    className="w-full px-3 py-1 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400 custom-select"
+                    placeholder="--Select--"
+                    value={toDate}
+                    disabledDate={(current) =>
+                      fromDate ? current.isBefore(fromDate, "day") : false
+                    }
+                    onChange={(date) => setToDate(date)}
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Detail Section - Multi-line Textareas */}
-            <div className="pt-4 mt-2 border-t border-gray-100">
-              <h3 className="mb-4 text-xl font-semibold text-gray-600">
-                Job Details
-              </h3>
+            {/* Section 02: The Brief */}
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <span className="bg-orange-50 text-orange-600 font-bold px-2 py-0.5 rounded text-base tracking-wide">
+                  02
+                </span>
+                <h2 className="!mt-2 text-xl font-bold text-gray-800">Brief</h2>
+              </div>
+
               <div className="grid grid-cols-1 gap-6">
+                {/* Description */}
                 <div className="w-full">
-                  <label className="flex w-full pb-1 mb-1 text-sm font-medium text-gray-500">
-                    Description
+                  <label className="block w-full mb-1 text-sm text-gray-500 font-small">
+                    Job Description
                   </label>
                   <textarea
                     rows={4}
-                    className="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
-                    placeholder="General description about the job..."
+                    className="w-full px-3 py-2 mt-1 text-sm text-gray-900 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                    placeholder="Describe the mission, the impact, and the day-to-day journey..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                  ></textarea>
+                  />
                 </div>
 
+                {/* Responsibilities */}
                 <div className="w-full">
-                  <label className="flex w-full pb-1 mb-1 text-sm font-medium text-gray-500">
-                    Responsibilities
+                  <label className="block w-full mb-1 text-sm text-gray-500 font-small">
+                    Key Responsibilities
                   </label>
                   <textarea
-                    rows={5}
-                    className="w-full px-3 py-2 text-sm leading-relaxed text-gray-900 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
-                    placeholder="1. Build and maintain features...&#10;2. Collaborate with team..."
+                    rows={4}
+                    className="w-full px-3 py-2 mt-1 text-sm text-gray-900 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                    placeholder="List the essential day-to-day responsibilities..."
                     value={responsibilities}
                     onChange={(e) => setResponsibilities(e.target.value)}
-                  ></textarea>
+                  />
                 </div>
 
+                {/* Requirements */}
                 <div className="w-full">
-                  <label className="flex w-full pb-1 mb-1 text-sm font-medium text-gray-500">
-                    Requirements
+                  <label className="block w-full mb-1 text-sm text-gray-500 font-small">
+                    Key Requirements
                   </label>
                   <textarea
-                    rows={5}
-                    className="w-full px-3 py-2 text-sm leading-relaxed text-gray-900 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
-                    placeholder="1. 3+ years of experience with React...&#10;2. English proficiency..."
+                    rows={4}
+                    className="w-full px-3 py-2 mt-1 text-sm text-gray-900 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                    placeholder="List the essential skills and architectural experience needed..."
                     value={requirements}
                     onChange={(e) => setRequirements(e.target.value)}
-                  ></textarea>
-                </div>
-
-                <div className="w-full">
-                  <label className="flex w-full pb-1 mb-1 text-sm font-medium text-gray-500">
-                    Benefits
-                  </label>
-                  <textarea
-                    rows={5}
-                    className="w-full px-3 py-2 text-sm leading-relaxed text-gray-900 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
-                    placeholder="1. Health insurance...&#10;2. 13th month salary..."
-                    value={benefits}
-                    onChange={(e) => setBenefits(e.target.value)}
-                  ></textarea>
+                  />
                 </div>
               </div>
             </div>
 
-            {/* Actions */}
+            {/* Buttons */}
             <div className="flex items-center justify-between mt-6">
               <span className="text-sm italic font-medium text-gray-500">
                 * Required
@@ -400,7 +435,6 @@ export default function AddJobPage() {
                   size="middle"
                   ghost
                   className="text-blue-500 border-blue-500 hover:bg-blue-50"
-                  onClick={() => router.push("/career")}
                 >
                   Cancel
                 </Button>
