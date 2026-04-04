@@ -13,6 +13,7 @@ export interface JobDto {
   id: string;
   employeeId: string;
   title?: string;
+  level?: string | null;
   jobTitleId?: string | null;
   jobTitleName?: string | null;
   subUnitId?: string | null;
@@ -37,6 +38,7 @@ export interface JobDto {
 export interface CreateJobDto {
   employeeId?: string;
   title?: string;
+  level?: string | null;
   jobTitleId?: string | null;
   jobTitleName?: string | null;
   subUnitId?: string | null;
