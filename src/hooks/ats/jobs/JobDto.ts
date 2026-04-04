@@ -31,8 +31,8 @@ export interface JobDto {
   fileUrl?: string | null;
   storageKey?: string | null;
   status: JobStatus;
-  createdDate?: string;
-  updatedDate?: string;
+  createDate?: string;
+  updateDate?: string;
 }
 
 export interface CreateJobDto {

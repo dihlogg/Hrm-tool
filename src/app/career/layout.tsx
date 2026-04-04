@@ -7,8 +7,7 @@ import MainLayout from "@/components/common/main-layout";
 import "@ant-design/v5-patch-for-react-19";
 
 const navItems = [
-  { href: "/career", label: "Job List" },
-  { href: "/career/add-job", label: "Add Job" },
+  { href: "/career", label: "Job Opportunities" },
 ];
 
 export default function CareerLayout({
@@ -25,11 +24,6 @@ export default function CareerLayout({
           {navItems.map((item) => {
             const isActive = (() => {
               if (item.href === "/career") {
-                return (
-                  pathname === "/career" ||
-                  (pathname.startsWith("/career/") &&
-                    !pathname.startsWith("/career/add-job"))
-                );
               }
               return (
                 pathname === item.href || pathname.startsWith(item.href + "/")
