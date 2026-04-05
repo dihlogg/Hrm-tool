@@ -55,13 +55,26 @@ export default function JobDetailsPage() {
     return "Full Time";
   };
 
-  const respList = job
-    .responsibilities!.split("\n")
-    .filter((r) => r.trim().length > 0);
+  const extractListItems = (htmlContent?: string) => {
+    if (!htmlContent) return [];
 
-  const reqList = job
-    .requirements!.split("\n")
-    .filter((r) => r.trim().length > 0);
+    const liMatches = [...htmlContent.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)];
+    if (liMatches.length > 0) {
+      return liMatches.map((m) => m[1].trim()).filter(Boolean);
+    }
+
+    const pMatches = [...htmlContent.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)];
+    if (pMatches.length > 0) {
+      return pMatches
+        .map((m) => m[1].trim())
+        .filter((text) => text !== "<br>" && text !== "");
+    }
+
+    return [htmlContent];
+  };
+
+  const respList = extractListItems(job.responsibilities!);
+  const reqList = extractListItems(job.requirements!);
 
   const techStack = job.parsedJson?.techStack || [
     "Node.js",
@@ -164,10 +177,12 @@ export default function JobDetailsPage() {
               <h2 className="mb-4 text-2xl font-bold text-gray-900">
                 About the Role
               </h2>
-              <p className="text-[15px] leading-relaxed text-gray-500 max-w-3xl">
-                {job.description ||
-                  "We are looking for a highly skilled Backend Developer to join our core engineering team. You will be responsible for building the scalable infrastructure that powers the Human Ledger, ensuring high performance and responsiveness to requests from the front-end. You'll work closely with product and design teams to build features that empower thousands of users globally."}
-              </p>
+              <div
+                className="text-[15px] leading-relaxed text-gray-500 max-w-3xl"
+                dangerouslySetInnerHTML={{
+                  __html: job.description || "No description provided.",
+                }}
+              />
             </section>
 
             {/* Responsibilities */}
@@ -182,9 +197,10 @@ export default function JobDetailsPage() {
                     className="flex items-start gap-3 p-5 transition-colors bg-white border border-gray-100 shadow-sm rounded-xl hover:border-orange-300 group"
                   >
                     <CheckCircleIcon />
-                    <span className="text-sm leading-relaxed text-gray-600">
-                      {resp}
-                    </span>
+                    <span
+                      className="text-sm leading-relaxed text-gray-600 [&>p]:m-0"
+                      dangerouslySetInnerHTML={{ __html: resp }}
+                    />
                   </div>
                 ))}
               </div>
@@ -201,9 +217,10 @@ export default function JobDetailsPage() {
                     <span className="text-orange-500 text-base leading-none mt-0.5">
                       ●
                     </span>
-                    <span className="text-[15px] leading-relaxed text-gray-500">
-                      {req}
-                    </span>
+                    <span
+                      className="text-[15px] leading-relaxed text-gray-500 [&>p]:m-0"
+                      dangerouslySetInnerHTML={{ __html: req }}
+                    />
                   </div>
                 ))}
               </div>
