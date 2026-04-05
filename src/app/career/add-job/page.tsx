@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import Script from "next/script";
 import { Button, message, notification, Select, DatePicker } from "antd";
 import { useCreateJob } from "@/hooks/ats/jobs/useCreateJob";
 import {
@@ -23,6 +24,16 @@ export default function AddJobPage() {
   const { jobTitles } = useJobTitles();
   const { subUnits } = useSubUnits();
   const [api, contextHolder] = notification.useNotification();
+
+  const [quillLoaded, setQuillLoaded] = useState(false);
+
+  const descRef = useRef<HTMLDivElement>(null);
+  const respRef = useRef<HTMLDivElement>(null);
+  const reqRef = useRef<HTMLDivElement>(null);
+
+  const quillDescInstance = useRef<any>(null);
+  const quillRespInstance = useRef<any>(null);
+  const quillReqInstance = useRef<any>(null);
 
   const [formErrors, setFormErrors] = useState<{
     level?: string;
@@ -52,6 +63,53 @@ export default function AddJobPage() {
   const [requirements, setRequirements] = useState("");
   const [benefits, setBenefits] = useState("");
 
+  useEffect(() => {
+    if (quillLoaded && typeof window !== "undefined" && (window as any).Quill) {
+      const Quill = (window as any).Quill;
+      const toolbarOptions = [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline", "link"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["clean"],
+      ];
+
+      if (descRef.current && !quillDescInstance.current) {
+        quillDescInstance.current = new Quill(descRef.current, {
+          theme: "snow",
+          modules: { toolbar: toolbarOptions },
+          placeholder:
+            "Describe the mission, the impact, and the day-to-day journey...",
+        });
+        quillDescInstance.current.on("text-change", () => {
+          setDescription(quillDescInstance.current.root.innerHTML);
+        });
+      }
+
+      if (respRef.current && !quillRespInstance.current) {
+        quillRespInstance.current = new Quill(respRef.current, {
+          theme: "snow",
+          modules: { toolbar: toolbarOptions },
+          placeholder: "List the essential day-to-day responsibilities...",
+        });
+        quillRespInstance.current.on("text-change", () => {
+          setResponsibilities(quillRespInstance.current.root.innerHTML);
+        });
+      }
+
+      if (reqRef.current && !quillReqInstance.current) {
+        quillReqInstance.current = new Quill(reqRef.current, {
+          theme: "snow",
+          modules: { toolbar: toolbarOptions },
+          placeholder:
+            "List the essential skills and architectural experience needed...",
+        });
+        quillReqInstance.current.on("text-change", () => {
+          setRequirements(quillReqInstance.current.root.innerHTML);
+        });
+      }
+    }
+  }, [quillLoaded]);
+
   const resetForm = () => {
     setLevel(undefined);
     setEmploymentType(undefined);
@@ -68,6 +126,10 @@ export default function AddJobPage() {
     setRequirements("");
     setBenefits("");
     setFormErrors({});
+
+    if (quillDescInstance.current) quillDescInstance.current.setContents([]);
+    if (quillRespInstance.current) quillRespInstance.current.setContents([]);
+    if (quillReqInstance.current) quillReqInstance.current.setContents([]);
   };
 
   const handleSubmit = async () => {
@@ -128,6 +190,17 @@ export default function AddJobPage() {
   return (
     <>
       {contextHolder}
+
+      <link
+        href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css"
+        rel="stylesheet"
+      />
+      <Script
+        src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"
+        strategy="lazyOnload"
+        onLoad={() => setQuillLoaded(true)}
+      />
+
       <div className="flex-1 w-full p-4 mt-2">
         <div className="w-full px-6 py-8 bg-white border border-gray-100 shadow-sm rounded-2xl md:px-10 md:py-10">
           {/* Header */}
@@ -378,47 +451,38 @@ export default function AddJobPage() {
                 <h2 className="!mt-2 text-xl font-bold text-gray-800">Brief</h2>
               </div>
 
-              <div className="grid grid-cols-1 gap-6">
+              <div className="grid grid-cols-1 gap-12">
                 {/* Description */}
                 <div className="w-full">
-                  <label className="block w-full mb-1 text-sm text-gray-500 font-small">
+                  <label className="block w-full mb-2 text-sm font-semibold text-gray-600">
                     Job Description
                   </label>
-                  <textarea
-                    rows={4}
-                    className="w-full px-3 py-2 mt-1 text-sm text-gray-900 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
-                    placeholder="Describe the mission, the impact, and the day-to-day journey..."
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
+                  <div className="bg-white rounded-md">
+                    {/* Element render Editor */}
+                    <div ref={descRef} className="h-[200px]" />
+                  </div>
                 </div>
 
                 {/* Responsibilities */}
                 <div className="w-full">
-                  <label className="block w-full mb-1 text-sm text-gray-500 font-small">
+                  <label className="block w-full mb-2 text-sm font-semibold text-gray-600">
                     Key Responsibilities
                   </label>
-                  <textarea
-                    rows={4}
-                    className="w-full px-3 py-2 mt-1 text-sm text-gray-900 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
-                    placeholder="List the essential day-to-day responsibilities..."
-                    value={responsibilities}
-                    onChange={(e) => setResponsibilities(e.target.value)}
-                  />
+                  <div className="bg-white rounded-md">
+                    {/* Element render Editor */}
+                    <div ref={respRef} className="h-[200px]" />
+                  </div>
                 </div>
 
                 {/* Requirements */}
                 <div className="w-full">
-                  <label className="block w-full mb-1 text-sm text-gray-500 font-small">
+                  <label className="block w-full mb-2 text-sm font-semibold text-gray-600">
                     Key Requirements
                   </label>
-                  <textarea
-                    rows={4}
-                    className="w-full px-3 py-2 mt-1 text-sm text-gray-900 bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
-                    placeholder="List the essential skills and architectural experience needed..."
-                    value={requirements}
-                    onChange={(e) => setRequirements(e.target.value)}
-                  />
+                  <div className="bg-white rounded-md">
+                    {/* Element render Editor */}
+                    <div ref={reqRef} className="h-[200px]" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -435,6 +499,7 @@ export default function AddJobPage() {
                   size="middle"
                   ghost
                   className="text-blue-500 border-blue-500 hover:bg-blue-50"
+                  onClick={() => router.back()} // Chỉnh thành back hoặc route mong muốn
                 >
                   Cancel
                 </Button>
