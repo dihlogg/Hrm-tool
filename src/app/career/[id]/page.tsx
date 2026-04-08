@@ -160,6 +160,7 @@ export default function JobDetailsPage() {
               <Button
                 type="primary"
                 size="large"
+                onClick={() => router.push(`/career/${id}/apply`)}
                 className="!bg-orange-500 hover:!bg-orange-600 !text-white !border-none !rounded-full !h-12 !px-8 font-bold flex items-center gap-2 shadow-md"
               >
                 Apply Now <ArrowRightOutlined />
