@@ -2,36 +2,65 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Spin, Empty, Button, Input, Select, Checkbox } from "antd";
-import {
-  SearchOutlined,
-  EnvironmentOutlined,
-} from "@ant-design/icons";
-import { useGetAllJobs } from "@/hooks/ats/jobs/useGetAllJobs";
+import { Spin, Empty, Button, Input, Select, Checkbox, Pagination } from "antd";
+import { SearchOutlined, EnvironmentOutlined } from "@ant-design/icons";
 import { EmploymentType } from "@/hooks/ats/jobs/JobDto";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { useGetJobList } from "@/hooks/ats/jobs/useGetJobList";
+import {
+  getInitialJobFilters,
+  JobFilters,
+} from "@/hooks/ats/jobs/JobFiltersDto";
+import { useJobTitles } from "@/hooks/employees/job-titles/useJobTitles";
 
 dayjs.extend(relativeTime);
 
 const { Option } = Select;
 
 export default function JobListPage() {
-  const { jobs, loading, error } = useGetAllJobs();
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
+  const [sortBy, setSortBy] = useState<string>("createDate");
+  const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("DESC");
 
-  const [keyword, setKeyword] = useState("");
-  const [location, setLocation] = useState("");
-  const [empType, setEmpType] = useState<string>("Full-time");
-  const [levels, setLevels] = useState<string[]>([]);
-  const safeJobs = jobs || [];
+  // Filters state
+  const [filters, setFilters] = useState<JobFilters>(getInitialJobFilters());
+  const [filterDrafts, setFilterDrafts] = useState<JobFilters>(
+    getInitialJobFilters(),
+  );
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center flex-1 w-full h-full min-h-[500px]">
-        <Spin size="large" />
-      </div>
-    );
-  }
+  const {
+    jobs: safeJobs,
+    total,
+    loading,
+    error,
+  } = useGetJobList(currentPage, pageSize, sortBy, sortOrder, filters);
+
+  const { jobTitles } = useJobTitles();
+
+  const handleApplyFilter = () => {
+    setFilters(filterDrafts);
+    setCurrentPage(1);
+  };
+  const handleResetFilter = () => {
+    const initial = getInitialJobFilters();
+    setFilterDrafts(initial);
+    setFilters(initial);
+    setCurrentPage(1);
+    setSortBy("createDate");
+    setSortOrder("DESC");
+  };
+
+  const handleSortChange = (val: string) => {
+    if (val === "earliest") {
+      setSortBy("createDate");
+      setSortOrder("DESC");
+    } else if (val === "oldest") {
+      setSortBy("createDate");
+      setSortOrder("ASC");
+    }
+  };
 
   if (error) {
     return (
@@ -69,38 +98,78 @@ export default function JobListPage() {
         </div>
 
         {/* Top Search Bar */}
-        <div className="flex flex-col gap-3 p-3 mb-8 bg-white border border-gray-100 shadow-sm md:flex-row rounded-2xl">
-          <Input
-            prefix={<SearchOutlined className="text-gray-400" />}
-            placeholder="Job title, company, or keywords"
-            className="flex-1 py-3 text-base border-none bg-gray-50 rounded-xl hover:bg-gray-100 focus:bg-white"
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
-          />
-          <Input
-            prefix={<EnvironmentOutlined className="text-gray-400" />}
-            placeholder="Location (Remote, Da Nang, SF)"
-            className="flex-1 py-3 text-base border-none bg-gray-50 rounded-xl hover:bg-gray-100 focus:bg-white"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
-          <div className="flex items-center w-full md:w-40 h-[50px] bg-gray-50 rounded-xl px-2 transition-colors hover:bg-gray-100 focus-within:bg-white focus-within:ring-2 focus-within:ring-orange-200">
+        <div className="flex flex-col gap-3 p-3 mb-8 bg-white border border-gray-100 shadow-sm md:flex-row md:items-center rounded-2xl">
+          <div className="flex items-center flex-1 h-[50px] bg-gray-50 rounded-xl px-2 transition-colors hover:bg-gray-100 focus-within:bg-white focus-within:ring-2 focus-within:ring-orange-200">
+            <SearchOutlined className="px-2 text-gray-400" />
             <Select
-              defaultValue="Full-time"
+              showSearch
+              placeholder="Select Job Title"
               variant="borderless"
               className="w-full text-base font-medium"
-              onChange={(val) => setEmpType(val)}
+              allowClear
+              value={filterDrafts.jobTitleName || undefined}
+              onChange={(value) =>
+                setFilterDrafts({ ...filterDrafts, jobTitleName: value })
+              }
             >
-              <Option value="Full-time">Full-time</Option>
-              <Option value="Part-time">Part-time</Option>
-              <Option value="Contract">Contract</Option>
+              {jobTitles.map((job) => (
+                <Option key={job.id} value={job.name}>
+                  {job.name}
+                </Option>
+              ))}
+            </Select>
+          </div>
+          <Input
+            prefix={<EnvironmentOutlined className="text-gray-400" />}
+            placeholder="Location (Da Nang, SF)"
+            className="flex-1 py-3 text-base border-none bg-gray-50 rounded-xl hover:bg-gray-100 focus:bg-white"
+            value={filterDrafts.location}
+            allowClear
+            onChange={(e) =>
+              setFilterDrafts({ ...filterDrafts, location: e.target.value })
+            }
+            onPressEnter={handleApplyFilter}
+          />
+          <div className="flex items-center w-full md:w-60 h-[50px] bg-gray-50 rounded-xl px-2 transition-colors hover:bg-gray-100 focus-within:bg-white focus-within:ring-2 focus-within:ring-orange-200">
+            <Select
+              placeholder="Employment Type"
+              defaultValue="FULL_TIME"
+              variant="borderless"
+              className="w-full text-base font-medium"
+              allowClear
+              value={filterDrafts.employmentType}
+              onChange={(value) =>
+                setFilterDrafts({ ...filterDrafts, employmentType: value })
+              }
+            >
+              <Option value="FULL_TIME">Full-time</Option>
+              <Option value="PART_TIME">Part-time</Option>
+              <Option value="REMOTE">Remote</Option>
             </Select>
           </div>
           <Button
             type="primary"
-            className="h-full px-8 text-base font-semibold bg-orange-500 border-none shadow-md hover:bg-orange-600 rounded-xl"
+            shape="round"
+            size="middle"
+            ghost
+            className="text-blue-500"
+            // className="text-blue-500 !h-[50px] px-6"
+            onClick={handleResetFilter}
           >
-            Find Workspace
+            Reset
+          </Button>
+          <Button
+            type="primary"
+            shape="round"
+            size="middle"
+            className="text-white bg-blue-500 hover:bg-blue-600"
+            // className="text-white bg-blue-500 hover:bg-blue-600 !h-[50px] px-6"
+            onClick={() => {
+              handleApplyFilter();
+              setCurrentPage(1);
+            }}
+          >
+            + Apply
           </Button>
         </div>
 
@@ -115,9 +184,20 @@ export default function JobListPage() {
               </h3>
               <Checkbox.Group
                 className="flex flex-col gap-3"
-                onChange={(checkedValues) =>
-                  setLevels(checkedValues as string[])
+                value={
+                  filterDrafts.level
+                    ? filterDrafts.level
+                        .split(",")
+                        .map((l) => l.trim())
+                        .filter(Boolean)
+                    : []
                 }
+                onChange={(checkedValues) => {
+                  setFilterDrafts({
+                    ...filterDrafts,
+                    level: checkedValues.join(", "),
+                  });
+                }}
               >
                 <Checkbox value="Senior" className="font-medium text-gray-600">
                   Senior (5+ years)
@@ -145,22 +225,27 @@ export default function JobListPage() {
           <div className="flex flex-col flex-1 gap-4">
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-lg font-bold text-gray-800">
-                {safeJobs.length} Available Opportunities
+                {total} Available Opportunities
               </h2>
               <div className="flex items-center gap-2 text-sm">
                 <span className="text-gray-500">Sort by:</span>
                 <Select
-                  defaultValue="recent"
+                  defaultValue="earliest"
                   variant="borderless"
                   className="font-sans font-semibold text-orange-600"
+                  onChange={handleSortChange}
                 >
-                  <Option value="recent">Most Recent</Option>
-                  <Option value="relevant">Most Relevant</Option>
+                  <Option value="earliest">Earliest</Option>
+                  <Option value="oldest">Oldest</Option>
                 </Select>
               </div>
             </div>
 
-            {safeJobs.length === 0 ? (
+            {loading ? (
+              <div className="flex flex-col items-center justify-center p-12 bg-white border border-gray-100 shadow-sm rounded-2xl">
+                <Spin size="large" />
+              </div>
+            ) : safeJobs.length === 0 ? (
               <div className="flex flex-col items-center justify-center p-12 bg-white border border-gray-100 shadow-sm rounded-2xl">
                 <Empty
                   description={
@@ -171,7 +256,7 @@ export default function JobListPage() {
                 />
               </div>
             ) : (
-              safeJobs.map((job, idx) => {
+              safeJobs.map((job) => {
                 const empTypeStr =
                   job.employmentType === EmploymentType.FULL_TIME
                     ? "Full-time"
@@ -243,6 +328,19 @@ export default function JobListPage() {
                   </div>
                 );
               })
+            )}
+
+            {/* Pagination */}
+            {!loading && total > 0 && (
+              <div className="flex justify-end mt-4">
+                <Pagination
+                  current={currentPage}
+                  pageSize={pageSize}
+                  total={total}
+                  onChange={(page) => setCurrentPage(page)}
+                  showSizeChanger={false}
+                />
+              </div>
             )}
           </div>
         </div>
