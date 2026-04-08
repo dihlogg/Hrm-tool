@@ -282,8 +282,8 @@ export default function AddJobPage() {
                       setFormErrors((prev) => ({ ...prev, level: undefined }));
                     }}
                   >
-                    <Option value="Intern-Fresher">Intern</Option>
-                    <Option value="Intern-Fresher">Fresher</Option>
+                    <Option value="Intern">Intern</Option>
+                    <Option value="Fresher">Fresher</Option>
                     <Option value="Junior">Junior</Option>
                     <Option value="Mid-Level">Mid-Level</Option>
                     <Option value="Senior">Senior</Option>
