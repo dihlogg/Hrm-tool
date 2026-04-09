@@ -76,14 +76,10 @@ export default function JobDetailsPage() {
   const respList = extractListItems(job.responsibilities!);
   const reqList = extractListItems(job.requirements!);
 
-  const techStack = job.parsedJson?.techStack || [
-    "Node.js",
-    "TypeScript",
-    "PostgreSQL",
-    "Redis",
-    "Kubernetes",
-    "AWS",
-  ];
+  const listSkills =
+    job.entitySkills?.map(
+      (es) => es.standardizedName || es.skill?.name || "Unknown Skill",
+    ) || [];
 
   const deadline = job.toDate ? dayjs(job.toDate).format("DD MMM YYYY") : null;
 
@@ -179,7 +175,7 @@ export default function JobDetailsPage() {
                 About the Role
               </h2>
               <div
-                className="text-[15px] leading-relaxed text-gray-500 max-w-3xl"
+                className="text-[15px] leading-relaxed text-gray-500 max-w-3xl break-all [overflow-wrap:anywhere] [&_*]:break-all"
                 dangerouslySetInnerHTML={{
                   __html: job.description || "No description provided.",
                 }}
@@ -195,11 +191,11 @@ export default function JobDetailsPage() {
                 {respList.map((resp, index) => (
                   <div
                     key={index}
-                    className="flex items-start gap-3 p-5 transition-colors bg-white border border-gray-100 shadow-sm rounded-xl hover:border-orange-300 group"
+                    className="flex items-start min-w-0 gap-3 p-5 transition-colors bg-white border border-gray-100 shadow-sm rounded-xl hover:border-orange-300 group"
                   >
                     <CheckCircleIcon />
-                    <span
-                      className="text-sm leading-relaxed text-gray-600 [&>p]:m-0"
+                    <div
+                      className="min-w-0 flex-1 text-sm leading-relaxed text-gray-600 break-all [overflow-wrap:anywhere] [&_*]:break-all [&>p]:m-0"
                       dangerouslySetInnerHTML={{ __html: resp }}
                     />
                   </div>
@@ -214,12 +210,12 @@ export default function JobDetailsPage() {
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
                 {reqList.map((req, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <span className="text-orange-500 text-base leading-none mt-0.5">
+                  <div key={index} className="flex items-start min-w-0 gap-3">
+                    <span className="shrink-0 text-orange-500 text-base leading-none mt-0.5">
                       ●
                     </span>
-                    <span
-                      className="text-[15px] leading-relaxed text-gray-500 [&>p]:m-0"
+                    <div
+                      className="min-w-0 flex-1 text-[15px] leading-relaxed text-gray-500 break-all [overflow-wrap:anywhere] [&_*]:break-all [&>p]:m-0"
                       dangerouslySetInnerHTML={{ __html: req }}
                     />
                   </div>
@@ -270,18 +266,22 @@ export default function JobDetailsPage() {
               {/* Tech Stack */}
               <div className="pt-5 border-t border-gray-200">
                 <h4 className="mb-3 text-sm font-bold text-gray-900">
-                  Tech Stack
+                  Tech Stack & Skills
                 </h4>
                 <div className="flex flex-wrap gap-2">
-                  {(Array.isArray(techStack) ? techStack : []).map(
-                    (tech: string, index: number) => (
+                  {listSkills.length > 0 ? (
+                    listSkills.map((tech: string, index: number) => (
                       <Tag
                         key={index}
                         className="!bg-white !border-gray-200 !text-gray-700 !rounded-lg !px-3 !py-1 !text-sm !font-medium !m-0"
                       >
                         {tech}
                       </Tag>
-                    ),
+                    ))
+                  ) : (
+                    <span className="text-sm text-gray-400">
+                      Không có yêu cầu kỹ năng cụ thể
+                    </span>
                   )}
                 </div>
               </div>

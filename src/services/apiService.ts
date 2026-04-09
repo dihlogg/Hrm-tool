@@ -126,4 +126,9 @@ export const API_ENDPOINTS = {
   POST_JOB: `${HRM_ATS_API_URL}/Jobs/CreateJob`,
   PUT_JOB: `${HRM_ATS_API_URL}/Jobs/UpdateJob`,
   DELETE_JOB: `${HRM_ATS_API_URL}/Jobs/DeleteJob`,
+
+  GET_ALL_SKILLS: `${HRM_ATS_API_URL}/Skills/GetAllSkills`,
+
+  GET_PRESIGNED_URL: `${HRM_ATS_API_URL}/applications/presigned-url`,
+  APPLY_JOB: `${HRM_ATS_API_URL}/applications/apply`,
 };
