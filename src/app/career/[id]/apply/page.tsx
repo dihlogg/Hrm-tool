@@ -15,6 +15,7 @@ import {
 } from "@ant-design/icons";
 import { useGetJobById } from "@/hooks/ats/jobs/useGetJobById";
 import { EmploymentType } from "@/hooks/ats/jobs/JobDto";
+import { useApplyJob } from "@/hooks/ats/jobs/useApplyJob";
 
 const { TextArea } = Input;
 const { Dragger } = Upload;
@@ -24,9 +25,10 @@ export default function ApplyJobPage() {
   const router = useRouter();
   const id = params?.id as string;
 
-  const { job, loading, error } = useGetJobById(id);
+  const { job, loading: loadingJob, error: jobError } = useGetJobById(id);
+  const { applyForJob, loading: isSubmitting } = useApplyJob();
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -35,7 +37,7 @@ export default function ApplyJobPage() {
     coverLetter: "",
   });
 
-  if (loading) {
+  if (loadingJob) {
     return (
       <div className="flex flex-col items-center justify-center flex-1 w-full h-full min-h-[500px]">
         <Spin size="large" />
@@ -43,7 +45,7 @@ export default function ApplyJobPage() {
     );
   }
 
-  if (error || !job) {
+  if (jobError || !job) {
     return (
       <div className="flex flex-col items-center justify-center flex-1 w-full h-full min-h-[500px] text-red-500">
         Job not found or an error occurred.
@@ -58,19 +60,31 @@ export default function ApplyJobPage() {
     return "Full-time";
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!formData.fullName || !formData.email || !formData.phone) {
       message.warning("Please fill in all required fields!");
       return;
     }
 
-    setIsSubmitting(true);
-    // Mock API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    if (!selectedFile) {
+      message.warning("Please upload your CV/Resume!");
+      return;
+    }
+
+    try {
+      await applyForJob(selectedFile, {
+        jobId: job.id,
+        fullName: formData.fullName,
+        email: formData.email,
+        phoneNumber: formData.phone,
+        profileUrl: formData.linkedIn,
+        coverLetter: formData.coverLetter,
+      });
       message.success("Application submitted successfully!");
       router.push("/career");
-    }, 1500);
+    } catch (error: any) {
+      message.error(error.message || "Something went wrong while applying!");
+    }
   };
 
   return (
@@ -198,7 +212,22 @@ export default function ApplyJobPage() {
                     <Dragger
                       name="file"
                       multiple={false}
-                      beforeUpload={() => false}
+                      beforeUpload={(file) => {
+                        const isValidFormat =
+                          file.type === "application/pdf" ||
+                          file.type ===
+                            "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                        if (!isValidFormat) {
+                          message.error(
+                            "You can only upload PDF or DOCX files!",
+                          );
+                          return Upload.LIST_IGNORE;
+                        }
+                        setSelectedFile(file);
+                        return false;
+                      }}
+                      onRemove={() => setSelectedFile(null)}
+                      fileList={selectedFile ? [selectedFile as any] : []}
                       className="flex-1 !bg-gray-50 !p-4 rounded-xl transition-colors hover:!border-orange-400 [&_.ant-upload-drag-container]:!text-center"
                     >
                       <div className="flex flex-col items-center justify-center h-full text-center">
@@ -215,12 +244,12 @@ export default function ApplyJobPage() {
                           type="primary"
                           shape="round"
                           size="middle"
-                          className="px-8 font-bold text-white !bg-orange-400 border-none shadow-md hover:!bg-orange-500"
+                          className="px-8 font-bold text-white !bg-orange-400 border-none shadow-md hover:!bg-orange-500 pointer-events-none"
                         >
-                          Upload CV
+                          Select CV
                         </Button>
                         <p className="!mt-3 text-[11px] text-gray-400">
-                          Accepted formats: PDF, DOCX. Only using english CVs
+                          Accepted formats: PDF, DOCX.
                         </p>
                       </div>
                     </Dragger>
@@ -228,7 +257,6 @@ export default function ApplyJobPage() {
                 </div>
 
                 {/* Action Buttons */}
-
                 <div className="grid justify-end grid-flow-col gap-2 mt-4">
                   <Button
                     type="primary"

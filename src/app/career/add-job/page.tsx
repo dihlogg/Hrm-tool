@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/contexts/authContext";
 import { useJobTitles } from "@/hooks/employees/job-titles/useJobTitles";
 import { useSubUnits } from "@/hooks/employees/sub-units/useSubUnits";
+import { useGetAllSkills } from "@/hooks/ats/skills/useGetAllSkills";
 
 const { Option } = Select;
 
@@ -23,9 +24,13 @@ export default function AddJobPage() {
   const { employee } = useAuthContext();
   const { jobTitles } = useJobTitles();
   const { subUnits } = useSubUnits();
+
+  const { skills, loading: loadingSkills } = useGetAllSkills();
+
   const [api, contextHolder] = notification.useNotification();
 
   const [quillLoaded, setQuillLoaded] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const descRef = useRef<HTMLDivElement>(null);
   const respRef = useRef<HTMLDivElement>(null);
@@ -62,6 +67,47 @@ export default function AddJobPage() {
   const [responsibilities, setResponsibilities] = useState("");
   const [requirements, setRequirements] = useState("");
   const [benefits, setBenefits] = useState("");
+
+  type SkillRow = {
+    skillId: string;
+    skillName: string;
+    years: number | "";
+    importance: "Must-have" | "Nice-to-have";
+  };
+
+  const [skillRows, setSkillRows] = useState<SkillRow[]>([
+    { skillId: "", skillName: "", years: "", importance: "Must-have" },
+  ]);
+
+  const skillOptions = skills.map((s) => ({
+    label: s.name,
+    value: s.id,
+  }));
+
+  const addSkillRow = () => {
+    setSkillRows((prev) => [
+      ...prev,
+      { skillId: "", skillName: "", years: "", importance: "Must-have" },
+    ]);
+  };
+
+  const removeSkillRow = (index: number) => {
+    setSkillRows((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const updateSkillRow = <K extends keyof SkillRow>(
+    index: number,
+    field: K,
+    value: SkillRow[K],
+  ) => {
+    setSkillRows((prev) =>
+      prev.map((row, i) => (i === index ? { ...row, [field]: value } : row)),
+    );
+  };
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (quillLoaded && typeof window !== "undefined" && (window as any).Quill) {
@@ -125,6 +171,9 @@ export default function AddJobPage() {
     setResponsibilities("");
     setRequirements("");
     setBenefits("");
+    setSkillRows([
+      { skillId: "", skillName: "", years: "", importance: "Must-have" },
+    ]);
     setFormErrors({});
 
     if (quillDescInstance.current) quillDescInstance.current.setContents([]);
@@ -149,6 +198,15 @@ export default function AddJobPage() {
     }
 
     try {
+      const formattedSkills = skillRows
+        .filter((r) => r.skillId !== "")
+        .map((r) => ({
+          skillId: r.skillId,
+          skillName: r.skillName,
+          experienceYears: r.years === "" ? 0 : Number(r.years),
+          // có thể cân nhắc lưu 'importance' vào bảng EntitySkill sau này
+        }));
+
       const payload: CreateJobDto = {
         employeeId: employee?.id,
         jobTitleId,
@@ -165,6 +223,12 @@ export default function AddJobPage() {
         responsibilities,
         requirements,
         benefits,
+
+        skills: formattedSkills,
+
+        parsedJson: {
+          skills: skillRows.filter((r) => r.skillId !== ""),
+        },
       };
 
       await createJob(payload);
@@ -225,7 +289,6 @@ export default function AddJobPage() {
                   Details
                 </h2>
               </div>
-
               <div className="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
                 {/* Job Title */}
                 <div className="flex flex-col items-start">
@@ -442,7 +505,7 @@ export default function AddJobPage() {
               </div>
             </div>
 
-            {/* Section 02: The Brief */}
+            {/* --- Section 02: The Brief --- */}
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <span className="bg-orange-50 text-orange-600 font-bold px-2 py-0.5 rounded text-base tracking-wide">
@@ -452,36 +515,125 @@ export default function AddJobPage() {
               </div>
 
               <div className="grid grid-cols-1 gap-12">
-                {/* Description */}
                 <div className="w-full">
                   <label className="block w-full mb-2 text-sm font-semibold text-gray-600">
                     Job Description
                   </label>
                   <div className="bg-white rounded-md">
-                    {/* Element render Editor */}
-                    <div ref={descRef} className="h-[200px]" />
+                    {mounted && quillLoaded && (
+                      <div ref={descRef} className="h-[200px]" />
+                    )}
                   </div>
                 </div>
 
-                {/* Responsibilities */}
                 <div className="w-full">
                   <label className="block w-full mb-2 text-sm font-semibold text-gray-600">
                     Key Responsibilities
                   </label>
                   <div className="bg-white rounded-md">
-                    {/* Element render Editor */}
-                    <div ref={respRef} className="h-[200px]" />
+                    {mounted && quillLoaded && (
+                      <div ref={respRef} className="h-[200px]" />
+                    )}
                   </div>
                 </div>
 
-                {/* Requirements */}
                 <div className="w-full">
                   <label className="block w-full mb-2 text-sm font-semibold text-gray-600">
                     Key Requirements
                   </label>
                   <div className="bg-white rounded-md">
-                    {/* Element render Editor */}
-                    <div ref={reqRef} className="h-[200px]" />
+                    {mounted && quillLoaded && (
+                      <div ref={reqRef} className="h-[200px]" />
+                    )}
+                  </div>
+                </div>
+
+                {/* Skills & Expertise */}
+                <div className="w-full">
+                  <label className="block w-full mb-3 text-sm font-semibold text-gray-600">
+                    Skills &amp; Expertise
+                  </label>
+                  <div className="flex flex-col gap-3">
+                    {skillRows.map((row, index) => (
+                      <div key={index} className="flex items-center gap-6">
+                        {/* Skill name */}
+                        <Select
+                          className="flex-1"
+                          placeholder="Select skill"
+                          value={row.skillId || undefined}
+                          showSearch
+                          allowClear
+                          loading={loadingSkills}
+                          options={skillOptions}
+                          filterOption={(input, option) =>
+                            (option?.label ?? "")
+                              .toLowerCase()
+                              .includes(input.toLowerCase())
+                          }
+                          onChange={(val, option: any) => {
+                            updateSkillRow(index, "skillId", val ?? "");
+                            updateSkillRow(
+                              index,
+                              "skillName",
+                              option?.label ?? "",
+                            );
+                          }}
+                        />
+
+                        {/* Years */}
+                        <input
+                          type="number"
+                          min={0}
+                          max={50}
+                          placeholder="0"
+                          value={row.years}
+                          onChange={(e) =>
+                            updateSkillRow(
+                              index,
+                              "years",
+                              e.target.value === ""
+                                ? ""
+                                : Number(e.target.value),
+                            )
+                          }
+                          className="w-16 px-2 py-1 text-sm text-center border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+                        />
+                        <span className="text-xs font-medium text-gray-400">
+                          YRS
+                        </span>
+
+                        {/* Importance */}
+                        <Select
+                          className="w-40"
+                          value={row.importance}
+                          onChange={(val) =>
+                            updateSkillRow(index, "importance", val)
+                          }
+                          options={[
+                            { label: "Must-have", value: "Must-have" },
+                            { label: "Nice-to-have", value: "Nice-to-have" },
+                          ]}
+                        />
+
+                        {/* Remove */}
+                        <button
+                          type="button"
+                          onClick={() => removeSkillRow(index)}
+                          className="text-lg leading-none text-gray-300 transition-colors cursor-pointer hover:text-red-400"
+                          aria-label="Remove skill"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+
+                    <button
+                      type="button"
+                      onClick={addSkillRow}
+                      className="self-start mt-1 text-sm font-medium text-blue-500 cursor-pointer hover:text-blue-600"
+                    >
+                      + Add another skill
+                    </button>
                   </div>
                 </div>
               </div>
@@ -499,7 +651,7 @@ export default function AddJobPage() {
                   size="middle"
                   ghost
                   className="text-blue-500 border-blue-500 hover:bg-blue-50"
-                  onClick={() => router.back()} // Chỉnh thành back hoặc route mong muốn
+                  onClick={() => router.back()}
                 >
                   Cancel
                 </Button>

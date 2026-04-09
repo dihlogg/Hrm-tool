@@ -33,6 +33,16 @@ export interface JobDto {
   status: JobStatus;
   createDate?: string;
   updateDate?: string;
+
+  entitySkills?: {
+    id: string;
+    experienceYears?: number;
+    standardizedName?: string;
+    skill?: {
+      id: string;
+      name: string;
+    };
+  }[];
 }
 
 export interface CreateJobDto {
@@ -56,4 +66,9 @@ export interface CreateJobDto {
   fileUrl?: string;
   storageKey?: string;
   status?: JobStatus;
+  skills?: {
+    skillId: string;
+    skillName: string;
+    experienceYears?: number;
+  }[];
 }
