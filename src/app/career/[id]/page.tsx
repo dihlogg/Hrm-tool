@@ -161,6 +161,13 @@ export default function JobDetailsPage() {
               >
                 Apply Now <ArrowRightOutlined />
               </Button>
+              <Button
+                size="large"
+                onClick={() => router.push(`/career/${id}/candidates`)}
+                className="!rounded-full !h-12 !px-8 font-bold"
+              >
+                View Candidates
+              </Button>
             </div>
           </div>
         </header>
