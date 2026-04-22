@@ -16,7 +16,7 @@ export default function MainLayout({
       <Layout className="flex flex-col h-full">
         <HeaderComponent />
         <Layout.Content
-          className="p-3 bg-[#F1F5F9] flex-1 overflow-auto"
+          className="relative p-3 bg-[#F1F5F9] flex-1 overflow-auto"
         >
           {children}
         </Layout.Content>

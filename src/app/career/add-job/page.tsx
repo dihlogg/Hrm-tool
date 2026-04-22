@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Script from "next/script";
-import { Button, message, notification, Select, DatePicker } from "antd";
+import { Button, message, notification, Select, DatePicker, Spin } from "antd";
 import { useCreateJob } from "@/hooks/ats/jobs/useCreateJob";
 import {
   CreateJobDto,
@@ -31,6 +31,7 @@ export default function AddJobPage() {
 
   const [quillLoaded, setQuillLoaded] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const descRef = useRef<HTMLDivElement>(null);
   const respRef = useRef<HTMLDivElement>(null);
@@ -197,6 +198,7 @@ export default function AddJobPage() {
       return;
     }
 
+    setSubmitting(true);
     try {
       const formattedSkills = skillRows
         .filter((r) => r.skillId !== "")
@@ -248,6 +250,8 @@ export default function AddJobPage() {
         description: msg,
         placement: "bottomLeft",
       });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -265,7 +269,15 @@ export default function AddJobPage() {
         onLoad={() => setQuillLoaded(true)}
       />
 
-      <div className="flex-1 w-full p-4 mt-2">
+      <div className="relative flex-1 w-full p-4 mt-2">
+        {submitting && (
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center rounded-2xl bg-white/70 backdrop-blur-sm">
+            <Spin size="large" />
+            <p className="mt-3 text-sm font-medium text-gray-500 animate-pulse">
+              Creating opportunity…
+            </p>
+          </div>
+        )}
         <div className="w-full px-6 py-8 bg-white border border-gray-100 shadow-sm rounded-2xl md:px-10 md:py-10">
           {/* Header */}
           <div className="mb-1">
@@ -660,6 +672,7 @@ export default function AddJobPage() {
                   shape="round"
                   size="middle"
                   className="text-white bg-blue-500 hover:bg-blue-600"
+                  disabled={submitting}
                   onClick={handleSubmit}
                 >
                   + Apply

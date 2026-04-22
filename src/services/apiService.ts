@@ -130,5 +130,7 @@ export const API_ENDPOINTS = {
   GET_ALL_SKILLS: `${HRM_ATS_API_URL}/Skills/GetAllSkills`,
 
   GET_PRESIGNED_URL: `${HRM_ATS_API_URL}/applications/presigned-url`,
+  GET_CV_DOWNLOAD_URL: `${HRM_ATS_API_URL}/applications/presigned-url/download`,
   APPLY_JOB: `${HRM_ATS_API_URL}/applications/apply`,
+  GET_RANKED_CANDIDATES: `${HRM_ATS_API_URL}/applications/by-job`,
 };
