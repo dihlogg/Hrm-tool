@@ -318,7 +318,8 @@ export default function JobListPage() {
                     <div className="flex items-center justify-end gap-4 mt-4 md:mt-0 shrink-0">
                       <Link href={`/career/${job.id}`}>
                         <Button
-                          type="primary"
+                          type="dashed"
+                          // variant="filled"
                           className="h-10 px-6 font-semibold text-white bg-orange-500 border border-orange-500 shadow-sm rounded-xl hover:bg-orange-600"
                         >
                           Details
