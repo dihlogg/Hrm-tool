@@ -134,4 +134,5 @@ export const API_ENDPOINTS = {
   GET_CV_DOWNLOAD_URL: `${HRM_ATS_API_URL}/applications/presigned-url/download`,
   APPLY_JOB: `${HRM_ATS_API_URL}/applications/apply`,
   GET_RANKED_CANDIDATES: `${HRM_ATS_API_URL}/applications/by-job`,
+  HIRE_CANDIDATE: `${HRM_ATS_API_URL}/applications`,
 };
