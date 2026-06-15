@@ -48,6 +48,7 @@ export const API_ENDPOINTS = {
   GET_SUPERVISOR_EMPLOYEE: `${HRM_API_URL}/Employees/GetSupervisorEmployee`,
   GET_DIRECTOR_BY_SUB_UNIT: `${HRM_API_URL}/Employees/GetDirectorBySubUnit`,
   GET_PARENT_FOR_EMPLOYEE: `${HRM_API_URL}/Employees/GetParentEmployee`,
+  CREATE_USER_ACCOUNT: `${HRM_API_URL}/Employees/CreateUserAccount`,
   //job titles
   GET_ALL_JOB_TITLES: `${HRM_API_URL}/JobTitles/GetAllJobTitles`,
   GET_JOB_TITLE_BY_ID: `${HRM_API_URL}/JobTitles/GetJobTitleById`,
