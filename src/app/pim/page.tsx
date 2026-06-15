@@ -11,6 +11,7 @@ import {
   Descriptions,
   notification,
   Popover,
+  message,
 } from "antd";
 import { useState } from "react";
 import {
@@ -18,6 +19,7 @@ import {
   CloudUploadOutlined,
   SelectOutlined,
   DeleteOutlined,
+  UserAddOutlined,
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { CreateEmployeeDto } from "@/hooks/employees/CreateEmployeeDto";
@@ -30,6 +32,8 @@ import {
   getInitialFilters,
 } from "@/hooks/employees/EmployeeFiltersDto";
 import { usePatchEmployeeStatus } from "@/hooks/employees/usePatchEmployeeStatus";
+import { useCreateUserAccount } from "@/hooks/employees/useCreateUserAccount";
+import { useUserStatuses } from "@/hooks/users/user-statuses/useUserStatuses";
 import { exportPDF } from "@/utils/exportPDF";
 import { API_ENDPOINTS } from "@/services/apiService";
 import axiosInstance from "@/utils/auth/axiosInstance";
@@ -50,6 +54,21 @@ export default function EmployeeListPage() {
   const { employeeStatuses, error: employeeStatusError } =
     useGetEmployeeStatus();
   const { updateEmployeeStatus } = usePatchEmployeeStatus();
+  const { userStatuses, error: userStatusError } = useUserStatuses();
+  const { createUserAccount, loading: creatingAccount } = useCreateUserAccount();
+
+  // Create User Account States
+  const [isCreateAccountModalOpen, setIsCreateAccountModalOpen] = useState(false);
+  const [selectedEmployeeForAccount, setSelectedEmployeeForAccount] = useState<CreateEmployeeDto | null>(null);
+  const [username, setUsername] = useState("");
+  const [userStatus, setUserStatus] = useState<"Active" | "Inactive">("Active");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<{ confirmPassword?: string }>({});
+  const [accountFormErrors, setAccountFormErrors] = useState<{
+    userName?: string;
+    password?: string;
+  }>({});
 
   //filter
   const [filters, setFilters] = useState<EmployeeFilters>(getInitialFilters());
@@ -71,6 +90,55 @@ export default function EmployeeListPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleCancel = () => {
     setIsModalOpen(false);
+  };
+
+  const handleCreateAccountCancel = () => {
+    setIsCreateAccountModalOpen(false);
+    setSelectedEmployeeForAccount(null);
+    setUsername("");
+    setPassword("");
+    setConfirmPassword("");
+    setUserStatus("Active");
+    setFieldErrors({});
+    setAccountFormErrors({});
+  };
+
+  const handleCreateAccountSubmit = async () => {
+    const selectedStatus = userStatuses.find((s) => s.name === userStatus);
+    const errors: typeof accountFormErrors = {};
+
+    if (!username.trim()) errors.userName = "*Required";
+    if (!password.trim()) errors.password = "*Required";
+
+    setAccountFormErrors(errors);
+
+    if (Object.keys(errors).length > 0 || fieldErrors.confirmPassword) {
+      message.warning("Please fill in all required fields correctly!");
+      return;
+    }
+
+    if (selectedEmployeeForAccount?.id) {
+      try {
+        await createUserAccount(selectedEmployeeForAccount.id, {
+          userName: username,
+          password,
+          userStatusId: selectedStatus?.id ?? "",
+        });
+        api.success({
+          message: "User Account Created!",
+          description: `Account created for ${selectedEmployeeForAccount.firstName} ${selectedEmployeeForAccount.lastName}.`,
+          placement: "bottomLeft",
+        });
+        handleCreateAccountCancel();
+        setHotReload((prev) => prev + 1); // Refresh list
+      } catch (err: unknown) {
+        api.error({
+          message: "Account Creation Failed!",
+          description: err instanceof Error ? err.message : "Unknown error",
+          placement: "bottomLeft",
+        });
+      }
+    }
   };
 
   const [isOpenModalChangeStatus, setIsOpenModalChangeStatus] = useState(false);
@@ -252,6 +320,20 @@ export default function EmployeeListPage() {
           >
             <SelectOutlined style={{ fontSize: "16px", color: "#6B7280" }} />
           </Button>
+          {!record.userId && (
+            <Button
+              type="default"
+              shape="circle"
+              className="p-2 text-gray-600 cursor-pointer hover:text-green-600 border-green-200"
+              onClick={() => {
+                setSelectedEmployeeForAccount(record);
+                setIsCreateAccountModalOpen(true);
+              }}
+              title="Create User Account"
+            >
+              <UserAddOutlined style={{ fontSize: "16px", color: "#16a34a" }} />
+            </Button>
+          )}
         </div>
       ),
     },
@@ -578,6 +660,152 @@ export default function EmployeeListPage() {
           <p className="mt-2 text-sm text-gray-500">
             This action will update their status to inactive.
           </p>
+        </Modal>
+        
+        {/* Create User Account Modal */}
+        <Modal
+          title={`Create Account for ${selectedEmployeeForAccount?.firstName || ""} ${selectedEmployeeForAccount?.lastName || ""}`}
+          open={isCreateAccountModalOpen}
+          onCancel={handleCreateAccountCancel}
+          footer={[
+            <Button key="cancel" onClick={handleCreateAccountCancel} shape="round">
+              Cancel
+            </Button>,
+            <Button
+              key="submit"
+              type="primary"
+              loading={creatingAccount}
+              onClick={handleCreateAccountSubmit}
+              shape="round"
+              className="bg-blue-500 hover:bg-blue-600 text-white"
+            >
+              Save
+            </Button>,
+          ]}
+          width={{
+            xs: "90%",
+            sm: "80%",
+            md: "70%",
+            lg: "60%",
+            xl: "50%",
+            xxl: "40%",
+          }}
+        >
+          <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 bg-[#F1F5F9] mt-4 px-4 py-4 rounded-xl">
+            <div className="flex flex-col items-start">
+              <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
+                User Name
+                {accountFormErrors.userName && (
+                  <span className="!mt-1 text-sm text-red-500">
+                    {accountFormErrors.userName}
+                  </span>
+                )}
+              </label>
+              <input
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                type="text"
+                placeholder="Type for hints..."
+                value={username}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                  setAccountFormErrors((prev) => ({
+                    ...prev,
+                    userName: undefined,
+                  }));
+                }}
+              />
+            </div>
+            <div>
+              <label className="text-sm text-gray-500">Status</label>
+              <div className="flex flex-wrap gap-4 mt-2">
+                {userStatuses.map((status) => (
+                  <label
+                    key={status.id}
+                    className="inline-flex items-center gap-1 text-sm text-gray-700"
+                  >
+                    <input
+                      type="radio"
+                      name="userStatus"
+                      value={status.name}
+                      checked={userStatus === status.name}
+                      onChange={(e) =>
+                        setUserStatus(e.target.value as "Active" | "Inactive")
+                      }
+                      className="w-4 h-4"
+                    />
+                    {status.name}
+                  </label>
+                ))}
+              </div>
+              {userStatusError && (
+                <p className="mt-1 text-sm text-red-500">{userStatusError}</p>
+              )}
+            </div>
+
+            <div className="flex flex-col">
+              <label className="flex justify-between mt-4 text-sm text-gray-500">
+                Password
+                {accountFormErrors.password && (
+                  <span className="!mt-1 text-sm text-red-500">
+                    {accountFormErrors.password}
+                  </span>
+                )}
+              </label>
+              <input
+                className="w-full px-3 py-2 !mt-1 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                type="password"
+                placeholder="Enter new password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setAccountFormErrors((prev) => ({
+                    ...prev,
+                    password: undefined,
+                  }));
+                }}
+              />
+              <p className="!mt-2 text-sm text-gray-500">
+                For a strong password, please use a hard to guess combination
+                with upper and lower case characters, symbols, and numbers
+              </p>
+            </div>
+            <div className="flex flex-col">
+              <label className="mt-4 text-sm text-gray-500">
+                Confirm Password*
+              </label>
+              <input
+                type="password"
+                placeholder="Confirm new password"
+                className={`w-full px-3 py-2 !mt-1 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-blue-400 ${
+                  fieldErrors.confirmPassword
+                    ? "border-red-400 focus:ring focus:ring-red-200"
+                    : "border-gray-200"
+                }`}
+                value={confirmPassword}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setConfirmPassword(value);
+
+                  if (value !== password) {
+                    setFieldErrors((prev) => ({
+                      ...prev,
+                      confirmPassword: "Passwords do not match !",
+                    }));
+                  } else {
+                    setFieldErrors((prev) => ({
+                      ...prev,
+                      confirmPassword: undefined,
+                    }));
+                  }
+                }}
+              />
+              {fieldErrors.confirmPassword && (
+                <p className="!mt-2 text-sm text-red-500">
+                  {fieldErrors.confirmPassword}
+                </p>
+              )}
+            </div>
+          </div>
         </Modal>
       </div>
     </>
