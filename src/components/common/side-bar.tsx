@@ -20,7 +20,7 @@ const SidebarComponent = () => {
   const labelStyle = { fontSize: 14, fontWeight: 500, color: "#6B7280" };
 
   const getSelectedKey = () => {
-    if (pathname === "/") return "dashboard";
+    if (pathname === "/" || pathname.startsWith("/dashboard")) return "dashboard";
     if (pathname.startsWith("/admin")) return "admin";
     if (pathname.startsWith("/leave")) return "leave";
     if (pathname.startsWith("/pim")) return "pim";
@@ -51,7 +51,7 @@ const SidebarComponent = () => {
           {
             key: "dashboard",
             icon: <DashboardOutlined style={iconStyle} />,
-            label: <Link href="/" style={labelStyle}>Dashboard</Link>,
+            label: <Link href="/dashboard" style={labelStyle}>Dashboard</Link>,
           },
           {
             key: "admin",

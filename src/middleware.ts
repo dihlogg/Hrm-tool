@@ -1,18 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const protectedRoutes = ["/pim", "/leave"];
+const protectedRoutes = ["/pim", "/leave", "/dashboard"];
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  if (pathname === "/") {
-    return NextResponse.redirect(new URL("/auth", req.url));
-  }
-  
-  const isProtected = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
+  const isProtected = protectedRoutes.some((route) => pathname.startsWith(route));
 
   if (!isProtected) {
     return NextResponse.next();
