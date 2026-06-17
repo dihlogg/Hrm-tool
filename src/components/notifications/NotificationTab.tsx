@@ -4,6 +4,7 @@ import { Avatar, Button, Tooltip, Spin } from "antd";
 import { ClockCircleOutlined } from "@ant-design/icons";
 import { useNotifications } from "@/contexts/notificationContext";
 import { useState, useEffect } from "react";
+import { usePatchMarkAsRead } from "@/hooks/notifications/usePatchMarkAsRead";
 
 interface NotificationTabProps {
   onClose?: () => void;
@@ -16,9 +17,18 @@ export default function NotificationTab({
 }: NotificationTabProps) {
   const { notifications, refreshNotifications, pagination } =
     useNotifications();
+  const { markAsRead } = usePatchMarkAsRead();
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+
+  const handleNotificationClick = async (notificationId: string, isRead: boolean) => {
+    if (!isRead) {
+      await markAsRead(notificationId);
+      // Reload notifications, preserving currently loaded pages
+      await refreshNotifications(1, page * 5);
+    }
+  };
 
   const formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("vi-VN", {
@@ -88,6 +98,7 @@ export default function NotificationTab({
             return (
               <div
                 key={notification._id}
+                onClick={() => handleNotificationClick(notification._id, notification.read)}
                 className={`flex items-start gap-2 sm:gap-3 p-2 sm:p-3 hover:bg-gray-50 rounded cursor-pointer transition-colors ${
                   !notification.read ? "bg-blue-50" : ""
                 } w-full mb-2`}

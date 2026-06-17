@@ -140,6 +140,12 @@ export const API_ENDPOINTS = {
 
   // Stats APIs
   GET_LEAVE_REQUEST_STATS: `${HRM_API_URL}/LeaveRequests/GetLeaveRequestStats`,
+  GET_COMPANY_LEAVE_FUND_STATS: `${HRM_API_URL}/LeaveRequests/GetCompanyLeaveFundStats`,
   GET_JOB_STATUS_STATS: `${HRM_ATS_API_URL}/Jobs/stats/status`,
   GET_APPLICATION_FUNNEL_STATS: `${HRM_ATS_API_URL}/applications/stats/funnel`,
+  
+  // Dashboard Widget APIs
+  GET_RECENT_EMPLOYEES: `${HRM_API_URL}/Employees/GetEmployeeList`,
+  GET_TRENDING_POSTS: `${HRM_SOCIAL_API_URL}/Posts/GetTopReactedPosts`,
+  GET_RECENT_NOTIFICATIONS: `${HRM_NOTIFY_API_URL}/Notifications/GetNotificationsByEmployeeId`,
 };
