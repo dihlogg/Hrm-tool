@@ -1,15 +1,19 @@
 "use client";
 
-import { Card, Row, Col, Typography, List, Avatar, Tag, Progress, Badge, Space, Spin } from "antd";
+import { Card, Row, Col, Typography, List, Avatar, Tag, Progress, Badge, Space, Spin, Skeleton } from "antd";
 import { 
   TrophyOutlined, 
   MessageOutlined, 
   LikeOutlined, 
   BellOutlined, 
-  UserOutlined 
+  UserOutlined,
+  UsergroupAddOutlined
 } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
+import { useDashboardData } from "@/hooks/dashboard/useDashboardData";
+import { useRouter } from "next/navigation";
+import { usePatchMarkAsRead } from "@/hooks/notifications/usePatchMarkAsRead";
 
 import dynamic from "next/dynamic";
 
@@ -28,56 +32,36 @@ const Column = dynamic(() => import("@ant-design/plots").then((mod) => mod.Colum
 });
 
 export default function DashboardPage() {
-  // 1. Thống kê đơn nghỉ phép (Core)
-  const mockLeaveStats = [
-    { status: 'APPROVED', count: 15 },
-    { status: 'PENDING', count: 5 },
-    { status: 'REJECTED', count: 2 },
-  ];
+  const router = useRouter();
+  const {
+    leaveStats,
+    jobStats,
+    funnelStats,
+    myLeaveBalances,
+    recentEmployees,
+    trendingPosts,
+    recentNotifications,
+    loading
+  } = useDashboardData();
+  const { markAsRead } = usePatchMarkAsRead();
 
-  // 2. Tình trạng tin tuyển dụng (ATS)
-  const mockJobStats = [
-    { status: 'OPEN', count: 12 },
-    { status: 'CLOSED', count: 4 },
-    { status: 'DRAFT', count: 1 },
-  ];
+  const handleNotificationClick = async (notificationId: string, isRead: boolean) => {
+    if (!isRead) {
+      await markAsRead(notificationId);
+      // We could re-fetch data, but to avoid full dashboard reload, 
+      // let's just trigger a reload if we had a dedicated refresh method.
+      // For now, the user can refresh to see it removed, or we can just navigate.
+    }
+    // Optional navigation logic here based on notification type
+  };
 
-  // 3. Phễu tuyển dụng (ATS)
-  const mockFunnelStats = [
-    { status: 'PARSING', count: 120 },
-    { status: 'MATCHED', count: 45 },
-    { status: 'INTERVIEWING', count: 15 },
-    { status: 'HIRED', count: 4 },
-  ];
-
-  // 4. Quỹ phép cá nhân (Core)
-  const mockLeaveBalances = [
-    { type: 'Annual Leave', total: 12, taken: 4, remaining: 8, color: '#1890ff' },
-    { type: 'Sick Leave', total: 5, taken: 1, remaining: 4, color: '#52c41a' },
-    { type: 'Unpaid Leave', total: 10, taken: 0, remaining: 10, color: '#faad14' },
-  ];
-
-  // 5. Top Ứng viên AI đánh giá cao (ATS)
-  const mockTopCandidates = [
-    { id: 1, name: "Nguyen Van A", role: "Senior Frontend Engineer", matchScore: 92 },
-    { id: 2, name: "Tran Thi B", role: "Backend Developer (NodeJS)", matchScore: 88 },
-    { id: 3, name: "Le Van C", role: "UI/UX Designer", matchScore: 85 },
-    { id: 4, name: "Pham Thi D", role: "DevOps Engineer", matchScore: 81 },
-  ];
-
-  // 6. Bài viết Mạng xã hội nổi bật (Social)
-  const mockTrendingPosts = [
-    { id: 1, author: "HR Department", content: "🎉 Welcome our new members this July!", likes: 45, comments: 12 },
-    { id: 2, author: "CEO", content: "Great quarter everyone! Keep up the good work 🚀", likes: 120, comments: 30 },
-    { id: 3, author: "John Doe", content: "Anyone up for football this Friday?", likes: 15, comments: 8 },
-  ];
-
-  // 7. Thông báo cần xử lý (Notify)
-  const mockNotifications = [
-    { id: 1, type: "leave", msg: "Hoang requested Annual Leave (2 days)", time: "10 mins ago", color: "blue" },
-    { id: 2, type: "mention", msg: "Anna mentioned you in a comment", time: "1 hour ago", color: "orange" },
-    { id: 3, type: "job", msg: "New CV parsed for Backend Developer", time: "2 hours ago", color: "green" },
-  ];
+  if (loading) {
+    return (
+      <div className="p-6 pb-20 flex justify-center items-center h-[80vh]">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   const pieConfig = {
     height: 260,
@@ -110,59 +94,59 @@ export default function DashboardPage() {
         {/* HÀNG 1: 3 Biểu đồ tổng quan */}
         <Col xs={24} md={12} lg={8}>
           <Card title="Leave Requests Status" className="h-full shadow-sm rounded-xl">
-            <Pie data={mockLeaveStats} {...pieConfig} />
+            {leaveStats.length > 0 ? <Pie data={leaveStats} {...pieConfig} /> : <div className="text-center text-gray-400 py-10">No data</div>}
           </Card>
         </Col>
 
         <Col xs={24} md={12} lg={8}>
           <Card title="Job Openings Status" className="h-full shadow-sm rounded-xl">
-            <Pie data={mockJobStats} {...donutConfig} />
+            {jobStats.length > 0 ? <Pie data={jobStats} {...donutConfig} /> : <div className="text-center text-gray-400 py-10">No data</div>}
           </Card>
         </Col>
 
         <Col xs={24} md={24} lg={8}>
           <Card title="Recruitment Pipeline" className="h-full shadow-sm rounded-xl">
-            <Funnel data={mockFunnelStats} {...funnelConfig} />
+            {funnelStats.length > 0 ? <Funnel data={funnelStats} {...funnelConfig} /> : <div className="text-center text-gray-400 py-10">No data</div>}
           </Card>
         </Col>
 
-        {/* HÀNG 2: Quỹ phép cá nhân & Top Ứng viên */}
+        {/* HÀNG 2: Quỹ phép cá nhân & Nhân sự mới */}
         <Col xs={24} lg={12}>
           <Card title="My Leave Balances" className="h-full shadow-sm rounded-xl">
-            <div className="flex flex-col gap-4 mt-2">
-              {mockLeaveBalances.map((leave, idx) => (
-                <div key={idx} className="flex flex-col gap-1">
-                  <div className="flex justify-between text-sm font-medium">
-                    <span>{leave.type}</span>
-                    <span>{leave.remaining} / {leave.total} Days Left</span>
+            {myLeaveBalances.length > 0 ? (
+              <div className="flex flex-col gap-4 mt-2">
+                {myLeaveBalances.map((leave, idx) => (
+                  <div key={idx} className="flex flex-col gap-1">
+                    <div className="flex justify-between text-sm font-medium">
+                      <span>{leave.leaveRequestTypeName}</span>
+                      <span>{leave.remainingQuotas} / {leave.maximumAllowed} Days Left</span>
+                    </div>
+                    <Progress 
+                      percent={leave.maximumAllowed ? (leave.remainingQuotas / leave.maximumAllowed) * 100 : 0} 
+                      strokeColor={idx === 0 ? '#1890ff' : idx === 1 ? '#52c41a' : '#faad14'} 
+                      showInfo={false} 
+                      strokeWidth={12} 
+                    />
                   </div>
-                  <Progress 
-                    percent={(leave.remaining / leave.total) * 100} 
-                    strokeColor={leave.color} 
-                    showInfo={false} 
-                    strokeWidth={12} 
-                  />
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+               <div className="text-center text-gray-400 py-10">No leave fund data</div>
+            )}
           </Card>
         </Col>
 
         <Col xs={24} lg={12}>
-          <Card title={<><TrophyOutlined className="text-yellow-500 mr-2" /> Top AI Matched Candidates</>} className="h-full shadow-sm rounded-xl">
+          <Card title={<><UsergroupAddOutlined className="text-blue-500 mr-2" /> Recent New Hires</>} className="h-full shadow-sm rounded-xl">
             <List
               itemLayout="horizontal"
-              dataSource={mockTopCandidates}
+              dataSource={recentEmployees}
               renderItem={(item) => (
-                <List.Item
-                  actions={[
-                    <Tag color="green" key="score">{item.matchScore}% Match</Tag>
-                  ]}
-                >
+                <List.Item>
                   <List.Item.Meta
-                    avatar={<Avatar icon={<UserOutlined />} />}
-                    title={<a className="font-semibold text-blue-600 hover:underline">{item.name}</a>}
-                    description={item.role}
+                    avatar={<Avatar src={item.imageUrl} className="bg-green-500 text-white">{item.firstName?.charAt(0) || <UserOutlined />}</Avatar>}
+                    title={<a className="font-semibold text-blue-600 hover:underline">{item.firstName} {item.lastName}</a>}
+                    description={item.jobTitle?.name || "Employee"}
                   />
                 </List.Item>
               )}
@@ -175,19 +159,18 @@ export default function DashboardPage() {
           <Card title="Trending on HRM Buzz" className="h-full shadow-sm rounded-xl">
             <List
               itemLayout="vertical"
-              dataSource={mockTrendingPosts}
+              dataSource={trendingPosts}
               renderItem={(item) => (
-                <List.Item className="bg-gray-50 mb-3 rounded-lg !px-4 border border-gray-100">
+                <List.Item 
+                  className="bg-gray-50 mb-3 rounded-lg !px-4 border border-gray-100 cursor-pointer hover:bg-gray-200 transition-all duration-200"
+                  onClick={() => router.push('/buzz')}
+                >
                   <List.Item.Meta
-                    avatar={<Avatar className="bg-gray-300 text-gray-600 mt-1">{item.author.charAt(0)}</Avatar>}
-                    title={<span className="font-semibold text-gray-800">{item.author}</span>}
+                    avatar={<Avatar src={item.employeeAvatarUrl} className="bg-gray-300 text-gray-600 mt-1">{item.employeeFullName?.charAt(0) || 'A'}</Avatar>}
+                    title={<span className="font-semibold text-gray-800">{item.employeeFullName || "Anonymous"}</span>}
                     description={
                       <div className="flex flex-col mt-1">
-                        <div className="text-gray-700 text-base">{item.content}</div>
-                        <Space className="text-gray-500 mt-3">
-                          <span className="flex items-center gap-1 hover:text-blue-500 cursor-pointer transition-colors"><LikeOutlined /> {item.likes}</span>
-                          <span className="flex items-center gap-1 ml-4 hover:text-blue-500 cursor-pointer transition-colors"><MessageOutlined /> {item.comments}</span>
-                        </Space>
+                        <div className="text-gray-700 text-base line-clamp-2">{item.content}</div>
                       </div>
                     }
                   />
@@ -201,13 +184,18 @@ export default function DashboardPage() {
           <Card title={<><BellOutlined className="text-red-500 mr-2" /> Actionable Tasks & Alerts</>} className="h-full shadow-sm rounded-xl">
             <List
               itemLayout="horizontal"
-              dataSource={mockNotifications}
+              dataSource={recentNotifications}
               renderItem={(item) => (
-                <List.Item>
+                <List.Item 
+                  className="hover:bg-gray-50 cursor-pointer p-2 rounded transition-colors"
+                  onClick={async () => {
+                    await handleNotificationClick(item._id, item.read);
+                  }}
+                >
                   <List.Item.Meta
-                    avatar={<Badge dot color={item.color}><Avatar icon={<BellOutlined />} /></Badge>}
-                    title={<span className="text-gray-800 text-sm">{item.msg}</span>}
-                    description={<span className="text-xs text-gray-400">{item.time}</span>}
+                    avatar={<Badge dot color={item.read ? "gray" : "blue"}><Avatar icon={<BellOutlined />} /></Badge>}
+                    title={<span className="text-gray-800 text-sm">{item.content || item.message}</span>}
+                    description={<span className="text-xs text-gray-400">{new Date(item.createdAt).toLocaleDateString()}</span>}
                   />
                 </List.Item>
               )}
