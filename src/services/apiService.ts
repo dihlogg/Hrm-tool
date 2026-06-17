@@ -75,6 +75,8 @@ export const API_ENDPOINTS = {
   GET_LEAVE_REQUEST_FOR_SUPERVISOR: `${HRM_API_URL}/LeaveRequests/GetLeaveRequestsForSupervisor`,
   PATCH_LEAVE_REQUEST_STATUS: `${HRM_API_URL}/LeaveRequests/PatchLeaveRequestStatus`,
   GET_LEAVE_REQUEST_FOR_DIRECTOR: `${HRM_API_URL}/LeaveRequests/getLeaveRequestForDirector`,
+  GET_MY_PENDING_REQUESTS: `${HRM_API_URL}/LeaveRequests/GetMyPendingRequests`,
+  GET_RECEIVE_REQUESTS: `${HRM_API_URL}/LeaveRequests/GetReceiveRequests`,
   //leave status
   GET_ALL_LEAVE_STATUS: `${HRM_API_URL}/LeaveStatuses/GetAllLeaveStatuses`,
   //partial days
