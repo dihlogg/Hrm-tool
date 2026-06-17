@@ -137,4 +137,9 @@ export const API_ENDPOINTS = {
   APPLY_JOB: `${HRM_ATS_API_URL}/applications/apply`,
   GET_RANKED_CANDIDATES: `${HRM_ATS_API_URL}/applications/by-job`,
   HIRE_CANDIDATE: `${HRM_ATS_API_URL}/applications`,
+
+  // Stats APIs
+  GET_LEAVE_REQUEST_STATS: `${HRM_API_URL}/LeaveRequests/GetLeaveRequestStats`,
+  GET_JOB_STATUS_STATS: `${HRM_ATS_API_URL}/Jobs/stats/status`,
+  GET_APPLICATION_FUNNEL_STATS: `${HRM_ATS_API_URL}/applications/stats/funnel`,
 };
