@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
-import { Button, Drawer, Input, Select, Spin, Pagination } from "antd";
+import { Button, Drawer, Input, Select, Spin, Pagination, message } from "antd";
 import {
   FileTextOutlined,
   SearchOutlined,
@@ -18,7 +18,7 @@ import { useGetJobById } from "@/hooks/ats/jobs/useGetJobById";
 import { useGetRankedCandidates } from "@/hooks/ats/applications/useGetRankedCandidates";
 import { ApplicationDto } from "@/hooks/ats/applications/ApplicationDto";
 import { useGetCvDownloadUrl } from "@/hooks/ats/applications/useGetCvDownloadUrl";
-
+import { API_ENDPOINTS } from "@/services/apiService";
 export default function CandidateListPage() {
   const params = useParams();
   const id = params?.id as string;
@@ -33,6 +33,26 @@ export default function CandidateListPage() {
   const [hotReload, setHotReload] = useState(0);
   const [selectedApp, setSelectedApp] = useState<ApplicationDto | null>(null);
   const { openCv } = useGetCvDownloadUrl();
+  const [hiringId, setHiringId] = useState<string | null>(null);
+
+  const handleHire = async (app: ApplicationDto) => {
+    try {
+      setHiringId(app.id);
+      const res = await fetch(`${API_ENDPOINTS.HIRE_CANDIDATE}/${app.id}/hire`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.message || "Failed to hire candidate");
+      }
+      message.success(`Successfully hired ${app.candidate.fullName}! Employee will be created automatically.`);
+      setHotReload((prev) => prev + 1);
+    } catch (err: any) {
+      message.error(err.message || "Something went wrong.");
+    } finally {
+      setHiringId(null);
+    }
+  };
 
   // Fetch Ranked Candidates via Custom Hook
   const {
@@ -255,6 +275,18 @@ export default function CandidateListPage() {
 
                     {/* Action */}
                     <div className="flex justify-start gap-2 md:justify-end" onClick={(e) => e.stopPropagation()}>
+                      {app.status !== "HIRED" && (
+                        <Button
+                          className="!h-[38px] !rounded-lg !px-3 !font-bold !border-none !bg-green-50 hover:!bg-green-100 !text-green-600"
+                          loading={hiringId === app.id}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleHire(app);
+                          }}
+                        >
+                          <UserAddOutlined className="text-[14px]" /> Hire
+                        </Button>
+                      )}
                       <Button
                         className="!h-[38px] !rounded-lg !px-3 !font-bold !border-none !bg-[#FFF7ED] hover:!bg-[#FFEDD5] !text-[#F97316]"
                         onClick={() => setSelectedApp(app)}

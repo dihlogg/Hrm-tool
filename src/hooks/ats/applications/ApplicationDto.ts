@@ -36,7 +36,8 @@ export interface ApplicationDto {
     | "PARSED_SUCCESS"
     | "PARSING_FAILED"
     | "MATCHED"
-    | "MATCHING_FAILED";
+    | "MATCHING_FAILED"
+    | "HIRED";
   matchScore?: number | string;
   skillMatchPercent?: number | string;
   experienceMatchStatus?: string;
