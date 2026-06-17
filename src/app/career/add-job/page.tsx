@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Script from "next/script";
 import { Button, message, notification, Select, DatePicker, Spin } from "antd";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useCreateJob } from "@/hooks/ats/jobs/useCreateJob";
 import {
   CreateJobDto,
@@ -271,14 +272,24 @@ export default function AddJobPage() {
 
       <div className="relative flex-1 w-full p-4 mt-2">
         {submitting && (
-          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center rounded-2xl bg-white/70 backdrop-blur-sm">
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center rounded-lg bg-white/70 backdrop-blur-sm">
             <Spin size="large" />
             <p className="mt-3 text-sm font-medium text-gray-500 animate-pulse">
               Creating opportunity…
             </p>
           </div>
         )}
-        <div className="w-full px-6 py-8 bg-white border border-gray-100 shadow-sm rounded-2xl md:px-10 md:py-10">
+        <div className="w-full px-6 py-8 bg-white border border-gray-100 shadow-sm rounded-lg md:px-10 md:py-10">
+          {/* Back link */}
+          <button
+            onClick={() => router.push("/career")}
+            className="inline-flex !pb-6 items-center gap-2 text-sm font-medium text-gray-500 transition-colors bg-transparent border-none cursor-pointer hover:text-blue-500"
+          >
+            <ArrowLeftOutlined className="text-xs" />
+            <span className="text-xs font-bold tracking-wider uppercase">
+              Back to Job Feed
+            </span>
+          </button>
           {/* Header */}
           <div className="mb-1">
             <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 md:text-3xl">
@@ -294,7 +305,7 @@ export default function AddJobPage() {
             {/* Section 01: Job Details */}
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <span className="bg-orange-50 text-orange-600 font-bold px-2 py-0.5 rounded text-base tracking-wide">
+                <span className="bg-blue-50 text-blue-600 font-bold px-2 py-0.5 rounded text-base tracking-wide">
                   01
                 </span>
                 <h2 className="!mt-2 text-xl font-bold text-gray-800">
@@ -444,7 +455,7 @@ export default function AddJobPage() {
                           }}
                           className={`px-5 py-2 text-sm rounded-full transition-colors cursor-pointer ${
                             isActive
-                              ? "bg-orange-50 !text-orange-400 border border-orange-200 font-medium"
+                              ? "bg-blue-50 !text-blue-500 border border-blue-200 font-medium"
                               : "bg-gray-50 text-black hover:bg-gray-100 border border-gray-200"
                           }`}
                         >
@@ -520,7 +531,7 @@ export default function AddJobPage() {
             {/* --- Section 02: The Brief --- */}
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <span className="bg-orange-50 text-orange-600 font-bold px-2 py-0.5 rounded text-base tracking-wide">
+                <span className="bg-blue-50 text-blue-600 font-bold px-2 py-0.5 rounded text-base tracking-wide">
                   02
                 </span>
                 <h2 className="!mt-2 text-xl font-bold text-gray-800">Brief</h2>

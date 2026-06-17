@@ -72,20 +72,20 @@ export default function JobListPage() {
 
   return (
     <div className="flex-1 w-full p-4 mt-2">
-      <div className="w-full px-6 py-8 bg-white border border-gray-100 shadow-sm rounded-2xl md:px-10 md:py-10">
+      <div className="w-full px-6 py-8 bg-white border border-gray-100 shadow-sm rounded-lg md:px-10 md:py-10">
         {/* Header Section */}
         <div className="mb-10">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 md:text-3xl">
               Architect Your{" "}
-              <span className="text-orange-500">Next Career Move.</span>
+              <span className="text-blue-500">Next Career Move.</span>
             </h1>
             <Link href="/career/add-job">
               <Button
                 type="primary"
                 shape="round"
                 size="middle"
-                className="font-medium text-white bg-orange-500 border-none shadow-md hover:bg-orange-600"
+                className="font-medium"
               >
                 + Post a Job
               </Button>
@@ -98,14 +98,14 @@ export default function JobListPage() {
         </div>
 
         {/* Top Search Bar */}
-        <div className="flex flex-col gap-3 p-3 mb-8 bg-white border border-gray-100 shadow-sm md:flex-row md:items-center rounded-2xl">
-          <div className="flex items-center flex-1 h-[50px] bg-gray-50 rounded-xl px-2 transition-colors hover:bg-gray-100 focus-within:bg-white focus-within:ring-2 focus-within:ring-orange-200">
+        <div className="flex flex-col gap-3 p-3 mb-8 bg-white border border-gray-100 shadow-sm md:flex-row md:items-center rounded-lg">
+          <div className="flex items-center flex-1 h-[40px] bg-gray-50 rounded-lg px-2 transition-colors hover:bg-gray-100 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-200">
             <SearchOutlined className="px-2 text-gray-400" />
             <Select
               showSearch
               placeholder="Select Job Title"
               variant="borderless"
-              className="w-full text-base font-medium"
+              className="w-full text-sm font-medium"
               allowClear
               value={filterDrafts.jobTitleName || undefined}
               onChange={(value) =>
@@ -122,7 +122,7 @@ export default function JobListPage() {
           <Input
             prefix={<EnvironmentOutlined className="text-gray-400" />}
             placeholder="Location (Da Nang, SF)"
-            className="flex-1 py-3 text-base border-none bg-gray-50 rounded-xl hover:bg-gray-100 focus:bg-white"
+            className="flex-1 py-2 text-sm border-none bg-gray-50 rounded-lg hover:bg-gray-100 focus:bg-white"
             value={filterDrafts.location}
             allowClear
             onChange={(e) =>
@@ -130,12 +130,12 @@ export default function JobListPage() {
             }
             onPressEnter={handleApplyFilter}
           />
-          <div className="flex items-center w-full md:w-60 h-[50px] bg-gray-50 rounded-xl px-2 transition-colors hover:bg-gray-100 focus-within:bg-white focus-within:ring-2 focus-within:ring-orange-200">
+          <div className="flex items-center w-full md:w-60 h-[40px] bg-gray-50 rounded-lg px-2 transition-colors hover:bg-gray-100 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-200">
             <Select
               placeholder="Employment Type"
               defaultValue="FULL_TIME"
               variant="borderless"
-              className="w-full text-base font-medium"
+              className="w-full text-sm font-medium"
               allowClear
               value={filterDrafts.employmentType}
               onChange={(value) =>
@@ -148,12 +148,9 @@ export default function JobListPage() {
             </Select>
           </div>
           <Button
-            type="primary"
+            type="default"
             shape="round"
             size="middle"
-            ghost
-            className="text-blue-500"
-            // className="text-blue-500 !h-[50px] px-6"
             onClick={handleResetFilter}
           >
             Reset
@@ -162,8 +159,6 @@ export default function JobListPage() {
             type="primary"
             shape="round"
             size="middle"
-            className="text-white bg-blue-500 hover:bg-blue-600"
-            // className="text-white bg-blue-500 hover:bg-blue-600 !h-[50px] px-6"
             onClick={() => {
               handleApplyFilter();
               setCurrentPage(1);
@@ -232,7 +227,7 @@ export default function JobListPage() {
                 <Select
                   defaultValue="earliest"
                   variant="borderless"
-                  className="font-sans font-semibold text-orange-600"
+                  className="font-sans font-semibold text-blue-600"
                   onChange={handleSortChange}
                 >
                   <Option value="earliest">Earliest</Option>
@@ -242,11 +237,11 @@ export default function JobListPage() {
             </div>
 
             {loading ? (
-              <div className="flex flex-col items-center justify-center p-12 bg-white border border-gray-100 shadow-sm rounded-2xl">
+              <div className="flex flex-col items-center justify-center p-12 bg-white border border-gray-100 shadow-sm rounded-lg">
                 <Spin size="large" />
               </div>
             ) : safeJobs.length === 0 ? (
-              <div className="flex flex-col items-center justify-center p-12 bg-white border border-gray-100 shadow-sm rounded-2xl">
+              <div className="flex flex-col items-center justify-center p-12 bg-white border border-gray-100 shadow-sm rounded-lg">
                 <Empty
                   description={
                     <span className="text-gray-500">
@@ -271,7 +266,7 @@ export default function JobListPage() {
                 return (
                   <div
                     key={job.id}
-                    className="flex flex-col gap-4 p-5 transition-all duration-200 bg-white border border-gray-100 shadow-sm md:flex-row md:items-center rounded-2xl hover:shadow-md group"
+                    className="flex flex-col gap-4 p-5 transition-all duration-200 bg-white border border-gray-100 shadow-sm md:flex-row md:items-center rounded-lg hover:shadow-md group"
                   >
                     {/* Info */}
                     <div className="flex-1 min-w-0">
@@ -290,7 +285,7 @@ export default function JobListPage() {
                       </div>
 
                       <div className="flex flex-wrap gap-2">
-                        <span className="px-3 py-1 text-xs font-semibold text-orange-700 rounded-lg bg-orange-50">
+                        <span className="px-3 py-1 text-xs font-semibold text-blue-700 rounded-lg bg-blue-50">
                           {empTypeStr}
                         </span>
 
@@ -318,9 +313,8 @@ export default function JobListPage() {
                     <div className="flex items-center justify-end gap-4 mt-4 md:mt-0 shrink-0">
                       <Link href={`/career/${job.id}`}>
                         <Button
-                          type="dashed"
-                          // variant="filled"
-                          className="h-10 px-6 font-semibold text-white bg-orange-500 border border-orange-500 shadow-sm rounded-xl hover:bg-orange-600"
+                          type="primary"
+                          className="h-9 px-6 font-semibold shadow-sm rounded-lg"
                         >
                           Details
                         </Button>

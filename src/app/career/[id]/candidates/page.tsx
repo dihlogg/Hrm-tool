@@ -146,7 +146,7 @@ export default function CandidateListPage() {
             <span className="w-8 text-[11px] text-gray-400 shrink-0">Exp</span>
             <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
               <div
-                className="h-full bg-orange-400 rounded-full"
+                className="h-full bg-blue-500 rounded-full"
                 style={{ width: `${expInfo.barPercent}%` }}
               />
             </div>
@@ -164,7 +164,7 @@ export default function CandidateListPage() {
 
   return (
     <div className="flex-1 w-full p-4 mt-2">
-      <div className="w-full p-4 bg-white border md:p-8 rounded-2xl border-gray-100/50">
+      <div className="w-full p-4 bg-white border md:p-8 rounded-lg border-gray-100/50">
         {/* Header */}
         <div className="flex flex-col gap-4 mb-10 md:flex-row md:items-start md:justify-between">
           <div>
@@ -178,19 +178,19 @@ export default function CandidateListPage() {
         </div>
 
         {/* Filter Bar */}
-        <div className="mb-8 p-3 rounded-2xl bg-[#F8FAFC] border border-[#F1F5F9]">
+        <div className="mb-8 p-3 rounded-lg bg-[#F8FAFC] border border-[#F1F5F9]">
           <div className="grid grid-cols-1 md:grid-cols-[1fr_200px_46px] gap-3">
             <Input
               prefix={<SearchOutlined className="text-gray-400" />}
               placeholder="Search by name or email (Client-side draft)..."
-              className="!h-11 !rounded-lg !bg-white !border-white hover:!border-orange-200 focus:!border-orange-300 shadow-sm"
+              className="!h-11 !rounded-lg !bg-white !border-white hover:!border-blue-200 focus:!border-blue-300 shadow-sm"
               value={keyword}
               onChange={(event) => setKeyword(event.target.value)}
             />
 
             <Select
               value={statusFilter}
-              className="w-full shadow-sm [&_.ant-select-selector]:!bg-white [&_.ant-select-selector]:!h-11 [&_.ant-select-selector]:!rounded-lg [&_.ant-select-selector]:!border-white hover:[&_.ant-select-selector]:!border-orange-200 [&_.ant-select-selection-item]:!font-medium [&_.ant-select-selection-item]:!text-gray-600 [&_.ant-select-selection-item]:!leading-[44px]"
+              className="w-full shadow-sm [&_.ant-select-selector]:!bg-white [&_.ant-select-selector]:!h-11 [&_.ant-select-selector]:!rounded-lg [&_.ant-select-selector]:!border-white hover:[&_.ant-select-selector]:!border-blue-200 [&_.ant-select-selection-item]:!font-medium [&_.ant-select-selection-item]:!text-gray-600 [&_.ant-select-selection-item]:!leading-[44px]"
               onChange={(value) => {
                 setStatusFilter(value);
                 setCurrentPage(1);
@@ -203,7 +203,7 @@ export default function CandidateListPage() {
             />
 
             <Button
-              className="!h-11 !w-full !p-0 !rounded-lg !border-white !bg-white shadow-sm !text-gray-500 hover:!text-orange-500 hover:!border-orange-200"
+              className="!h-11 !w-full !p-0 !rounded-lg !border-white !bg-white shadow-sm !text-gray-500 hover:!text-blue-500 hover:!border-blue-200"
               onClick={() => setHotReload((prev) => prev + 1)}
             >
               <SyncOutlined />
@@ -212,7 +212,7 @@ export default function CandidateListPage() {
         </div>
 
         {/* Candidate List Table */}
-        <div className="overflow-hidden bg-white border border-[#F1F5F9] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+        <div className="overflow-hidden bg-white border border-[#F1F5F9] rounded-lg shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           {/* Table Header */}
           <div className="hidden md:grid grid-cols-[1.5fr_1.5fr_1fr_1.5fr_1fr] gap-4 px-8 py-5 text-[11px] font-bold tracking-[0.05em] text-[#94A3B8] uppercase bg-white border-b border-[#F1F5F9]">
             <span>Candidate Info</span>
@@ -288,13 +288,13 @@ export default function CandidateListPage() {
                         </Button>
                       )}
                       <Button
-                        className="!h-[38px] !rounded-lg !px-3 !font-bold !border-none !bg-[#FFF7ED] hover:!bg-[#FFEDD5] !text-[#F97316]"
+                        className="!h-[38px] !rounded-lg !px-3 !font-bold !border-none !bg-blue-50 hover:!bg-blue-100 !text-blue-500"
                         onClick={() => setSelectedApp(app)}
                       >
                         <EyeOutlined className="text-[14px]" />
                       </Button>
                       <Button
-                        className="!h-[38px] !rounded-lg !px-3 !font-bold !border-none !bg-[#FFF7ED] hover:!bg-[#FFEDD5] !text-[#F97316]"
+                        className="!h-[38px] !rounded-lg !px-3 !font-bold !border-none !bg-blue-50 hover:!bg-blue-100 !text-blue-500"
                         disabled={!app.candidate.storageKey}
                         onClick={() => app.candidate.storageKey && openCv(app.candidate.storageKey)}
                       >
@@ -432,7 +432,7 @@ export default function CandidateListPage() {
                         <div className="flex items-start justify-between gap-2">
                           <div>
                             <p className="text-sm font-semibold text-[#1A1A1A]">{exp.position}</p>
-                            <p className="text-xs font-medium text-[#F97316] mt-0.5">{exp.company}</p>
+                            <p className="text-xs font-medium text-blue-500 mt-0.5">{exp.company}</p>
                           </div>
                           <span className="text-[11px] text-gray-400 whitespace-nowrap shrink-0">{exp.duration}</span>
                         </div>
@@ -468,7 +468,7 @@ export default function CandidateListPage() {
             <div className="flex gap-2 px-6 py-4 border-t border-slate-100">
               <Button
                 icon={<FileTextOutlined />}
-                className="flex-1 !h-10 !rounded-lg !border-orange-200 !text-[#F97316] hover:!border-orange-400"
+                className="flex-1 !h-10 !rounded-lg !border-blue-200 !text-blue-500 hover:!border-blue-400"
                 disabled={!selectedApp.candidate.storageKey}
                 onClick={() => selectedApp.candidate.storageKey && openCv(selectedApp.candidate.storageKey)}
               >

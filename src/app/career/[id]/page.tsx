@@ -87,22 +87,22 @@ export default function JobDetailsPage() {
 
   const defaultBenefits = [
     {
-      icon: <SafetyCertificateOutlined className="text-lg text-orange-500" />,
+      icon: <SafetyCertificateOutlined className="text-lg text-blue-500" />,
       title: "Health & Dental",
       desc: "Full premium coverage for you and your family including vision and mental health.",
     },
     {
-      icon: <SmileOutlined className="text-lg text-orange-500" />,
+      icon: <SmileOutlined className="text-lg text-blue-500" />,
       title: "Unlimited PTO",
       desc: "Take the time you need to recharge. We encourage at least 4 weeks off a year.",
     },
     {
-      icon: <HomeOutlined className="text-lg text-orange-500" />,
+      icon: <HomeOutlined className="text-lg text-blue-500" />,
       title: "Remote Stipend",
       desc: "$2,000 yearly for your home office setup, ergonomic furniture, and high-speed internet.",
     },
     {
-      icon: <ReadOutlined className="text-lg text-orange-500" />,
+      icon: <ReadOutlined className="text-lg text-blue-500" />,
       title: "Learning Budget",
       desc: "$3,000 for courses, conferences, and books to help you grow professionally.",
     },
@@ -110,11 +110,11 @@ export default function JobDetailsPage() {
 
   return (
     <div className="relative flex-1 w-full p-4 mt-2">
-      <div className="w-full px-6 py-8 bg-white border border-gray-100 shadow-sm rounded-2xl md:px-10 md:py-10">
+      <div className="w-full px-6 py-8 bg-white border border-gray-100 shadow-sm rounded-lg md:px-10 md:py-10">
         {/* Back link */}
         <button
           onClick={() => router.push("/career")}
-          className="inline-flex !pb-6 items-center gap-2 text-sm font-medium text-gray-500 transition-colors bg-transparent border-none cursor-pointer hover:text-orange-500"
+          className="inline-flex !pb-6 items-center gap-2 text-sm font-medium text-gray-500 transition-colors bg-transparent border-none cursor-pointer hover:text-blue-500"
         >
           <ArrowLeftOutlined className="text-xs" />
           <span className="text-xs font-bold tracking-wider uppercase">
@@ -127,7 +127,7 @@ export default function JobDetailsPage() {
             <div className="space-y-3">
               {/* Badge + Time */}
               <div className="flex items-center gap-3">
-                <span className="px-3 py-1 text-xs font-bold tracking-wide text-orange-500 uppercase rounded-full bg-orange-50">
+                <span className="px-3 py-1 text-xs font-bold tracking-wide text-blue-500 uppercase rounded-full bg-blue-50">
                   {formatEmpBadge(job.employmentType)}
                 </span>
               </div>
@@ -140,7 +140,7 @@ export default function JobDetailsPage() {
               {/* Company Info Row */}
               <div className="flex flex-wrap items-center text-sm font-semibold text-gray-500 gap-x-8 gap-y-3">
                 <span className="flex items-center gap-1.5">
-                  <EnvironmentOutlined className="text-base text-orange-500" />
+                  <EnvironmentOutlined className="text-base text-blue-500" />
                   {job.location || "Đà Nẵng"}
                 </span>
                 {deadline && (
@@ -155,16 +155,14 @@ export default function JobDetailsPage() {
             <div className="flex items-center gap-3 shrink-0">
               <Button
                 type="primary"
-                size="large"
                 onClick={() => router.push(`/career/${id}/apply`)}
-                className="!bg-orange-500 hover:!bg-orange-600 !text-white !border-none !rounded-full !h-12 !px-8 font-bold flex items-center gap-2 shadow-md"
+                className="!bg-blue-500 hover:!bg-blue-600 !text-white !border-none !rounded-full !h-10 !px-6 font-semibold flex items-center gap-2 shadow-sm"
               >
                 Apply Now <ArrowRightOutlined />
               </Button>
               <Button
-                size="large"
                 onClick={() => router.push(`/career/${id}/candidates`)}
-                className="!rounded-full !h-12 !px-8 font-bold"
+                className="!rounded-full !h-10 !px-6 font-semibold"
               >
                 View Candidates
               </Button>
@@ -198,7 +196,7 @@ export default function JobDetailsPage() {
                 {respList.map((resp, index) => (
                   <div
                     key={index}
-                    className="flex items-start min-w-0 gap-3 p-5 transition-colors bg-white border border-gray-100 shadow-sm rounded-xl hover:border-orange-300 group"
+                    className="flex items-start min-w-0 gap-3 p-5 transition-colors bg-white border border-gray-100 shadow-sm rounded-lg hover:border-blue-300 group"
                   >
                     <CheckCircleIcon />
                     <div
@@ -218,7 +216,7 @@ export default function JobDetailsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
                 {reqList.map((req, index) => (
                   <div key={index} className="flex items-start min-w-0 gap-3">
-                    <span className="shrink-0 text-orange-500 text-base leading-none mt-0.5">
+                    <span className="shrink-0 text-blue-500 text-base leading-none mt-0.5">
                       ●
                     </span>
                     <div
@@ -234,7 +232,7 @@ export default function JobDetailsPage() {
           {/* Right / Sidebar Column */}
           <aside className="flex flex-col gap-6 lg:col-span-4">
             {/* Job Summary + Tech Stack */}
-            <div className="p-6 space-y-5 bg-gray-50 rounded-xl">
+            <div className="p-6 space-y-5 bg-gray-50 rounded-lg">
               <h3 className="text-lg font-bold text-gray-900">Job Summary</h3>
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
@@ -305,9 +303,9 @@ export default function JobDetailsPage() {
             {defaultBenefits.map((benefit, index) => (
               <div
                 key={index}
-                className="flex flex-col gap-3 p-5 transition-all bg-white border border-gray-100 shadow-sm rounded-xl hover:shadow-md group"
+                className="flex flex-col gap-3 p-5 transition-all bg-white border border-gray-100 shadow-sm rounded-lg hover:shadow-md group"
               >
-                <div className="flex items-center justify-center w-10 h-10 transition-transform bg-orange-50 rounded-xl group-hover:rotate-6">
+                <div className="flex items-center justify-center w-10 h-10 transition-transform bg-blue-50 rounded-lg group-hover:rotate-6">
                   {benefit.icon}
                 </div>
                 <h4 className="m-0 text-sm font-bold text-gray-900">
@@ -335,10 +333,10 @@ function CheckCircleIcon() {
       fill="none"
       className="shrink-0 mt-0.5"
     >
-      <circle cx="12" cy="12" r="11" stroke="#F97316" strokeWidth="2" />
+      <circle cx="12" cy="12" r="11" stroke="#3B82F6" strokeWidth="2" />
       <path
         d="M7.5 12.5L10.5 15L16.5 9"
-        stroke="#F97316"
+        stroke="#3B82F6"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
