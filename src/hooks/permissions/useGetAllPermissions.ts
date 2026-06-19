@@ -18,10 +18,11 @@ export function useGetAllPermissions(hotReload: number = 0) {
           API_ENDPOINTS.GET_ALL_PERMISSIONS,
         );
         setPermissions(response.data);
-      } catch (err: any) {
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
         setError(
-          err.response?.data?.message ||
-            err.message ||
+          errorObj.response?.data?.message ||
+            errorObj.message ||
             "Failed to load permissions",
         );
       } finally {

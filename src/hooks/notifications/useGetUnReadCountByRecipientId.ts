@@ -16,8 +16,9 @@ export function useGetUnReadCountByRecipientId(id: string) {
           `${API_ENDPOINTS.GET_UNREAD_COUNT_BY_RECIPIENT_ID}/${id}`
         );
         setUnReadCount(response.data);
-      } catch (err: any) {
-        setError(err.response?.data?.message || "Failed to get un read count");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.response?.data?.message || "Failed to get un read count");
       } finally {
         setLoading(false);
       }

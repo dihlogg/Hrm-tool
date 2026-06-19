@@ -26,7 +26,7 @@ export function useGetJobList(
 
       const cleanedFilters: Record<string, string> = Object.fromEntries(
         Object.entries(filters).filter(
-          ([_, value]) => value && value.trim() !== "",
+          (entry) => entry[1] && entry[1].trim() !== "",
         ),
       );
 

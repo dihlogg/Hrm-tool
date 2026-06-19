@@ -7,7 +7,7 @@ import axiosInstance from "@/utils/auth/axiosInstance";
 export function useDeleteRoleById() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<unknown>(null);
 
   const deleteRole = useCallback(async (id: string) => {
     setLoading(true);
@@ -18,9 +18,10 @@ export function useDeleteRoleById() {
       );
       setResult(response.data);
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
       const message =
-        err.response?.data?.message || "Failed to delete role";
+        errorObj.response?.data?.message || "Failed to delete role";
       setError(message);
       throw err;
     } finally {

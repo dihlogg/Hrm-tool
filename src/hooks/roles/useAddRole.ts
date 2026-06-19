@@ -12,9 +12,10 @@ export function useAddRole() {
         role,
       );
       return response.data;
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
       throw new Error(
-        error.response?.data?.message || "Failed to add role",
+        errorObj.response?.data?.message || errorObj.message || "Failed to add role",
       );
     }
   }

@@ -16,9 +16,10 @@ export function useAssignPermissionToRole() {
         data,
       );
       return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorObj = error as { response?: { data?: { message?: string } }; message?: string };
       throw new Error(
-        error.response?.data?.message || "Failed to assign permission to role",
+        errorObj.response?.data?.message || "Failed to assign permission to role",
       );
     } finally {
       setLoading(false);

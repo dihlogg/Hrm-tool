@@ -6,13 +6,13 @@ import { useAuthContext } from "@/contexts/authContext";
 export function useDashboardData() {
   const { employee } = useAuthContext();
   
-  const [leaveStats, setLeaveStats] = useState<any[]>([]);
-  const [jobStats, setJobStats] = useState<any[]>([]);
-  const [funnelStats, setFunnelStats] = useState<any[]>([]);
-  const [myLeaveBalances, setMyLeaveBalances] = useState<any[]>([]);
-  const [recentEmployees, setRecentEmployees] = useState<any[]>([]);
-  const [trendingPosts, setTrendingPosts] = useState<any[]>([]);
-  const [recentNotifications, setRecentNotifications] = useState<any[]>([]);
+  const [leaveStats, setLeaveStats] = useState<Record<string, unknown>[]>([]);
+  const [jobStats, setJobStats] = useState<Record<string, unknown>[]>([]);
+  const [funnelStats, setFunnelStats] = useState<Record<string, unknown>[]>([]);
+  const [myLeaveBalances, setMyLeaveBalances] = useState<Record<string, unknown>[]>([]);
+  const [recentEmployees, setRecentEmployees] = useState<Record<string, unknown>[]>([]);
+  const [trendingPosts, setTrendingPosts] = useState<Record<string, unknown>[]>([]);
+  const [recentNotifications, setRecentNotifications] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,9 +34,9 @@ export function useDashboardData() {
 
         const results = await Promise.allSettled(endpoints);
 
-        if (results[0].status === 'fulfilled') setLeaveStats(results[0].value.data?.map((d: any) => ({ ...d, count: Number(d.count) })) || []);
-        if (results[1].status === 'fulfilled') setJobStats(results[1].value.data?.map((d: any) => ({ ...d, count: Number(d.count) })) || []);
-        if (results[2].status === 'fulfilled') setFunnelStats(results[2].value.data?.map((d: any) => ({ ...d, count: Number(d.count) })) || []);
+        if (results[0].status === 'fulfilled') setLeaveStats(results[0].value.data?.map((d: Record<string, unknown>) => ({ ...d, count: Number(d.count) })) || []);
+        if (results[1].status === 'fulfilled') setJobStats(results[1].value.data?.map((d: Record<string, unknown>) => ({ ...d, count: Number(d.count) })) || []);
+        if (results[2].status === 'fulfilled') setFunnelStats(results[2].value.data?.map((d: Record<string, unknown>) => ({ ...d, count: Number(d.count) })) || []);
         if (results[3].status === 'fulfilled') setRecentEmployees(results[3].value.data?.data || []);
         if (results[4].status === 'fulfilled') setTrendingPosts(results[4].value.data?.data || []);
         

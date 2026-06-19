@@ -15,8 +15,9 @@ export function useGetAllRoles(hotReload?: number) {
       try {
         const response = await axiosInstance.get(API_ENDPOINTS.GET_ALL_ROLES);
         setRoles(response.data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load roles");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.message || "Failed to load roles");
       } finally {
         setLoading(false);
       }

@@ -20,9 +20,10 @@ export function useAssignRoleToUser() {
         data,
       );
       return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorObj = error as { response?: { data?: { message?: string } }; message?: string };
       throw new Error(
-        error.response?.data?.message || "Failed to assign role to user",
+        errorObj.response?.data?.message || "Failed to assign role to user",
       );
     } finally {
       setLoading(false);

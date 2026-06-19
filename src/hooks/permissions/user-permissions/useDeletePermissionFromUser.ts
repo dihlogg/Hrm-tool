@@ -17,9 +17,10 @@ export function useDeletePermissionFromUser() {
           `${API_ENDPOINTS.DELETE_PERMISSION_FROM_USER}/${userPermissionId}`,
         );
         return response.data;
-      } catch (err: any) {
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
         const message =
-          err.response?.data?.message ||
+          errorObj.response?.data?.message ||
           "Failed to remove permission exception";
         setError(message);
         throw new Error(message);
