@@ -17,9 +17,10 @@ export function useUpdateLeaveRequest() {
         data
       );
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
       setError(
-        err.response?.data?.message || "Failed to update this leave request"
+        errorObj.response?.data?.message || "Failed to update this leave request"
       );
     } finally {
       setLoading(false);

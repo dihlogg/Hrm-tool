@@ -23,10 +23,10 @@ export function useGetSupervisorEmployee(id: string) {
         setSupervisorEmployee(
           Array.isArray(response.data) ? response.data : [response.data]
         );
-      } catch (e: unknown) {
-      const err = e as { response?: { data?: { message?: string } }; message?: string };
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
         setError(
-          err.response?.data?.message || "Failed to get supervisor employee"
+          errorObj.response?.data?.message || "Failed to get supervisor employee"
         );
       } finally {
         setLoading(false);

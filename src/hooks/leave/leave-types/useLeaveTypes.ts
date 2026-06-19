@@ -15,8 +15,9 @@ export function useLeaveTypes(hotReload: number = 0) {
           API_ENDPOINTS.GET_ALL_LEAVE_REQUEST_TYPE
         );
         setLeaveTypes(response.data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load leave types");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.message || "Failed to load leave types");
       }
     }
 

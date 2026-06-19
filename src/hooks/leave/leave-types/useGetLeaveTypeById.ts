@@ -17,8 +17,9 @@ export function useGetLeaveTypeById(id: string | null) {
           `${API_ENDPOINTS.GET_LEAVE_REQUEST_TYPE_BY_ID}/${id}`
         );
         setLeaveType(response.data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load leave type");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.message || "Failed to load leave type");
       }
     }
 

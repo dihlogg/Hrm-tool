@@ -21,8 +21,9 @@ export function useGetPartialDay() {
           API_ENDPOINTS.GET_ALL_PARTIAL_DAY
         );
         setPartialDays(response.data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load partial days");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.message || "Failed to load partial days");
       }
     }
 

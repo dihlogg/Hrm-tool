@@ -21,8 +21,9 @@ export function useGetLeaveRequestType() {
           API_ENDPOINTS.GET_ALL_LEAVE_REQUEST_TYPE
         );
         setLeaveRequestTypes(response.data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load leave request type");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.message || "Failed to load leave request type");
       }
     }
 

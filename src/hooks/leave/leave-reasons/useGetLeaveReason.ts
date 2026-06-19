@@ -21,8 +21,9 @@ export function useGetLeaveReason() {
           API_ENDPOINTS.GET_ALL_LEAVE_REASON
         );
         setLeaveReasons(response.data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load leave reason");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.message || "Failed to load leave reason");
       }
     }
 

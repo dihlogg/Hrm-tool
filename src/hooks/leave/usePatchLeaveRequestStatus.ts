@@ -20,9 +20,10 @@ export function usePatchLeaveRequestStatus() {
         { statusCode, note }
       );
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
       setError(
-        err.response?.data?.message || "Failed to patch leave request status"
+        errorObj.response?.data?.message || "Failed to patch leave request status"
       );
     } finally {
       setLoading(false);

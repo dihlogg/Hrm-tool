@@ -12,9 +12,10 @@ export function useAddLeaveRequest() {
         leaveRequest
       );
       return response.data;
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
       throw new Error(
-        error.response?.data?.message || "Failed to create new leave request"
+        errorObj.response?.data?.message || "Failed to create new leave request"
       );
     }
   }
