@@ -89,6 +89,10 @@ export const API_ENDPOINTS = {
   GET_ALL_LEAVE_REASON: `${HRM_API_URL}/LeaveReasons/GetAllLeaveReasons`,
   //leave request type
   GET_ALL_LEAVE_REQUEST_TYPE: `${HRM_API_URL}/LeaveRequestTypes/GetAllLeaveRequestTypes`,
+  GET_LEAVE_REQUEST_TYPE_BY_ID: `${HRM_API_URL}/LeaveRequestTypes/GetLeaveRequestTypeById`,
+  POST_LEAVE_REQUEST_TYPE: `${HRM_API_URL}/LeaveRequestTypes/PostLeaveRequestType`,
+  PUT_LEAVE_REQUEST_TYPE: `${HRM_API_URL}/LeaveRequestTypes/PutLeaveRequestType`,
+  DELETE_LEAVE_REQUEST_TYPE: `${HRM_API_URL}/LeaveRequestTypes/DeleteLeaveRequestType`,
   //cloudinary
   GET_CLOUDINARY_SIGNATURE: `${HRM_API_URL}/Cloudinary/Signature`,
 
@@ -134,7 +138,11 @@ export const API_ENDPOINTS = {
   PUT_JOB: `${HRM_ATS_API_URL}/Jobs/UpdateJob`,
   DELETE_JOB: `${HRM_ATS_API_URL}/Jobs/DeleteJob`,
 
-  GET_ALL_SKILLS: `${HRM_ATS_API_URL}/Skills/GetAllSkills`,
+  GET_ALL_SKILLS: `${HRM_ATS_API_URL}/skills/GetAllSkills`,
+  GET_SKILL_BY_ID: `${HRM_ATS_API_URL}/skills/GetSkillById`,
+  POST_SKILL: `${HRM_ATS_API_URL}/skills/PostSkill`,
+  PUT_SKILL: `${HRM_ATS_API_URL}/skills/PutSkill`,
+  DELETE_SKILL: `${HRM_ATS_API_URL}/skills/DeleteSkill`,
 
   GET_PRESIGNED_URL: `${HRM_ATS_API_URL}/applications/presigned-url`,
   GET_CV_DOWNLOAD_URL: `${HRM_ATS_API_URL}/applications/presigned-url/download`,
@@ -147,7 +155,7 @@ export const API_ENDPOINTS = {
   GET_COMPANY_LEAVE_FUND_STATS: `${HRM_API_URL}/LeaveRequests/GetCompanyLeaveFundStats`,
   GET_JOB_STATUS_STATS: `${HRM_ATS_API_URL}/Jobs/stats/status`,
   GET_APPLICATION_FUNNEL_STATS: `${HRM_ATS_API_URL}/applications/stats/funnel`,
-  
+
   // Dashboard Widget APIs
   GET_RECENT_EMPLOYEES: `${HRM_API_URL}/Employees/GetEmployeeList`,
   GET_TRENDING_POSTS: `${HRM_SOCIAL_API_URL}/Posts/GetTopReactedPosts`,

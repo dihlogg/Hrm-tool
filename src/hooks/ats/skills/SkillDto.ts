@@ -1,5 +1,5 @@
 export interface SkillDto {
-  id: string;
+  id?: string;
   name: string;
-  description?: string;
+  category: string;
 }

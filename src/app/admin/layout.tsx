@@ -10,6 +10,8 @@ const navItems = [
   { href: "/admin", label: "User Management" },
   { href: "/admin/job-title", label: "Job Titles Management" },
   { href: "/admin/sub-units", label: "Sub Units Management" },
+  { href: "/admin/leave-types", label: "Leave Types Management" },
+  { href: "/admin/skills", label: "Skills Dictionary" },
 ];
 
 export default function AdminLayout({

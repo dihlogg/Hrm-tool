@@ -64,7 +64,12 @@ export default function JobTitlePage() {
     {
       title: <span className="select-none">Job Description</span>,
       dataIndex: "description",
-      render: (text: string) => <span>{text}</span>,
+      width: 400,
+      render: (text: string) => (
+        <span className="block whitespace-normal break-words max-w-[400px]">
+          {text}
+        </span>
+      ),
     },
     {
       title: <span className="select-none">Actions</span>,
