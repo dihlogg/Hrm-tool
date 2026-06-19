@@ -20,7 +20,8 @@ export function useGetJobTitleById(id: string | undefined) {
           `${API_ENDPOINTS.GET_JOB_TITLE_BY_ID}/${id}`
         );
         setJobTitles(response.data);
-      } catch (err: any) {
+      } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } }; message?: string };
         setError(err.response?.data?.message || "Failed to load job title");
       } finally {
         setLoading(false);

@@ -20,7 +20,8 @@ export function useGetEmployeeDetailsByUserId(id: string | undefined) {
           `${API_ENDPOINTS.GET_EMPLOYEE_DETAILS_BY_USER_ID}/${id}`
         );
         setEmployee(response.data);
-      } catch (err: any) {
+      } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } }; message?: string };
         setError(err.response?.data?.message || "Failed to fetch employee");
       } finally {
         setLoading(false);

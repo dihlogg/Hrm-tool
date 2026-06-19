@@ -8,7 +8,7 @@ export function useCreateUserAccount() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const createUserAccount = async (employeeId: string, payload: any) => {
+  const createUserAccount = async (employeeId: string, payload: Record<string, unknown>) => {
     setLoading(true);
     setError(null);
     try {
@@ -17,9 +17,10 @@ export function useCreateUserAccount() {
         payload
       );
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
       const errorMessage =
-        err.response?.data?.message || err.message || "Failed to create user account";
+        errorObj.response?.data?.message || errorObj.message || "Failed to create user account";
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {

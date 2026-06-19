@@ -21,7 +21,8 @@ export function useGetEmployeeStatus() {
           API_ENDPOINTS.GET_ALL_EMPLOYEE_STATUSES
         );
         setEmployeeStatuses(response.data);
-      } catch (err: any) {
+      } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } }; message?: string };
         setError(err.message || "Failed to load employee status");
       }
     }

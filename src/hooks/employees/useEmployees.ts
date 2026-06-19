@@ -30,7 +30,7 @@ export function useEmployees(
         )
       );
 
-      const params: any = {
+      const params: Record<string, string | number> = {
         page,
         pageSize,
         ...cleanedFilters,
@@ -47,8 +47,9 @@ export function useEmployees(
 
         setEmployees(response.data.data);
         setTotal(response.data.total);
-      } catch (err: any) {
-        setError(err.message || "Failed to load employees");
+      } catch (err: unknown) {
+        const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.response?.data?.message || errorObj.message || "Failed to load employees");
       } finally {
         setLoading(false);
       }

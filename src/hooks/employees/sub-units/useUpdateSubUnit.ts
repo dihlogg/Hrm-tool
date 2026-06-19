@@ -12,7 +12,8 @@ export function useUpdateSubUnit() {
         subUnit
       );
       return response.data;
-    } catch (error: any) {
+    } catch (e: unknown) {
+      const error = e as { response?: { data?: { message?: string } }; message?: string };
       throw new Error(
         error.response?.data?.message || "Failed to update sub unit"
       );

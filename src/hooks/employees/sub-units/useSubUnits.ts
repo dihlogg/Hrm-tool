@@ -21,7 +21,8 @@ export function useSubUnits(hotReload: number = 0) {
           API_ENDPOINTS.GET_ALL_SUB_UNITS
         );
         setSubUnits(response.data);
-      } catch (err: any) {
+      } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } }; message?: string };
         setError(err.message || "Failed to load sub units");
       }
     }

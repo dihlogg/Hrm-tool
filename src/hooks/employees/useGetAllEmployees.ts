@@ -15,8 +15,9 @@ export function useGetAllEmployees() {
           API_ENDPOINTS.GET_ALL_EMPLOYEES
         );
         setEmployees(response.data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load employees");
+      } catch (err: unknown) {
+        const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.response?.data?.message || errorObj.message || "Failed to load employees");
       }
     }
 
