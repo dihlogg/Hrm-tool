@@ -18,8 +18,9 @@ export function useUpdateComment() {
         data,
       );
       return response.data;
-    } catch (err: any) {
-      const errMsg = err.response?.data?.message || "Failed to update comment";
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+      const errMsg = errorObj.response?.data?.message || "Failed to update comment";
       setError(errMsg);
       throw new Error(errMsg);
     } finally {

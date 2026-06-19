@@ -16,8 +16,9 @@ export function useDeleteComment() {
         `${API_ENDPOINTS.DELETE_COMMENT}/${id}`,
       );
       return response.data;
-    } catch (err: any) {
-      const errMsg = err.response?.data?.message || "Failed to delete comment";
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+      const errMsg = errorObj.response?.data?.message || "Failed to delete comment";
       setError(errMsg);
       throw new Error(errMsg);
     } finally {

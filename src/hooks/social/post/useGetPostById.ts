@@ -20,8 +20,9 @@ export function useGetPostById(id: string | undefined, hotReload: number = 0) {
           `${API_ENDPOINTS.GET_POST_BY_ID}/${id}`,
         );
         setPost(response.data);
-      } catch (err: any) {
-        setError(err.response?.data?.message || "Failed to fetch post details");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.response?.data?.message || "Failed to fetch post details");
       } finally {
         setLoading(false);
       }

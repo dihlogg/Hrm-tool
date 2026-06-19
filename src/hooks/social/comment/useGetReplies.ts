@@ -36,8 +36,9 @@ export function useGetReplies(
           setReplies((prev) => [...prev, ...response.data.data]);
         }
         setTotal(response.data.total);
-      } catch (err: any) {
-        setError(err.message || "Failed to load replies");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.message || "Failed to load replies");
       } finally {
         setLoading(false);
       }

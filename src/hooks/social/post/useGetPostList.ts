@@ -24,7 +24,7 @@ export function useGetPostList(
       setError("");
       try {
         const cleanedFilters = Object.fromEntries(
-          Object.entries(filters).filter(([_, v]) => v && v.trim() !== ""),
+          Object.entries(filters).filter((entry) => entry[1] && entry[1].trim() !== ""),
         );
 
         const params = {
@@ -51,8 +51,9 @@ export function useGetPostList(
 
         setNextCursor(response.data.nextCursor);
         setHasNextPage(response.data.hasNextPage);
-      } catch (err: any) {
-        setError(err.message || "Failed to load posts");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.message || "Failed to load posts");
       } finally {
         setLoading(false);
       }

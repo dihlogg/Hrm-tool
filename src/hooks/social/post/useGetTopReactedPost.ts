@@ -25,7 +25,7 @@ export function useGetTopReactedPost(
 
       const cleanedFilters = Object.fromEntries(
         Object.entries(filters).filter(
-          ([_, value]) => value && value.trim() !== "",
+          (entry) => entry[1] && entry[1].trim() !== "",
         ),
       );
 
@@ -54,8 +54,9 @@ export function useGetTopReactedPost(
 
         setNextCursor(response.data.nextCursor);
         setHasNextPage(response.data.hasNextPage);
-      } catch (err: any) {
-        setError(err.message || "Failed to load posts");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.message || "Failed to load posts");
       } finally {
         setLoading(false);
       }

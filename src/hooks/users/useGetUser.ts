@@ -25,11 +25,11 @@ export function useGetUsers(
       setLoading(true);
       const cleanedFilters: Record<string, string> = Object.fromEntries(
         Object.entries(filters).filter(
-          ([_, value]) => value && value.trim() !== ""
+          (entry) => entry[1] && entry[1].trim() !== ""
         )
       );
 
-      const params: any = {
+      const params: Record<string, string | number> = {
         page,
         pageSize,
         ...cleanedFilters,
@@ -46,8 +46,9 @@ export function useGetUsers(
         );
         setUsers(response.data.data);
         setTotal(response.data.total);
-      } catch (err: any) {
-        setError(err.message || "Failed to load users");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.message || "Failed to load users");
       } finally {
         setLoading(false);
       }

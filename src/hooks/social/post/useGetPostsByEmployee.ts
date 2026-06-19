@@ -32,8 +32,9 @@ export function useGetPostsByEmployee(
 
         setPosts(response.data.data);
         setTotal(response.data.total);
-      } catch (err: any) {
-        setError(err.message || "Failed to load employee posts");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.message || "Failed to load employee posts");
       } finally {
         setLoading(false);
       }

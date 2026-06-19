@@ -18,8 +18,9 @@ export function useCreateComment() {
         data,
       );
       return response.data;
-    } catch (err: any) {
-      const errMsg = err.response?.data?.message || "Failed to create comment";
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+      const errMsg = errorObj.response?.data?.message || "Failed to create comment";
       setError(errMsg);
       throw new Error(errMsg);
     } finally {

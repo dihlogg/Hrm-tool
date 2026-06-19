@@ -24,8 +24,9 @@ export function useGetReactionCountByPost(
         );
 
         setReactionCounts(response.data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load reaction counts for post");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.message || "Failed to load reaction counts for post");
       } finally {
         setLoading(false);
       }

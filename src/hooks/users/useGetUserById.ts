@@ -20,8 +20,9 @@ export function useGetUserById(id: string | undefined) {
           `${API_ENDPOINTS.GET_USER_BY_ID}/${id}`
         );
         setUser(response.data);
-      } catch (err: any) {
-        setError(err.response?.data?.message || "Failed to fetch user");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.response?.data?.message || "Failed to fetch user");
       } finally {
         setLoading(false);
       }

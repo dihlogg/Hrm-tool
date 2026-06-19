@@ -5,7 +5,7 @@ export interface NotificationPayload {
   id: string;
   type: NotificationType;
   message: string;
-  payload?: any;
+  payload?: Record<string, unknown>;
   read: boolean;
   seen: boolean;
   actor?: {
