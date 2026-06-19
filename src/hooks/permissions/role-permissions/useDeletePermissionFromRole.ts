@@ -17,9 +17,10 @@ export function useDeletePermissionFromRole() {
           `${API_ENDPOINTS.DELETE_BY_ROLE_AND_PERMISSION}/${roleId}/${permissionId}`,
         );
         return response.data;
-      } catch (err: any) {
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
         const message =
-          err.response?.data?.message ||
+          errorObj.response?.data?.message ||
           "Failed to remove permission from role";
         setError(message);
         throw new Error(message);

@@ -19,9 +19,10 @@ export function useChangeUserPermissionStatus() {
         data,
       );
       return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorObj = error as { response?: { data?: { message?: string } }; message?: string };
       throw new Error(
-        error.response?.data?.message || "Failed to change permission status",
+        errorObj.response?.data?.message || "Failed to change permission status",
       );
     } finally {
       setLoading(false);

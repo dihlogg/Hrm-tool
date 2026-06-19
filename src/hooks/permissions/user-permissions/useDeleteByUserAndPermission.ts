@@ -17,9 +17,10 @@ export function useDeleteByUserAndPermission() {
           `${API_ENDPOINTS.DELETE_BY_USER_AND_PERMISSION}/${userId}/${permissionId}`,
         );
         return response.data;
-      } catch (err: any) {
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
         const message =
-          err.response?.data?.message ||
+          errorObj.response?.data?.message ||
           "Failed to remove permission from user";
         setError(message);
         throw new Error(message);

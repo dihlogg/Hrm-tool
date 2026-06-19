@@ -13,8 +13,9 @@ export function usePatchMarkAsRead() {
         `${API_ENDPOINTS.PATCH_MARK_AS_READ}/${objectId}`
       );
       return response.data;
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to mark as read");
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+      setError(errorObj.response?.data?.message || "Failed to mark as read");
     } finally {
       setLoading(false);
     }

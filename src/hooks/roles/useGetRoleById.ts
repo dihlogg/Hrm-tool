@@ -20,8 +20,9 @@ export function useGetRoleById(id: string | undefined) {
           `${API_ENDPOINTS.GET_ROLE_BY_ID}/${id}`
         );
         setRole(response.data);
-      } catch (err: any) {
-        setError(err.response?.data?.message || "Failed to load role");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.response?.data?.message || "Failed to load role");
       } finally {
         setLoading(false);
       }

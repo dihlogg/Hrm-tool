@@ -13,8 +13,9 @@ export function usePatchMarkAsAllSeen() {
         `${API_ENDPOINTS.PATCH_MARK_AS_ALL_SEEN}/${id}`
       );
       return response.data;
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to mark as all seen");
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+      setError(errorObj.response?.data?.message || "Failed to mark as all seen");
     } finally {
       setLoading(false);
     }

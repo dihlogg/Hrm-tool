@@ -23,7 +23,7 @@ export function useLogin() {
       setAuthCookies(access_token, refresh_token);
 
       //decode get userId and roles from token
-      const decodedToken: any = jwtDecode(access_token);
+      const decodedToken: Record<string, unknown> = jwtDecode(access_token);
       const userId = decodedToken.sub;
       const roles = decodedToken.roles || [];
       setUserId(userId);
@@ -37,9 +37,10 @@ export function useLogin() {
 
       router.push("/pim");
       return true;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Login error:", err);
-      const message = err.response?.data?.message || "Login failed";
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+      const message = errorObj.response?.data?.message || errorObj.message || "Login failed";
       setError(message);
       return false;
     }

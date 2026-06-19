@@ -17,9 +17,10 @@ export function useDeleteRoleFromUser() {
           `${API_ENDPOINTS.DELETE_ROLE_FROM_USER}/${userId}/${roleId}`,
         );
         return response.data;
-      } catch (err: any) {
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
         const message =
-          err.response?.data?.message || "Failed to remove role from user";
+          errorObj.response?.data?.message || "Failed to remove role from user";
         setError(message);
         throw new Error(message);
       } finally {

@@ -23,9 +23,10 @@ export function useGetPermissionsByRoleId(
           `${API_ENDPOINTS.GET_PERMISSIONS_BY_ROLE_ID}/${roleId}`,
         );
         setRolePermissions(response.data);
-      } catch (err: any) {
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
         setError(
-          err.response?.data?.message ||
+          errorObj.response?.data?.message ||
             "Failed to load permissions for this role",
         );
       } finally {

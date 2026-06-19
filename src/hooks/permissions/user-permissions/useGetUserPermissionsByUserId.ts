@@ -8,7 +8,7 @@ export function useGetUserPermissionsByUserId(
   userId: string | null,
   hotReload: number = 0,
 ) {
-  const [userPermissions, setUserPermissions] = useState<any[]>([]);
+  const [userPermissions, setUserPermissions] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -22,9 +22,10 @@ export function useGetUserPermissionsByUserId(
           `${API_ENDPOINTS.GET_PERMISSIONS_BY_USER_ID}/${userId}`,
         );
         setUserPermissions(response.data);
-      } catch (err: any) {
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
         setError(
-          err.response?.data?.message ||
+          errorObj.response?.data?.message ||
             "Failed to load permissions for this user",
         );
       } finally {
