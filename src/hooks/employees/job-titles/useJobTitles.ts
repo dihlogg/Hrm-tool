@@ -15,8 +15,9 @@ export function useJobTitles(hotReload: number = 0) {
           API_ENDPOINTS.GET_ALL_JOB_TITLES
         );
         setJobTitles(response.data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load job titles");
+      } catch (err: unknown) {
+        const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.response?.data?.message || errorObj.message || "Failed to load job titles");
       }
     }
 

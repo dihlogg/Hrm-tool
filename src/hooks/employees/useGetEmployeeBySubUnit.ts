@@ -19,7 +19,8 @@ export function useGetEmployeeBySubUnit(subUnitId: string, employeeId: string) {
           `${API_ENDPOINTS.GET_EMPLOYEE_BY_SUB_UNIT}/${subUnitId}/exclude/${employeeId}`
         );
         setSubUnitEmployees(response.data);
-      } catch (err: any) {
+      } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } }; message?: string };
         setError(
           err.response?.data?.message || "Failed to get employee by sub unit"
         );

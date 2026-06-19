@@ -7,7 +7,7 @@ import axiosInstance from "@/utils/auth/axiosInstance";
 export function useDeleteJobTitleById() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<unknown>(null);
 
   const deleteJobTitle = useCallback(async (id: string) => {
     setLoading(true);
@@ -18,9 +18,10 @@ export function useDeleteJobTitleById() {
       );
       setResult(response.data);
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
       const message =
-        err.response?.data?.message || "Failed to delete job title";
+        errorObj.response?.data?.message || errorObj.message || "Failed to delete job title";
       setError(message);
       throw err;
     } finally {

@@ -17,7 +17,8 @@ export function useGetSubUnitById(id: string | null) {
           `${API_ENDPOINTS.GET_SUB_UNIT_BY_ID}/${id}`
         );
         setSubUnit(response.data);
-      } catch (err: any) {
+      } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } }; message?: string };
         setError(err.message || "Failed to load sub unit");
       }
     }

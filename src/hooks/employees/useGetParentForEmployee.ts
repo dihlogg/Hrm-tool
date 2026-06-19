@@ -18,7 +18,8 @@ export function useGetParentForEmployee() {
           API_ENDPOINTS.GET_PARENT_FOR_EMPLOYEE
         );
         setParentEmployee(response.data);
-      } catch (err: any) {
+      } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } }; message?: string };
         setError(err.message || "failed to load parent for employee");
       } finally {
         setLoading(false);
