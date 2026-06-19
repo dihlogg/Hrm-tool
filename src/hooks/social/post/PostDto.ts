@@ -21,6 +21,6 @@ export interface PostDto {
     employeeId: string;
   }[];
 
-  postComments?: any[];
+  postComments?: Record<string, unknown>[];
   commentCount?: number;
 }

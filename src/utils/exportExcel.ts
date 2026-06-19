@@ -1,8 +1,8 @@
 import * as XLSX from "xlsx";
 
-export const exportExcel = (
-  columns: any[],
-  data: any[],
+export const exportExcel = <T extends Record<string, unknown>>(
+  columns: { key?: string; dataIndex?: string; title?: unknown; render?: (val: unknown, record: T) => unknown }[],
+  data: T[],
   fileName: string,
   sheetName: string,
 ) => {
@@ -14,11 +14,12 @@ export const exportExcel = (
   // Lấy tiêu đề cột
   const tableColumn = exportColumns.map((col) => {
     if (typeof col.title === "string") return col.title;
-    if (col.title?.props?.children) {
-      if (Array.isArray(col.title.props.children)) {
-        return col.title.props.children.join(" ");
+    const titleObj = col.title as { props?: { children?: string | string[] } };
+    if (titleObj?.props?.children) {
+      if (Array.isArray(titleObj.props.children)) {
+        return titleObj.props.children.join(" ");
       }
-      return String(col.title.props.children);
+      return String(titleObj.props.children);
     }
     return "";
   });
@@ -27,12 +28,15 @@ export const exportExcel = (
   const tableRows = data.map((row) =>
     exportColumns.map((col) => {
       if (col.render) {
-        const rendered = col.render(row[col.dataIndex], row);
+        const dataIndex = col.dataIndex as keyof T;
+        const rendered = col.render(row[dataIndex], row);
         if (typeof rendered === "string") return rendered;
         if (typeof rendered === "number") return rendered.toString();
-        return rendered?.props?.children || "";
+        const renderedObj = rendered as { props?: { children?: string } };
+        return renderedObj?.props?.children || "";
       }
-      const value = row[col.dataIndex];
+      const dataIndex = col.dataIndex as keyof T;
+      const value = row[dataIndex];
       return value !== undefined && value !== null ? String(value) : "";
     })
   );

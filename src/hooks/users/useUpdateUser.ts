@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import { UserDto } from "./UserDto";
@@ -16,9 +16,10 @@ export function useUpdateUser() {
         data
       );
       return response.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
       setError(
-        err.response.data.message || "Failed to update user information"
+        errorObj.response?.data?.message || errorObj.message || "Failed to update user information"
       );
     } finally {
       setLoading(false);

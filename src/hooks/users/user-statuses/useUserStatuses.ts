@@ -21,8 +21,9 @@ export function useUserStatuses() {
           API_ENDPOINTS.GET_ALL_USER_STAUSES
         );
         setUserStatuses(response.data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load user statuses");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.message || "Failed to load user statuses");
       }
     }
 
