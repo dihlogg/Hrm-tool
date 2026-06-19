@@ -42,9 +42,10 @@ export function useApplyJob() {
       });
 
       return applyRes.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
       const errMsg =
-        err.response?.data?.message || err.message || "Failed to apply for job";
+        errorObj.response?.data?.message || errorObj.message || "Failed to apply for job";
       setError(errMsg);
       throw new Error(errMsg);
     } finally {

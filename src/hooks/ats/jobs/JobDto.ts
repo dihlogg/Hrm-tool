@@ -27,7 +27,7 @@ export interface JobDto {
   requirements?: string | null;
   benefits?: string | null;
   rawText?: string | null;
-  parsedJson?: any | null;
+  parsedJson?: Record<string, unknown> | null;
   fileUrl?: string | null;
   storageKey?: string | null;
   status: JobStatus;
@@ -62,7 +62,7 @@ export interface CreateJobDto {
   requirements?: string;
   benefits?: string;
   rawText?: string;
-  parsedJson?: any;
+  parsedJson?: Record<string, unknown>;
   fileUrl?: string;
   storageKey?: string;
   status?: JobStatus;

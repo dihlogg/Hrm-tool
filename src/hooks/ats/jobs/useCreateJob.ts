@@ -15,8 +15,9 @@ export function useCreateJob() {
     try {
       const response = await axiosInstance.post(API_ENDPOINTS.POST_JOB, data);
       return response.data;
-    } catch (err: any) {
-      const errMsg = err.response?.data?.message || "Failed to create job";
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+      const errMsg = errorObj.response?.data?.message || errorObj.message || "Failed to create job";
       setError(errMsg);
       throw new Error(errMsg);
     } finally {

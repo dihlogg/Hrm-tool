@@ -18,8 +18,9 @@ export function useUpdateJob() {
         data,
       );
       return response.data;
-    } catch (err: any) {
-      const errMsg = err.response?.data?.message || "Failed to update job";
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+      const errMsg = errorObj.response?.data?.message || errorObj.message || "Failed to update job";
       setError(errMsg);
       throw new Error(errMsg);
     } finally {
