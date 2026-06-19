@@ -17,7 +17,7 @@ const { Option } = Select;
 export default function UserManagementPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 5;
-  const [api, contextHolder] = notification.useNotification();
+  const [, contextHolder] = notification.useNotification();
   const [hotReload] = useState(0);
   const [sortBy, setSortBy] = useState<string | undefined>(undefined);
   const [sortOrder, setSortOrder] = useState<SortOrder | undefined>(undefined);
@@ -116,7 +116,7 @@ export default function UserManagementPage() {
         </span>
       ),
       key: "actions",
-      render: (_: any, record: UserDto) => (
+      render: (_: unknown, record: UserDto) => (
         <div className="flex gap-4">
           <Button
             type="default"

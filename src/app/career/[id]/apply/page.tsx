@@ -82,8 +82,8 @@ export default function ApplyJobPage() {
       });
       message.success("Application submitted successfully!");
       router.push("/career");
-    } catch (error: any) {
-      message.error(error.message || "Something went wrong while applying!");
+    } catch (error: unknown) {
+      message.error(error instanceof Error ? error.message : "Something went wrong while applying!");
     }
   };
 
@@ -369,8 +369,8 @@ export default function ApplyJobPage() {
                   </div>
                 </div>
                 <p className="text-xs italic leading-relaxed text-gray-500">
-                  "We build the tools that empower the next generation of web
-                  developers worldwide."
+                  &quot;We build the tools that empower the next generation of web
+                  developers worldwide.&quot;
                 </p>
               </div>
             </div>

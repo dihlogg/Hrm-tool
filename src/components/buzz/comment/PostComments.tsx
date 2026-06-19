@@ -64,7 +64,7 @@ export default function PostComments({
       });
       setHotReload((prev) => prev + 1);
       if (onCommentAdded) onCommentAdded();
-    } catch (error) {
+    } catch {
       message.error("Failed to send comment");
     }
   };
@@ -78,7 +78,7 @@ export default function PostComments({
       await createComment({ postId, content, parentId, mentionedEmployeeIds });
       setHotReload((prev) => prev + 1);
       if (onCommentAdded) onCommentAdded();
-    } catch (error) {
+    } catch {
       message.error("Failed to send reply");
     }
   };
@@ -88,7 +88,7 @@ export default function PostComments({
       await deleteComment(commentId);
       setHotReload((prev) => prev + 1);
       if (onCommentDeleted) onCommentDeleted();
-    } catch (error) {
+    } catch {
       message.error("Failed to delete comment");
     }
   };
@@ -97,7 +97,7 @@ export default function PostComments({
     try {
       await updateComment(id, { content });
       setHotReload((prev) => prev + 1);
-    } catch (error) {
+    } catch {
       message.error("Failed to update comment");
     }
   };

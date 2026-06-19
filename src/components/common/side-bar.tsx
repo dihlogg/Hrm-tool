@@ -24,7 +24,6 @@ const SidebarComponent = () => {
     if (pathname.startsWith("/admin")) return "admin";
     if (pathname.startsWith("/leave")) return "leave";
     if (pathname.startsWith("/pim")) return "pim";
-    if (pathname.startsWith("/time")) return "time";
     if (pathname.startsWith("/buzz")) return "buzz";
     if (pathname.startsWith("/profile")) return "profile";
     if (pathname.startsWith("/authz")) return "authz";

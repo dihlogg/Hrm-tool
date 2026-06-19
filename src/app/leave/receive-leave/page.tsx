@@ -136,15 +136,14 @@ export default function ReceiveRequestPage() {
           pauseOnHover: true,
         });
       } catch (err: unknown) {
-  let message = "An unknown error occurred.";
-
-  if (err instanceof Error) {
-    message = err.message;
-  }
+        let errorMessage = "An unknown error occurred.";
+        if (err instanceof Error) {
+          errorMessage = err.message;
+        }
         console.error("Failed to set leave request to pending:", err);
         api.error({
           message: "Update failed!",
-          description: "Leave request could not be set to pending.",
+          description: errorMessage,
           placement: "bottomLeft",
           duration: 3,
           pauseOnHover: true,
@@ -177,15 +176,14 @@ export default function ReceiveRequestPage() {
         });
         setIsOpenModal(false);
       } catch (err: unknown) {
-  let message = "An unknown error occurred.";
-
-  if (err instanceof Error) {
-    message = err.message;
-  }
+        let errorMessage = "An unknown error occurred.";
+        if (err instanceof Error) {
+          errorMessage = err.message;
+        }
         console.error("Failed to reject leave request:", err);
         api.error({
           message: "Update failed!",
-          description: "Leave request has not been reject.",
+          description: errorMessage,
           placement: "bottomLeft",
           duration: 3,
           pauseOnHover: true,
@@ -210,15 +208,14 @@ export default function ReceiveRequestPage() {
         });
         setIsOpenModal(false);
       } catch (err: unknown) {
-  let message = "An unknown error occurred.";
-
-  if (err instanceof Error) {
-    message = err.message;
-  }
+        let errorMessage = "An unknown error occurred.";
+        if (err instanceof Error) {
+          errorMessage = err.message;
+        }
         console.error("Failed to approved leave request:", err);
         api.error({
           message: "Update failed!",
-          description: "Leave request has not been aprrove.",
+          description: errorMessage,
           placement: "bottomLeft",
           duration: 3,
           pauseOnHover: true,
@@ -242,15 +239,14 @@ export default function ReceiveRequestPage() {
           pauseOnHover: true,
         });
       } catch (err: unknown) {
-  let message = "An unknown error occurred.";
-
-  if (err instanceof Error) {
-    message = err.message;
-  }
+        let errorMessage = "An unknown error occurred.";
+        if (err instanceof Error) {
+          errorMessage = err.message;
+        }
         console.error("Failed to confirm leave request:", err);
         api.error({
           message: "Update failed!",
-          description: "Leave request has not been confirmed.",
+          description: errorMessage,
           placement: "bottomLeft",
           duration: 3,
           pauseOnHover: true,
@@ -381,7 +377,7 @@ export default function ReceiveRequestPage() {
           {
             title: "Confirm By",
             dataIndex: "expectedConfirmId",
-            render: (_: unknown, record: { participantsRequests: any[] }) => {
+            render: (_: unknown, record: LeaveRequestDto) => {
               const confirm = record.participantsRequests?.find(
                 (p) => p.type === "confirm"
               );

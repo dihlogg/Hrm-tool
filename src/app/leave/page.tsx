@@ -24,7 +24,7 @@ const columns = [
   {
     title: <span className="text-sm font-semibold text-gray-600">Request Type</span>,
     dataIndex: "leaveRequestTypeId",
-    render: (_: any, record: LeaveRequestDto) => (
+    render: (_: unknown, record: LeaveRequestDto) => (
       <span className="text-sm text-gray-500">{record.leaveRequestType?.name || "N/A"}</span>
     ),
   },
@@ -52,14 +52,14 @@ const columns = [
   {
     title: <span className="text-sm font-semibold text-gray-600">Reason</span>,
     dataIndex: "leaveReasonId",
-    render: (_: any, record: LeaveRequestDto) => (
+    render: (_: unknown, record: LeaveRequestDto) => (
       <span className="text-sm text-gray-500">{record.leaveReason?.name || "N/A"}</span>
     ),
   },
   {
     title: <span className="text-sm font-semibold text-gray-600">Status</span>,
     dataIndex: "leaveStatusId",
-    render: (_: any, record: LeaveRequestDto) => (
+    render: (_: unknown, record: LeaveRequestDto) => (
       <span className="text-sm text-gray-500">{record.leaveStatus?.name || "N/A"}</span>
     ),
   },
@@ -98,7 +98,7 @@ export default function LeavePage() {
   const annualLeaveType = leaveRequestTypes?.find(t => t.name.toLowerCase().includes("phép năm") || t.name.toLowerCase().includes("annual"));
   const approvedStatus = leaveStatuses?.find(s => s.name.toLowerCase() === "approved");
 
-  let activeFilters: any = {};
+  const activeFilters: Record<string, string> = {};
   if (activeTab === 0 && annualLeaveType) {
     activeFilters.leaveRequestTypeId = annualLeaveType.id;
   } else if (activeTab === 1 && approvedStatus) {
@@ -115,7 +115,7 @@ export default function LeavePage() {
     0
   );
 
-  let currentDataSource: any[] = [];
+  let currentDataSource: LeaveRequestDto[] = [];
   let currentTotal = 0;
   let currentLoading = false;
   let currentTitle = "";
