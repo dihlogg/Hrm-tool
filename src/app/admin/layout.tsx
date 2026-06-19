@@ -9,6 +9,7 @@ import "@ant-design/v5-patch-for-react-19";
 const navItems = [
   { href: "/admin", label: "User Management" },
   { href: "/admin/job-title", label: "Job Titles Management" },
+  { href: "/admin/sub-units", label: "Sub Units Management" },
 ];
 
 export default function AdminLayout({
@@ -25,11 +26,11 @@ export default function AdminLayout({
           {navItems.map((item) => {
             const isActive = (() => {
               if (item.href === "/admin") {
-                return (
-                  pathname === "/admin" ||
-                  (pathname.startsWith("/admin/") &&
-                    !pathname.startsWith("/admin/job-title"))
+                const isOtherTab = navItems.some(
+                  (nav) =>
+                    nav.href !== "/admin" && pathname.startsWith(nav.href)
                 );
+                return pathname === "/admin" || (!isOtherTab && pathname.startsWith("/admin/"));
               }
               return (
                 pathname === item.href || pathname.startsWith(item.href + "/")
