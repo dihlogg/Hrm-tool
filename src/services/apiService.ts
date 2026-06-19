@@ -57,6 +57,10 @@ export const API_ENDPOINTS = {
   DELETE_JOB_TITLE_BY_ID: `${HRM_API_URL}/JobTitles/DeleteJobTitle`,
   //sub units
   GET_ALL_SUB_UNITS: `${HRM_API_URL}/SubUnits/GetAllSubUnits`,
+  GET_SUB_UNIT_BY_ID: `${HRM_API_URL}/SubUnits/GetSubUnitById`,
+  POST_SUB_UNIT: `${HRM_API_URL}/SubUnits/PostSubUnit`,
+  PUT_SUB_UNIT: `${HRM_API_URL}/SubUnits/PutSubUnit`,
+  DELETE_SUB_UNIT_BY_ID: `${HRM_API_URL}/SubUnits/DeleteSubUnit`,
   //employee status
   GET_ALL_EMPLOYEE_STATUSES: `${HRM_API_URL}/EmployeeStatuses/GetAllEmployeeStatuses`,
   //user

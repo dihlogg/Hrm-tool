@@ -10,7 +10,7 @@ export interface SubUnits {
   displayOrder: number;
 }
 
-export function useSubUnits() {
+export function useSubUnits(hotReload: number = 0) {
   const [subUnits, setSubUnits] = useState<SubUnits[]>([]);
   const [error, setError] = useState("");
 
@@ -27,7 +27,7 @@ export function useSubUnits() {
     }
 
     loadSubUnits();
-  }, []);
+  }, [hotReload]);
 
-  return { subUnits, error };
+  return { subUnits, error, hotReload };
 }
