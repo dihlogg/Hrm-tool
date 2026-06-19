@@ -20,8 +20,9 @@ export function useGetJobById(id: string | undefined, hotReload: number = 0) {
           `${API_ENDPOINTS.GET_JOB_BY_ID}/${id}`,
         );
         setJob(response.data);
-      } catch (err: any) {
-        setError(err.response?.data?.message || "Failed to load job details");
+      } catch (err: unknown) {
+        const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.response?.data?.message || errorObj.message || "Failed to load job details");
       } finally {
         setLoading(false);
       }

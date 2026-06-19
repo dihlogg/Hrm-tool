@@ -18,7 +18,7 @@ export default function UserPermissionsPage() {
   const [api, contextHolder] = notification.useNotification();
   const [hotReload, setHotReload] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const [userPage, setUserPage] = useState(1);
+  const [userPage] = useState(1);
 
   // States
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -64,8 +64,8 @@ export default function UserPermissionsPage() {
     if (userPermissions && userPermissions.length > 0) {
       const permIds = new Set(
         userPermissions
-          .filter((up: any) => up.isGranted)
-          .map((up: any) => up.permissionId),
+          .filter((up) => up.isGranted)
+          .map((up) => up.permissionId!),
       );
       setSelectedPermIds(permIds);
       setInitialPermIds(new Set(permIds));
@@ -77,7 +77,7 @@ export default function UserPermissionsPage() {
 
   useEffect(() => {
     if (rolePermissions && rolePermissions.length > 0) {
-      setRolePermIds(new Set(rolePermissions.map((p: any) => p.id)));
+      setRolePermIds(new Set(rolePermissions.map((p) => p.id!)));
     } else {
       setRolePermIds(new Set());
     }
@@ -146,11 +146,11 @@ export default function UserPermissionsPage() {
 
       setInitialPermIds(new Set(selectedPermIds));
       setHotReload((prev) => prev + 1);
-    } catch (error: any) {
+    } catch (error: unknown) {
       api.error({
         message: "Update Failed",
         description:
-          error.message || "An error occurred while saving user permissions.",
+          error instanceof Error ? error.message : "An error occurred while saving user permissions.",
         placement: "bottomLeft",
       });
     } finally {

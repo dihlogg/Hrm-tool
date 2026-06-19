@@ -16,8 +16,9 @@ export function useGetAllJobs(hotReload: number = 0) {
       try {
         const response = await axiosInstance.get(API_ENDPOINTS.GET_ALL_JOBS);
         setJobs(response.data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load jobs");
+      } catch (err: unknown) {
+        const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.response?.data?.message || errorObj.message || "Failed to load jobs");
       } finally {
         setLoading(false);
       }

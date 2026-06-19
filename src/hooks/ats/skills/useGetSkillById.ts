@@ -17,8 +17,9 @@ export function useGetSkillById(id: string | null) {
           `${API_ENDPOINTS.GET_SKILL_BY_ID}/${id}`
         );
         setSkill(response.data);
-      } catch (err: any) {
-        setError(err.message || "Failed to load skill");
+      } catch (err: unknown) {
+        const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.response?.data?.message || errorObj.message || "Failed to load skill");
       }
     }
 

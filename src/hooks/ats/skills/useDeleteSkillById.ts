@@ -10,9 +10,10 @@ export function useDeleteSkillById() {
         `${API_ENDPOINTS.DELETE_SKILL}/${id}`
       );
       return response.data;
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
       throw new Error(
-        error.response?.data?.message || "Failed to delete skill"
+        errorObj.response?.data?.message || errorObj.message || "Failed to delete skill"
       );
     }
   }

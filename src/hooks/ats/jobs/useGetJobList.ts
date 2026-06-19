@@ -30,7 +30,7 @@ export function useGetJobList(
         ),
       );
 
-      const params: any = {
+      const params: Record<string, string | number> = {
         page,
         pageSize,
         ...cleanedFilters,
@@ -49,6 +49,7 @@ export function useGetJobList(
 
         setJobs(response.data.data);
         setTotal(response.data.total);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         setError(err.message || "Failed to load jobs");
       } finally {

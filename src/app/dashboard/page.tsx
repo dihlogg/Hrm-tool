@@ -1,10 +1,7 @@
 "use client";
 
-import { Card, Row, Col, Typography, List, Avatar, Tag, Progress, Badge, Space, Spin, Skeleton } from "antd";
+import { Card, Row, Col, Typography, List, Avatar, Progress, Badge, Spin } from "antd";
 import { 
-  TrophyOutlined, 
-  MessageOutlined, 
-  LikeOutlined, 
   BellOutlined, 
   UserOutlined,
   UsergroupAddOutlined

@@ -25,7 +25,7 @@ export function useGetRankedCandidates(
     async function fetchCandidates() {
       setLoading(true);
       try {
-        const params: any = { page, pageSize };
+        const params: Record<string, string | number> = { page, pageSize };
         if (status && status !== "ALL") params.status = status;
         if (minScore !== undefined) params.minScore = minScore;
 
@@ -35,8 +35,9 @@ export function useGetRankedCandidates(
 
         setApplications(response.data.data);
         setTotal(response.data.total);
-      } catch (err: any) {
-        setError(err.message || "Failed to load candidates");
+      } catch (err: unknown) {
+        const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.response?.data?.message || errorObj.message || "Failed to load candidates");
       } finally {
         setLoading(false);
       }
