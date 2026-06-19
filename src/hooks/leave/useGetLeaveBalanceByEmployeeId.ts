@@ -17,9 +17,10 @@ export function useGetLeaveBalanceByEmployeeId(employeeId: string) {
           `${API_ENDPOINTS.GET_LEAVE_BALANCE_BY_EMPLOYEE_ID}/${employeeId}`
         );
         setLeaveBalance(response.data);
-      } catch (err: any) {
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
         setError(
-          err.response?.data?.message ||
+          errorObj.response?.data?.message ||
             "Failed to get leave balance by employee id"
         );
       } finally {

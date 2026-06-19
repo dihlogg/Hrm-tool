@@ -12,10 +12,10 @@ export function useAddJobTitle() {
         jobTitle
       );
       return response.data;
-    } catch (e: unknown) {
-      const error = e as { response?: { data?: { message?: string } }; message?: string };
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
       throw new Error(
-        error.response?.data?.message || "Failed to add job title"
+        errorObj.response?.data?.message || "Failed to add job title"
       );
     }
   }

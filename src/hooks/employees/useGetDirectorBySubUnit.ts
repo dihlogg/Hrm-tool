@@ -21,9 +21,9 @@ export function useGetDirectorBySubUnit(id: string) {
         setDirector(
           Array.isArray(response.data) ? response.data : [response.data]
         );
-      } catch (e: unknown) {
-      const err = e as { response?: { data?: { message?: string } }; message?: string };
-        setError(err.response?.data?.message || "Failed to get director");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.response?.data?.message || "Failed to get director");
       } finally {
         setLoading(false);
       }

@@ -39,7 +39,7 @@ export function useGetLeaveRequestForDirector(
             ])
         );
 
-      const params: any = {
+      const params: Record<string, string | number> = {
         page,
         pageSize,
         ...cleanedFilters,
@@ -58,9 +58,10 @@ export function useGetLeaveRequestForDirector(
         });
         setleaveRequests(response.data.data);
         setTotal(response.data.total);
-      } catch (err: any) {
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
         setError(
-          err.response?.data?.message ||
+          errorObj.response?.data?.message ||
             "Failed to get leave request for director"
         );
       } finally {

@@ -12,9 +12,10 @@ export function useUpdateLeaveType() {
         leaveType
       );
       return response.data;
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
       throw new Error(
-        error.response?.data?.message || "Failed to update leave type"
+        errorObj.response?.data?.message || "Failed to update leave type"
       );
     }
   }

@@ -12,10 +12,10 @@ export function useUpdateSubUnit() {
         subUnit
       );
       return response.data;
-    } catch (e: unknown) {
-      const error = e as { response?: { data?: { message?: string } }; message?: string };
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
       throw new Error(
-        error.response?.data?.message || "Failed to update sub unit"
+        errorObj.response?.data?.message || "Failed to update sub unit"
       );
     }
   }

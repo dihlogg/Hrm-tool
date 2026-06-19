@@ -17,7 +17,7 @@ export function useGetReceiveRequests(employeeId: string, page: number = 1, page
     async function loadRequests(employeeId: string) {
       setLoading(true);
 
-      const params: any = {
+      const params: Record<string, string | number> = {
         page,
         pageSize,
       };
@@ -31,8 +31,9 @@ export function useGetReceiveRequests(employeeId: string, page: number = 1, page
 
         setLeaveRequests(response.data.data);
         setTotal(response.data.total);
-      } catch (err: any) {
-        setError(err.message || "Failed to load receive requests");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.message || "Failed to load receive requests");
       } finally {
         setLoading(false);
       }

@@ -39,7 +39,7 @@ export function useGetLeaveRequestForSupervisor(
             ])
         );
 
-      const params: any = {
+      const params: Record<string, string | number> = {
         page,
         pageSize,
         ...cleanedFilters,
@@ -59,8 +59,9 @@ export function useGetLeaveRequestForSupervisor(
 
         setLeaveRequests(response.data.data);
         setTotal(response.data.total);
-      } catch (err: any) {
-        setError(err.message || "Failed to load leave requests for supervisor");
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(errorObj.message || "Failed to load leave requests for supervisor");
       } finally {
         setLoading(false);
       }

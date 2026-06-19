@@ -20,9 +20,10 @@ export function useGetleaveRequestDetailById(id: string | undefined) {
           `${API_ENDPOINTS.GET_LEAVE_REQUEST_DETAIL_BY_ID}/${id}`
         );
         setLeaveRequest(response.data);
-      } catch (err: any) {
+      } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
         setError(
-          err.response?.data?.message || "Failed to fetch leave request"
+          errorObj.response?.data?.message || "Failed to fetch leave request"
         );
       } finally {
         setLoading(false);
