@@ -5,45 +5,46 @@ import { useState } from "react";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { ColumnsType } from "antd/es/table";
-import { SubUnitDto } from "@/hooks/employees/sub-units/SubUnitDto";
-import { useSubUnits } from "@/hooks/employees/sub-units/useSubUnits";
-import { useDeleteSubUnitById } from "@/hooks/employees/sub-units/useDeleteSubUnitById";
+import { LeaveTypeDto } from "@/hooks/leave/leave-types/LeaveTypeDto";
+import { useLeaveTypes } from "@/hooks/leave/leave-types/useLeaveTypes";
+import { useDeleteLeaveTypeById } from "@/hooks/leave/leave-types/useDeleteLeaveTypeById";
 
-export default function SubUnitPage() {
+export default function LeaveTypePage() {
   const router = useRouter();
   const [api, contextHolder] = notification.useNotification();
   const [hotReload, setHotReload] = useState(0);
 
-  const { subUnits } = useSubUnits(hotReload);
-  const { deleteSubUnit } = useDeleteSubUnitById();
+  const { leaveTypes } = useLeaveTypes(hotReload);
+  const { deleteLeaveType } = useDeleteLeaveTypeById();
 
   //modal
-  const [selectedSubUnit, setSelectedSubUnit] = useState<SubUnitDto | null>(
+  const [selectedLeaveType, setSelectedLeaveType] = useState<LeaveTypeDto | null>(
     null
   );
   const [isModalOpen, setIsOpenModal] = useState(false);
+  
   const handleCancel = () => {
     setIsOpenModal(false);
   };
   
   const handleOk = async () => {
-    if (selectedSubUnit?.id) {
+    if (selectedLeaveType?.id) {
       try {
-        await deleteSubUnit(selectedSubUnit.id);
+        await deleteLeaveType(selectedLeaveType.id);
         setIsOpenModal(false);
-        setSelectedSubUnit(null);
+        setSelectedLeaveType(null);
         setHotReload((prev) => prev + 1);
         api.success({
-          message: "Delete Sub Unit Successfully!",
-          description: `Sub Unit information has been deleted.`,
+          message: "Delete Leave Type Successfully!",
+          description: `Leave Type information has been deleted.`,
           placement: "bottomLeft",
           duration: 3,
           pauseOnHover: true,
         });
       } catch {
         api.error({
-          message: "Delete Sub Unit failed!",
-          description: "Sub Unit information has not been deleted",
+          message: "Delete Leave Type failed!",
+          description: "Leave Type information has not been deleted",
           placement: "bottomLeft",
           duration: 3,
           pauseOnHover: true,
@@ -53,13 +54,13 @@ export default function SubUnitPage() {
     }
   };
 
-  const columns: ColumnsType<SubUnitDto> = [
+  const columns: ColumnsType<LeaveTypeDto> = [
     {
       title: <span className="select-none">No</span>,
       render: (_, __, index) => <span>{index + 1}</span>,
     },
     {
-      title: <span className="select-none">Sub Units</span>,
+      title: <span className="select-none">Name</span>,
       dataIndex: "name",
       render: (text) => <span>{text}</span>,
     },
@@ -74,15 +75,35 @@ export default function SubUnitPage() {
       ),
     },
     {
+      title: <span className="select-none">Unit</span>,
+      dataIndex: "unit",
+      render: (text: string) => <span>{text}</span>,
+    },
+    {
+      title: <span className="select-none">Max Allowed</span>,
+      dataIndex: "maximumAllowed",
+      render: (text: number) => <span>{text}</span>,
+    },
+    {
+      title: <span className="select-none">Max Carry Over</span>,
+      dataIndex: "maxCarryOver",
+      render: (text: number) => <span>{text}</span>,
+    },
+    {
+      title: <span className="select-none">Expire Month</span>,
+      dataIndex: "expireMonth",
+      render: (text: number) => <span>{text}</span>,
+    },
+    {
       title: <span className="select-none">Actions</span>,
       key: "actions",
-      render: (_: unknown, record: SubUnitDto) => (
+      render: (_: unknown, record: LeaveTypeDto) => (
         <div className="flex gap-4">
           <Button
             type="default"
             shape="circle"
             onClick={() =>
-              router.push(`/admin/sub-units/edit-sub-unit?id=${record.id}`)
+              router.push(`/admin/leave-types/edit-leave-type?id=${record.id}`)
             }
             className="p-2 text-blue-600 cursor-pointer hover:text-blue-800"
           >
@@ -93,7 +114,7 @@ export default function SubUnitPage() {
             shape="circle"
             className="p-2 text-red-600 cursor-pointer hover:text-red-800"
             onClick={() => {
-              setSelectedSubUnit(record);
+              setSelectedLeaveType(record);
               setIsOpenModal(true);
             }}
           >
@@ -112,7 +133,7 @@ export default function SubUnitPage() {
         <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
           <div className="flex justify-between p-2 border-b border-b-gray-400">
             <h2 className="pt-2 text-xl font-semibold text-gray-500">
-              Sub Units
+              Leave Types
             </h2>
             <Button
               type="primary"
@@ -120,7 +141,7 @@ export default function SubUnitPage() {
               size="large"
               className="!mb-1 text-white bg-blue-500 hover:bg-blue-600"
               onClick={() =>
-              router.push(`/admin/sub-units/add-sub-unit`)
+              router.push(`/admin/leave-types/add-leave-type`)
             }
             >
               + Add
@@ -128,12 +149,12 @@ export default function SubUnitPage() {
           </div>
           <div className="flex items-center justify-between mt-6 mb-4">
             <h2 className="px-2 text-lg font-semibold text-gray-500">
-              ({subUnits.length ?? 0}) Records Found
+              ({leaveTypes.length ?? 0}) Records Found
             </h2>
           </div>
           <Table
             columns={columns}
-            dataSource={subUnits as unknown as readonly SubUnitDto[]}
+            dataSource={leaveTypes as unknown as readonly LeaveTypeDto[]}
             pagination={false}
             rowKey="id"
             scroll={{ x: "max-content" }}
@@ -156,11 +177,11 @@ export default function SubUnitPage() {
         }}
       >
         <span className="text-sm font-medium text-gray-500">
-          Are you sure you want to delete this sub unit:{" "}
-          {selectedSubUnit ? `${selectedSubUnit.name}` : "this sub unit"}
+          Are you sure you want to delete this leave type:{" "}
+          {selectedLeaveType ? `${selectedLeaveType.name}` : "this leave type"}
         </span>
         <p className="mt-2 text-sm text-gray-500">
-          This action will delete the sub unit from the system!
+          This action will delete the leave type from the system!
         </p>
       </Modal>
     </>
