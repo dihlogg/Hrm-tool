@@ -38,7 +38,7 @@ export default function RolePermissionsPage() {
 
   useEffect(() => {
     if (rolePermissions && rolePermissions.length > 0) {
-      const permIds = new Set(rolePermissions.map((rp: any) => rp.id));
+      const permIds = new Set(rolePermissions.map((rp) => rp.id!));
 
       setSelectedPermIds(permIds);
       setInitialPermIds(new Set(permIds));
@@ -102,11 +102,11 @@ export default function RolePermissionsPage() {
 
       setInitialPermIds(new Set(selectedPermIds));
       setHotReload((prev) => prev + 1);
-    } catch (error: any) {
+    } catch (error: unknown) {
       api.error({
         message: "Update Failed",
         description:
-          error.message || "An error occurred while saving permissions.",
+          error instanceof Error ? error.message : "An error occurred while saving permissions.",
         placement: "bottomLeft",
       });
     } finally {

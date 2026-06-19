@@ -159,15 +159,14 @@ export default function EmployeeListPage() {
         });
         setIsOpenModalChangeStatus(false);
       } catch (err: unknown) {
-        let message = "An unknown error occurred.";
-
+        let errorMessage = "An unknown error occurred.";
         if (err instanceof Error) {
-          message = err.message;
+          errorMessage = err.message;
         }
         console.error("Failed to update employee status:", err);
         api.error({
           message: "Update failed!",
-          description: "This employee is already on leave",
+          description: errorMessage,
           placement: "bottomLeft",
           duration: 3,
           pauseOnHover: true,

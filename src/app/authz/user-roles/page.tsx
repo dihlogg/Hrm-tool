@@ -115,11 +115,11 @@ export default function UserRolesPage() {
 
       setInitialUserIds(new Set(selectedUserIds));
       setHotReload((prev) => prev + 1);
-    } catch (error: any) {
+    } catch (error: unknown) {
       api.error({
         message: "Update Failed",
         description:
-          error.message || "An error occurred while saving role assignments.",
+          error instanceof Error ? error.message : "An error occurred while saving role assignments.",
         placement: "bottomLeft",
       });
     } finally {

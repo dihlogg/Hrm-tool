@@ -47,8 +47,8 @@ export default function CandidateListPage() {
       }
       message.success(`Successfully hired ${app.candidate.fullName}! Employee will be created automatically.`);
       setHotReload((prev) => prev + 1);
-    } catch (err: any) {
-      message.error(err.message || "Something went wrong.");
+    } catch (err: unknown) {
+      message.error(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setHiringId(null);
     }

@@ -38,9 +38,15 @@ export default function AddJobPage() {
   const respRef = useRef<HTMLDivElement>(null);
   const reqRef = useRef<HTMLDivElement>(null);
 
-  const quillDescInstance = useRef<any>(null);
-  const quillRespInstance = useRef<any>(null);
-  const quillReqInstance = useRef<any>(null);
+  type QuillInstance = {
+    root: { innerHTML: string };
+    on: (event: string, handler: () => void) => void;
+    setContents: (contents: never[]) => void;
+  };
+
+  const quillDescInstance = useRef<QuillInstance | null>(null);
+  const quillRespInstance = useRef<QuillInstance | null>(null);
+  const quillReqInstance = useRef<QuillInstance | null>(null);
 
   const [formErrors, setFormErrors] = useState<{
     level?: string;
@@ -112,8 +118,8 @@ export default function AddJobPage() {
   }, []);
 
   useEffect(() => {
-    if (quillLoaded && typeof window !== "undefined" && (window as any).Quill) {
-      const Quill = (window as any).Quill;
+    if (quillLoaded && typeof window !== "undefined" && "Quill" in window) {
+      const Quill = (window as unknown as { Quill: new (selector: HTMLElement, options: Record<string, unknown>) => QuillInstance }).Quill;
       const toolbarOptions = [
         [{ header: [1, 2, 3, false] }],
         ["bold", "italic", "underline", "link"],
@@ -129,7 +135,7 @@ export default function AddJobPage() {
             "Describe the mission, the impact, and the day-to-day journey...",
         });
         quillDescInstance.current.on("text-change", () => {
-          setDescription(quillDescInstance.current.root.innerHTML);
+          setDescription(quillDescInstance.current?.root.innerHTML || "");
         });
       }
 
@@ -140,7 +146,7 @@ export default function AddJobPage() {
           placeholder: "List the essential day-to-day responsibilities...",
         });
         quillRespInstance.current.on("text-change", () => {
-          setResponsibilities(quillRespInstance.current.root.innerHTML);
+          setResponsibilities(quillRespInstance.current?.root.innerHTML || "");
         });
       }
 
@@ -152,7 +158,7 @@ export default function AddJobPage() {
             "List the essential skills and architectural experience needed...",
         });
         quillReqInstance.current.on("text-change", () => {
-          setRequirements(quillReqInstance.current.root.innerHTML);
+          setRequirements(quillReqInstance.current?.root.innerHTML || "");
         });
       }
     }
@@ -593,12 +599,13 @@ export default function AddJobPage() {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          onChange={(val, option: any) => {
+                          onChange={(val) => {
+                            const selectedOption = skillOptions.find((o) => o.value === val);
                             updateSkillRow(index, "skillId", val ?? "");
                             updateSkillRow(
                               index,
                               "skillName",
-                              option?.label ?? "",
+                              selectedOption?.label ?? "",
                             );
                           }}
                         />

@@ -214,8 +214,8 @@ export default function BuzzPage() {
       setImageUrls([]);
       setHotReload((prev) => prev + 1);
       setActiveTab("recent");
-    } catch (error: any) {
-      message.error(error.message || "Failed to create post");
+    } catch (error: unknown) {
+      message.error(error instanceof Error ? error.message : "Failed to create post");
     }
   };
 
@@ -241,8 +241,8 @@ export default function BuzzPage() {
       setIsEditModalOpen(false);
       setEditingPost(null);
       setHotReload((prev) => prev + 1);
-    } catch (error: any) {
-      message.error(error.message || "Failed to update post");
+    } catch (error: unknown) {
+      message.error(error instanceof Error ? error.message : "Failed to update post");
     }
   };
 
@@ -258,8 +258,8 @@ export default function BuzzPage() {
           await deletePost(postId);
           message.success("Post deleted successfully!");
           setHotReload((prev) => prev + 1);
-        } catch (error: any) {
-          message.error(error.message || "Failed to delete post");
+        } catch (error: unknown) {
+          message.error(error instanceof Error ? error.message : "Failed to delete post");
         }
       },
     });
@@ -423,7 +423,7 @@ export default function BuzzPage() {
                   const url = await uploadImageToCloudinary(file, "posts/image");
                   setImageUrls((prev) => [...prev, url]);
                   message.success("Image uploaded successfully!");
-                } catch (err) {
+                } catch {
                   message.error("Image upload failed!");
                 } finally {
                   setUploadLoading(false);
@@ -574,7 +574,7 @@ export default function BuzzPage() {
                   const url = await uploadImageToCloudinary(file, "posts/image");
                   setEditImageUrls((prev) => [...prev, url]);
                   message.success("Image uploaded successfully!");
-                } catch (err) {
+                } catch {
                   message.error("Image upload failed!");
                 } finally {
                   setEditUploadLoading(false);
