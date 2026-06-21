@@ -68,15 +68,8 @@ export function useGetLeaveRequestForSupervisor(
     }
 
     loadLeaveRequestForSupervisorId(supervisorId);
-  }, [
-    supervisorId,
-    page,
-    pageSize,
-    sortBy,
-    sortOrder,
-    JSON.stringify(filters),
-    hotReload,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [supervisorId, page, pageSize, sortBy, sortOrder, JSON.stringify(filters), hotReload]);
 
   return { supervisorId, leaveRequests, total, error, loading, hotReload };
 }

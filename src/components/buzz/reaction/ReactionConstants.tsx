@@ -12,16 +12,19 @@ export const REACTION_TYPES = {
 
 export type ReactionType = keyof typeof REACTION_TYPES;
 
-const ReactionIcon = ({ src, alt }: { src: string; alt: string }) => (
-  <img
-    src={src}
-    alt={alt}
-    width={48}
-    height={48}
-    style={{ width: 48, height: 48 }}
-    className="object-contain shrink-0 drop-shadow-sm md:w-11 md:h-11"
-  />
-);
+const ReactionIcon = ({ src, alt }: { src: string; alt: string }) => {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+      width={48}
+      height={48}
+      style={{ width: 48, height: 48 }}
+      className="object-contain shrink-0 drop-shadow-sm md:w-11 md:h-11"
+    />
+  );
+};
 
 const LocalIcons = {
   Like: <ReactionIcon src="/reactions/like.png" alt="Like" />,

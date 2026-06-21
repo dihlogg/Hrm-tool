@@ -32,7 +32,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const [employee, setEmployee] = useState<CreateEmployeeDto | null>(null);
   const router = useRouter();
-  const [socketConnected, setSocketConnected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isClient, setIsClient] = useState(false);
 
@@ -70,7 +69,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
           socketService.disconnect();
           socketService.connect(token!, employeeData.id || "");
-          setSocketConnected(true);
         }
       } catch (err) {
         console.error("Failed to fetch user info or employee:", err);
@@ -78,13 +76,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUserRoles([]);
         setEmployee(null);
         socketService.disconnect(); // close websocket nếu có lỗi
-        setSocketConnected(false);
       } finally {
         setLoading(false);
       }
     };
 
     fetchUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [Cookies.get("access_token")]);
 
   //config hydration context delay

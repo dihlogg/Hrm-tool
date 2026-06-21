@@ -24,8 +24,8 @@ export function useLogin() {
 
       //decode get userId and roles from token
       const decodedToken: Record<string, unknown> = jwtDecode(access_token);
-      const userId = decodedToken.sub;
-      const roles = decodedToken.roles || [];
+      const userId = decodedToken.sub as string;
+      const roles = (decodedToken.roles as string[]) || [];
       setUserId(userId);
       setUserRoles(Array.isArray(roles) ? roles : [roles]);
 
@@ -35,7 +35,7 @@ export function useLogin() {
       );
       setEmployee(employeeResponse.data);
 
-      router.push("/pim");
+      router.push("/dashboard");
       return true;
     } catch (err: unknown) {
       console.error("Login error:", err);

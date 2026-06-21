@@ -60,6 +60,9 @@ instance.interceptors.response.use(
         return instance(originalRequest);
       } else {
         isRefreshing = false;
+        if (typeof window !== "undefined") {
+          window.location.href = "/auth";
+        }
         return Promise.reject(new Error("Session expired. Please login again."));
       }
     }

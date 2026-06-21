@@ -68,15 +68,8 @@ export function useGetLeaveRequestByEmployeeId(
     }
 
     loadLeaveRequestByEmployeeId(employeeId);
-  }, [
-    employeeId,
-    page,
-    pageSize,
-    sortBy,
-    sortOrder,
-    JSON.stringify(filters),
-    hotReload,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [employeeId, page, pageSize, sortBy, sortOrder, JSON.stringify(filters), hotReload]);
 
   return { employeeId, leaveRequests, total, error, loading, hotReload };
 }

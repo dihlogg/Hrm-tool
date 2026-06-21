@@ -49,7 +49,7 @@ export function useGetJobList(
 
         setJobs(response.data.data);
         setTotal(response.data.total);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         setError(err.message || "Failed to load jobs");
       } finally {
@@ -58,6 +58,7 @@ export function useGetJobList(
     }
 
     loadJobs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, sortBy, sortOrder, JSON.stringify(filters), hotReload]);
 
   return { jobs, total, error, loading, hotReload };

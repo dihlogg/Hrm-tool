@@ -116,6 +116,7 @@ export default function PostDetailModal({
                       className="flex items-center justify-center w-full"
                       style={{ height: 580 }}
                     >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={url}
                         alt={`post-image-${idx}`}

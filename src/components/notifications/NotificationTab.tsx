@@ -12,14 +12,12 @@ interface NotificationTabProps {
 }
 
 export default function NotificationTab({
-  onClose,
   isMobile = false,
 }: NotificationTabProps) {
   const { notifications, refreshNotifications, pagination } =
     useNotifications();
   const { markAsRead } = usePatchMarkAsRead();
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
   const handleNotificationClick = async (notificationId: string, isRead: boolean) => {
@@ -52,7 +50,6 @@ export default function NotificationTab({
     setLoading(true);
     try {
       const res = await refreshNotifications(page, 5);
-      setTotalPages(res.totalPages);
       setPage(res.currentPage);
     } finally {
       setLoading(false);
@@ -61,6 +58,7 @@ export default function NotificationTab({
 
   useEffect(() => {
     fetchNotifications(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

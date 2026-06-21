@@ -7,7 +7,7 @@ import {
   UsergroupAddOutlined
 } from "@ant-design/icons";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 import { useDashboardData } from "@/hooks/dashboard/useDashboardData";
 import { useRouter } from "next/navigation";
 import { usePatchMarkAsRead } from "@/hooks/notifications/usePatchMarkAsRead";
@@ -23,10 +23,7 @@ const Funnel = dynamic(() => import("@ant-design/plots").then((mod) => mod.Funne
   ssr: false,
   loading: () => <div className="flex justify-center items-center h-48"><Spin /></div>
 });
-const Column = dynamic(() => import("@ant-design/plots").then((mod) => mod.Column), { 
-  ssr: false,
-  loading: () => <div className="flex justify-center items-center h-48"><Spin /></div>
-});
+
 
 export default function DashboardPage() {
   const router = useRouter();

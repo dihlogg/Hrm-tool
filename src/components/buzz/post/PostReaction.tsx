@@ -97,7 +97,7 @@ export const PostReaction: React.FC<PostReactionProps> = ({
             if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
           }}
         >
-          {REACTION_LIST.map((react, index) => (
+          {REACTION_LIST.map((react) => (
             <button
               key={react.type}
               onClick={(e) => {

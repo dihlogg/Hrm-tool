@@ -204,7 +204,8 @@ export default function EmployeeListPage() {
 
       const allEmployees = response.data.data;
 
-      exportPDF(columns, allEmployees, "Employee_List.pdf", "Employee List");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      exportPDF(columns as any, allEmployees, "Employee_List.pdf", "Employee List");
     } catch (err) {
       console.error("Export failed:", err);
     }
@@ -219,7 +220,8 @@ export default function EmployeeListPage() {
         },
       );
       const allEmployees = response.data.data;
-      exportExcel(columns, allEmployees, "Employee_List.xlsx", "Employee List");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      exportExcel(columns as any, allEmployees, "Employee_List.xlsx", "Employee List");
     } catch (err) {
       console.error("Export Excel failed:", err);
     }

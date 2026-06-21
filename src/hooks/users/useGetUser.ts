@@ -54,6 +54,7 @@ export function useGetUsers(
       }
     }
     loadUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, sortBy, sortOrder, JSON.stringify(filters), hotReload]);
   return { users, total, error, loading, hotReload };
 }
