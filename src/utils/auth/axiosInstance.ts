@@ -38,6 +38,11 @@ instance.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
+      // Do not trigger token refresh flow for login requests
+      if (originalRequest.url?.includes("/Auth/Login")) {
+        return Promise.reject(error);
+      }
+
       originalRequest._retry = true;
 
       if (isRefreshing) {
