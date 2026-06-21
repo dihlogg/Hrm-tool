@@ -30,6 +30,7 @@ export function useSocket() {
       socketService.off('connected', handleConnected);
       socketService.off('disconnected', handleDisconnected);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { socket, connected };

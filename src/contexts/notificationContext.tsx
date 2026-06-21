@@ -84,6 +84,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       refreshNotifications();
       refreshUnSeenCount();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [employee?.id]);
 
   // socket nhận notify, show toast và refresh lại notify

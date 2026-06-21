@@ -8,7 +8,6 @@ import {
   WechatWorkOutlined,
   FieldTimeOutlined,
   ReconciliationOutlined,
-  ProfileOutlined,
   PieChartOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
@@ -67,11 +66,7 @@ const SidebarComponent = () => {
             icon: <AuditOutlined style={iconStyle}/>,
             label: <Link href="/pim" style={labelStyle}>Pim</Link>,
           },
-          {
-            key: "time",
-            icon: <ProfileOutlined style={iconStyle}/>,
-            label: <Link href="/time" style={labelStyle}>Time</Link>,
-          },
+
           {
             key: "profile",
             icon: <UserOutlined style={iconStyle}/>,

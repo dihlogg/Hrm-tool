@@ -5,7 +5,8 @@ export interface NotificationPayload {
   id: string;
   type: NotificationType;
   message: string;
-  payload?: Record<string, unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  payload?: any;
   read: boolean;
   seen: boolean;
   actor?: {

@@ -69,15 +69,8 @@ export function useGetLeaveRequestForDirector(
       }
     }
     loadLeaveRequestForDirectorId(directorId);
-  }, [
-    directorId,
-    page,
-    pageSize,
-    sortBy,
-    sortOrder,
-    JSON.stringify(filters),
-    hotReload,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [directorId, page, pageSize, sortBy, sortOrder, JSON.stringify(filters), hotReload]);
 
   return { leaveRequests, total, loading, error };
 }

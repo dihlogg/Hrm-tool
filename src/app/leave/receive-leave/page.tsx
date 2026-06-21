@@ -291,7 +291,8 @@ export default function ReceiveRequestPage() {
       const allReceiveLeave = response.data.data;
 
       exportExcel(
-        columns,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        columns as any,
         allReceiveLeave,
         "Leave_Receive_List.xlsx",
         "Leave Receive List"

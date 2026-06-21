@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const protectedRoutes = ["/pim", "/leave", "/dashboard"];
+const publicRoutes = ["/auth"];
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  const isProtected = protectedRoutes.some((route) => pathname.startsWith(route));
+  const isPublic = publicRoutes.some((route) => pathname.startsWith(route));
 
-  if (!isProtected) {
+  if (isPublic) {
     return NextResponse.next();
   }
 

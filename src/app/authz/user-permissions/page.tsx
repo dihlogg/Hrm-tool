@@ -62,10 +62,10 @@ export default function UserPermissionsPage() {
 
   useEffect(() => {
     if (userPermissions && userPermissions.length > 0) {
-      const permIds = new Set(
-        userPermissions
+      const permIds = new Set<string>(
+        (userPermissions as { isGranted?: boolean; permissionId?: string }[])
           .filter((up) => up.isGranted)
-          .map((up) => up.permissionId!),
+          .map((up) => up.permissionId as string),
       );
       setSelectedPermIds(permIds);
       setInitialPermIds(new Set(permIds));
