@@ -49,7 +49,7 @@ export default function LoginPage() {
           {/* Account 1: Admin */}
           <div 
             onClick={() => {
-              setUserName("LongEmployee");
+              setUserName("admin@gmail.com");
               setPassword("171204");
             }}
             className="flex flex-col w-full p-4 space-y-1 text-gray-600 bg-white sm:p-6 rounded-3xl cursor-pointer hover:bg-orange-50 border-2 border-transparent hover:border-orange-300 shadow-sm hover:shadow-md transition-all duration-300 group"
@@ -59,7 +59,7 @@ export default function LoginPage() {
               <div className="flex justify-between w-full pr-4">
                 <div className="text-left">
                   <span className="block text-xs tracking-wide text-gray-400 mb-0.5">Username</span>
-                  <span className="text-sm font-medium text-gray-700">LongEmployee</span>
+                  <span className="text-sm font-medium text-gray-700">admin@gmail.com</span>
                 </div>
                 <div className="text-left">
                   <span className="block text-xs tracking-wide text-gray-400 mb-0.5">Password</span>
@@ -75,7 +75,7 @@ export default function LoginPage() {
           {/* Account 2: Employee */}
           <div 
             onClick={() => {
-              setUserName("DevManager");
+              setUserName("employee@gmail.com");
               setPassword("171204");
             }}
             className="flex flex-col w-full p-4 space-y-1 text-gray-600 bg-white sm:p-6 rounded-3xl cursor-pointer hover:bg-orange-50 border-2 border-transparent hover:border-orange-300 shadow-sm hover:shadow-md transition-all duration-300 group"
@@ -85,7 +85,7 @@ export default function LoginPage() {
               <div className="flex justify-between w-full pr-4">
                 <div className="text-left">
                   <span className="block text-xs tracking-wide text-gray-400 mb-0.5">Username</span>
-                  <span className="text-sm font-medium text-gray-700">DevManager</span>
+                  <span className="text-sm font-medium text-gray-700">employee@gmail.com</span>
                 </div>
                 <div className="text-left">
                   <span className="block text-xs tracking-wide text-gray-400 mb-0.5">Password</span>
@@ -190,7 +190,7 @@ export default function LoginPage() {
         </button>
 
         <p className="text-center text-sm tracking-wide text-gray-500 !mt-8">
-          Don't have an account? <a href="#" className="text-orange-500 font-bold hover:underline">Sign up</a>
+          Don&apos;t have an account? <a href="#" className="text-orange-500 font-bold hover:underline">Sign up</a>
         </p>
       </div>
 

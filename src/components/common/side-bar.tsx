@@ -1,6 +1,6 @@
 "use client";
 
-import { Layout, Menu } from "antd";
+import { Layout, Menu, MenuProps } from "antd";
 import {
   DashboardOutlined,
   UserOutlined,
@@ -12,9 +12,15 @@ import {
 } from "@ant-design/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuthContext } from "@/contexts/authContext";
 
 const SidebarComponent = () => {
   const pathname = usePathname();
+  const { userRoles } = useAuthContext();
+  
+  const isSuperAdmin = Array.isArray(userRoles) && userRoles.includes("Super Admin");
+  const isAdmin = Array.isArray(userRoles) && userRoles.includes("Admin");
+  const isAtLeastAdmin = isSuperAdmin || isAdmin;
   const iconStyle = { fontSize: 20, fontWeight: 500, color: "#6B7280" };
   const labelStyle = { fontSize: 14, fontWeight: 500, color: "#6B7280" };
 
@@ -40,7 +46,7 @@ const SidebarComponent = () => {
       style={{ height: "100vh" }}
     >
       <div className="py-6 text-xl font-bold text-center text-orange-500">
-        Dinh Long
+        LTD HRM
       </div>
       <Menu
         mode="inline"
@@ -51,7 +57,7 @@ const SidebarComponent = () => {
             icon: <DashboardOutlined style={iconStyle} />,
             label: <Link href="/dashboard" style={labelStyle}>Dashboard</Link>,
           },
-          {
+          isAtLeastAdmin && {
             key: "admin",
             icon: <ReconciliationOutlined style={iconStyle}/>,
             label: <Link href="/admin" style={labelStyle}>Admin</Link>,
@@ -66,7 +72,6 @@ const SidebarComponent = () => {
             icon: <AuditOutlined style={iconStyle}/>,
             label: <Link href="/pim" style={labelStyle}>Pim</Link>,
           },
-
           {
             key: "profile",
             icon: <UserOutlined style={iconStyle}/>,
@@ -77,7 +82,7 @@ const SidebarComponent = () => {
             icon: <WechatWorkOutlined style={iconStyle}/>,
             label: <Link href="/buzz" style={labelStyle}>Buzz</Link>,
           },
-          {
+          isSuperAdmin && {
             key: "authz",
             icon: <AuditOutlined style={iconStyle}/>,
             label: <Link href="/authz" style={labelStyle}>Authz</Link>,
@@ -87,7 +92,7 @@ const SidebarComponent = () => {
             icon: <PieChartOutlined style={iconStyle}/>,
             label: <Link href="/career" style={labelStyle}>Career</Link>,
           }
-        ]}
+        ].filter(Boolean) as MenuProps["items"]}
       />
     </Layout.Sider>
   );

@@ -119,7 +119,7 @@ export default function DashboardPage() {
                       percent={leave.maximumAllowed ? (leave.remainingQuotas / leave.maximumAllowed) * 100 : 0} 
                       strokeColor={idx === 0 ? '#1890ff' : idx === 1 ? '#52c41a' : '#faad14'} 
                       showInfo={false} 
-                      strokeWidth={12} 
+                      size={12} 
                     />
                   </div>
                 ))}
