@@ -5,6 +5,7 @@ import Link from "next/link";
 import React from "react";
 import MainLayout from "@/components/common/main-layout";
 import { useIdleLogout } from "@/hooks/auth/useIdleLogout";
+import { useAuthContext } from "@/contexts/authContext";
 
 const navItems = [
   { href: "/pim", label: "Employee List" },
@@ -13,13 +14,20 @@ const navItems = [
 
 export default function PimLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { userRoles } = useAuthContext();
+  const isAtLeastAdmin = Array.isArray(userRoles) && (userRoles.includes("Super Admin") || userRoles.includes("Admin"));
   useIdleLogout(15);
+
+  const filteredNavItems = navItems.filter((item) => {
+    if (item.href === "/pim/add-employee" && !isAtLeastAdmin) return false;
+    return true;
+  });
 
   return (
     <MainLayout >
       <div className="flex flex-col h-full">
         <div className="flex gap-2 ml-3">
-          {navItems.map((item) => {
+          {filteredNavItems.map((item) => {
             const isActive = (() => {
               if (item.href === "/pim") {
                 return (

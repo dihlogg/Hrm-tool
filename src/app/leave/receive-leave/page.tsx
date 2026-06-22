@@ -85,12 +85,10 @@ export default function ReceiveRequestPage() {
   } = usePatchLeaveRequestStatus();
 
   // check role
-  const isManager = Array.isArray(userRoles) && userRoles.includes("Manager");
-  const isDirectorOrCeo =
-    Array.isArray(userRoles) &&
-    (userRoles.includes("Director") || userRoles.includes("CEO"));
+  const isAdmin = Array.isArray(userRoles) && userRoles.includes("Admin");
+  const isSuperAdmin = Array.isArray(userRoles) && userRoles.includes("Super Admin");
 
-  const dataHook = isDirectorOrCeo
+  const dataHook = isSuperAdmin
     ? useGetLeaveRequestForDirector
     : useGetLeaveRequestForSupervisor;
 
@@ -373,7 +371,7 @@ export default function ReceiveRequestPage() {
       dataIndex: "leaveReasonId",
       render: (_, record) => record.leaveReason?.name || "N/A",
     },
-    ...(isDirectorOrCeo
+    ...(isSuperAdmin
       ? [
           {
             title: "Confirm By",
@@ -670,7 +668,7 @@ export default function ReceiveRequestPage() {
               selectedLeaveRequest?.leaveStatus?.name?.toUpperCase();
             // for manager role, is leave request status is SUBMITED or PENDING => show footer
             // if leave request is CONFIRMED or REJECTED => no footer
-            if (isManager && (status === "SUBMITTED" || status === "PENDING")) {
+            if (isAdmin && (status === "SUBMITTED" || status === "PENDING")) {
               return [
                 <Button
                   key="pending"
@@ -699,7 +697,7 @@ export default function ReceiveRequestPage() {
 
             // for director or ceo role, if leave request status is REJECTED => no footer
             if (
-              isDirectorOrCeo &&
+              isSuperAdmin &&
               (status === "SUBMITTED" ||
                 status === "PENDING" ||
                 status === "CONFIRMED")

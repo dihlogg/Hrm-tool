@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import React from "react";
 import MainLayout from "@/components/common/main-layout";
+import { useAuthContext } from "@/contexts/authContext";
 import "@ant-design/v5-patch-for-react-19";
 
 const navItems = [
@@ -19,12 +20,19 @@ export default function LeaveLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { userRoles } = useAuthContext();
+  const isAtLeastAdmin = Array.isArray(userRoles) && (userRoles.includes("Super Admin") || userRoles.includes("Admin"));
+
+  const filteredNavItems = navItems.filter((item) => {
+    if (item.href === "/leave/receive-leave" && !isAtLeastAdmin) return false;
+    return true;
+  });
 
   return (
     <MainLayout>
       <div className="flex flex-col h-full">
         <div className="flex flex-wrap gap-2 ml-3 sm:gap-3 sm:ml-4">
-          {navItems.map((item) => {
+          {filteredNavItems.map((item) => {
             const isActive = pathname === item.href;
             const baseClass =
               "px-4 py-2 text-xs font-medium rounded-full border transition-colors !bg-[#F9FAFB]";

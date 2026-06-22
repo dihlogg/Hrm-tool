@@ -152,17 +152,17 @@ export default function JobDetailsPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex flex-wrap items-center gap-3 shrink-0 mt-2 xl:mt-0">
               <Button
                 type="primary"
                 onClick={() => router.push(`/career/${id}/apply`)}
-                className="!bg-blue-500 hover:!bg-blue-600 !text-white !border-none !rounded-full !h-10 !px-6 font-semibold flex items-center gap-2 shadow-sm"
+                className="!bg-blue-500 hover:!bg-blue-600 !text-white !border-none !rounded-full !h-10 px-4 sm:!px-6 font-semibold flex items-center gap-2 shadow-sm"
               >
                 Apply Now <ArrowRightOutlined />
               </Button>
               <Button
                 onClick={() => router.push(`/career/${id}/candidates`)}
-                className="!rounded-full !h-10 !px-6 font-semibold"
+                className="!rounded-full !h-10 px-4 sm:!px-6 font-semibold"
               >
                 View Candidates
               </Button>

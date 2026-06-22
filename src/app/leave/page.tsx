@@ -74,8 +74,8 @@ export default function LeavePage() {
   const { employee } = useGetEmployeeDetailsByUserId(userId ?? "");
   const { total: pendingTotal, leaveRequests: pendingRequests, loading: pendingLoading } = useGetMyPendingRequests(employee?.id ?? "", activeTab === 2 ? currentPage : 1, pageSize);
   
-  const isDirectorOrCeo = Array.isArray(userRoles) && (userRoles.includes("Director") || userRoles.includes("CEO"));
-  const receiveDataHook = isDirectorOrCeo ? useGetLeaveRequestForDirector : useGetLeaveRequestForSupervisor;
+  const isSuperAdmin = Array.isArray(userRoles) && userRoles.includes("Super Admin");
+  const receiveDataHook = isSuperAdmin ? useGetLeaveRequestForDirector : useGetLeaveRequestForSupervisor;
 
   const { total: receiveTotal, leaveRequests: receiveRequests, loading: receiveLoading } = receiveDataHook(
     employee?.id ?? "",

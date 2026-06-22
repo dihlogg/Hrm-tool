@@ -77,7 +77,7 @@ export default function AddEmployeePage() {
     if (!jobTitleId) errors.jobTitleId = "*Required";
     if (!subUnitId) errors.subUnitId = "*Required";
     if (!employeeStatusId) errors.employeeStatusId = "*Required";
-    if (!parentId) errors.employeeStatusId = "*Required";
+    if (!parentId) errors.parentId = "*Required";
     if (loginEnabled) {
       if (!username.trim()) errors.userName = "*Required";
       if (!password.trim()) errors.password = "*Required";
