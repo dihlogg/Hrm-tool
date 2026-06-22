@@ -23,7 +23,10 @@ class SocketService extends EventEmitter {
 
       this.isConnecting = true;
 
+      // Socket.io ignores the path in the URL (like /hrm-notify), so we must explicitly set the path 
+      // so the API Gateway can intercept it and forward it to the notify service.
       this.socket = io(this.serverUrl!, {
+        path: "/hrm-notify/socket.io",
         transports: ["websocket"],
         auth: { token, employeeId },
         reconnection: true,
