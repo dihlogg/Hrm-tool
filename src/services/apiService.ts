@@ -1,11 +1,9 @@
-export const HRM_API_URL =
-  process.env.HRM_CORE_API_BASE_URL || "http://localhost:3001";
-export const HRM_NOTIFY_API_URL =
-  process.env.HRM_NOTIFY_API_BASE_URL || "http://localhost:3002";
-export const HRM_SOCIAL_API_URL =
-  process.env.NEXT_PUBLIC_HRM_SOCIAL_API_BASE_URL || "http://localhost:3003";
-export const HRM_ATS_API_URL =
-  process.env.NEXT_PUBLIC_HRM_ATS_API_BASE_URL || "http://localhost:3004";
+const GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL || "http://localhost:3100";
+
+export const HRM_API_URL = `${GATEWAY_URL}/hrm-api`;
+export const HRM_NOTIFY_API_URL = `${GATEWAY_URL}/hrm-notify`;
+export const HRM_SOCIAL_API_URL = `${GATEWAY_URL}/hrm-social`;
+export const HRM_ATS_API_URL = `${GATEWAY_URL}/hrm-ats`;
 
 export const API_ENDPOINTS = {
   //hrm-api
