@@ -7,6 +7,7 @@ import {
   LogoutOutlined,
   SettingOutlined,
   UserOutlined,
+  MenuOutlined,
 } from "@ant-design/icons";
 import { useAuthContext } from "@/contexts/authContext";
 import { useRouter } from "next/navigation";
@@ -15,7 +16,7 @@ import NotificationTab from "../notifications/NotificationTab";
 import { useNotifications } from "@/contexts/notificationContext";
 import { usePatchMarkAsAllSeen } from "@/hooks/notifications/usePatchMarkAsAllSeen";
 
-const HeaderComponent = () => {
+const HeaderComponent = ({ collapsed, setCollapsed }: { collapsed: boolean, setCollapsed: (val: boolean) => void }) => {
   const router = useRouter();
   const { employee, logout } = useAuthContext();
   const { unSeenCount, refreshNotifications, refreshUnSeenCount } =
@@ -113,10 +114,18 @@ const HeaderComponent = () => {
   return (
     <Layout.Header
       style={{ backgroundColor: "#FB860D", height: "70px" }}
-      className="flex items-center justify-between !px-8 shadow-md"
+      className="flex items-center justify-between !px-4 md:!px-8 shadow-md"
     >
-      <div className="text-xl font-extrabold text-transparent transition-all duration-300 cursor-pointer md:text-3xl bg-clip-text bg-gradient-to-r from-white to-yellow-200 hover:from-yellow-200 hover:to-white drop-shadow-md animate-fade-in">
-        LTD Hrm
+      <div className="flex items-center gap-2 md:gap-4">
+        <Button
+          type="text"
+          icon={<MenuOutlined style={{ fontSize: '20px', color: 'white' }} />}
+          onClick={() => setCollapsed(!collapsed)}
+          className="md:hidden text-white hover:bg-white/20 !px-2 flex items-center justify-center"
+        />
+        <div className="text-xl font-extrabold text-transparent transition-all duration-300 cursor-pointer md:text-3xl bg-clip-text bg-gradient-to-r from-white to-yellow-200 hover:from-yellow-200 hover:to-white drop-shadow-md animate-fade-in">
+          LTD Hrm
+        </div>
       </div>
 
       <div className="flex items-center gap-3 md:gap-4">

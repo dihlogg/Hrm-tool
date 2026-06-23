@@ -14,7 +14,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthContext } from "@/contexts/authContext";
 
-const SidebarComponent = () => {
+const SidebarComponent = ({ collapsed, setCollapsed }: { collapsed: boolean, setCollapsed: (val: boolean) => void }) => {
   const pathname = usePathname();
   const { userRoles } = useAuthContext();
   
@@ -42,7 +42,12 @@ const SidebarComponent = () => {
       collapsible={true}
       breakpoint="md"
       collapsedWidth={0}
-      className="shadow-lg z-50 absolute md:relative"
+      trigger={null}
+      collapsed={collapsed}
+      onBreakpoint={(broken) => {
+        setCollapsed(broken);
+      }}
+      className="shadow-lg z-50 absolute md:relative h-full"
       width={240}
       style={{ height: "100vh" }}
     >
@@ -52,6 +57,11 @@ const SidebarComponent = () => {
       <Menu
         mode="inline"
         selectedKeys={[getSelectedKey()]}
+        onClick={() => {
+          if (typeof window !== 'undefined' && window.innerWidth < 768) {
+            setCollapsed(true);
+          }
+        }}
         items={[
           {
             key: "dashboard",
