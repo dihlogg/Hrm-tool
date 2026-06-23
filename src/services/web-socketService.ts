@@ -23,9 +23,14 @@ class SocketService extends EventEmitter {
 
       this.isConnecting = true;
 
-      // Socket.io ignores the path in the URL (like /hrm-notify), so we must explicitly set the path 
-      // so the API Gateway can intercept it and forward it to the notify service.
-      this.socket = io(this.serverUrl!, {
+      // Socket.io treats the path in the URL as a "namespace". If NEXT_PUBLIC_SOCKET_BASE_URL
+      // is "https://api.ltdhrm.me/hrm-notify", it tries to connect to the "/hrm-notify" namespace and fails.
+      // We must extract only the origin (https://api.ltdhrm.me) to connect to the root namespace,
+      // and let the 'path' option handle the routing through the gateway.
+      const urlObj = new URL(this.serverUrl || "http://localhost:3002");
+      const rootUrl = `${urlObj.protocol}//${urlObj.host}`;
+      
+      this.socket = io(rootUrl, {
         path: "/hrm-notify/socket.io",
         auth: { token, employeeId },
         reconnection: true,
