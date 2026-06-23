@@ -27,7 +27,6 @@ class SocketService extends EventEmitter {
       // so the API Gateway can intercept it and forward it to the notify service.
       this.socket = io(this.serverUrl!, {
         path: "/hrm-notify/socket.io",
-        transports: ["websocket"],
         auth: { token, employeeId },
         reconnection: true,
         reconnectionAttempts: 5,
