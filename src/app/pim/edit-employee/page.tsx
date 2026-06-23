@@ -21,13 +21,15 @@ import { useJobTitles } from "@/hooks/employees/job-titles/useJobTitles";
 import { useSubUnits } from "@/hooks/employees/sub-units/useSubUnits";
 import { uploadImageToCloudinary } from "@/services/cloudinaryService";
 import { useAuthContext } from "@/contexts/authContext";
+import { useGetParentForEmployee } from "@/hooks/employees/useGetParentForEmployee";
 
 const { Option } = Select;
 
 export default function EditEmployeePage() {
   const { updateEmployee } = useUpdateEmployee();
-  const { employee: contextEmployee, setEmployee: setContextEmployee } =
+  const { employee: contextEmployee, setEmployee: setContextEmployee, userRoles } =
     useAuthContext();
+  const isSuperAdmin = Array.isArray(userRoles) && userRoles.includes("Super Admin");
   const searchParams = useSearchParams();
   const employeeId = searchParams.get("id") || undefined;
   const { employee } = useGetEmployeeById(employeeId ?? "");
@@ -51,12 +53,15 @@ export default function EditEmployeePage() {
   const [jobTitleId, setJobTitleId] = useState<string | null>(null);
   const { subUnits } = useSubUnits();
   const [subUnitId, setSubUnitId] = useState<string | null>(null);
+  const { parentEmployee } = useGetParentForEmployee();
+  const [parentId, setParentId] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<{
     firstName?: string;
     lastName?: string;
     jobTitleId?: string;
     subUnitId?: string;
     employeeStatusId?: string;
+    parentId?: string;
   }>({});
 
   useEffect(() => {
@@ -74,6 +79,7 @@ export default function EditEmployeePage() {
       setEmployeeStatusId(employee.employeeStatusId ?? null);
       setJobTitleId(employee.jobTitleId ?? null);
       setSubUnitId(employee.subUnitId ?? null);
+      setParentId(employee.parentId ?? null);
     }
   }, [employee]);
 
@@ -85,6 +91,7 @@ export default function EditEmployeePage() {
     if (!jobTitleId) errors.jobTitleId = "*Required";
     if (!subUnitId) errors.subUnitId = "*Required";
     if (!employeeStatusId) errors.employeeStatusId = "*Required";
+    if (isSuperAdmin && !parentId) errors.parentId = "*Required";
     setFormErrors(errors);
 
     if (Object.keys(errors).length > 0) {
@@ -104,9 +111,10 @@ export default function EditEmployeePage() {
         gender: gender ?? null,
         nationality: nationality ?? null,
         dayOfBirth: dateOfBirth?.toISOString() ?? null,
-        employeeStatusId,
-        jobTitleId,
-        subUnitId,
+        employeeStatusId: employeeStatusId || "",
+        jobTitleId: jobTitleId || "",
+        subUnitId: subUnitId || "",
+        parentId: parentId || "",
       };
 
       await updateEmployee(employeeId!, payload);
@@ -436,6 +444,37 @@ export default function EditEmployeePage() {
                     ))}
                   </Select>
                 </div>
+                {isSuperAdmin && (
+                  <div>
+                    <label className="flex justify-between w-full mb-1 text-sm text-gray-500 font-small">
+                      Supervisor
+                      {formErrors.parentId && (
+                        <span className="!mt-1 text-sm text-red-500">
+                          {formErrors.parentId}
+                        </span>
+                      )}
+                    </label>
+                    <Select
+                      value={parentId}
+                      className="w-full"
+                      placeholder="--Select--"
+                      allowClear
+                      onChange={(value) => {
+                        setParentId(value);
+                        setFormErrors((prev) => ({
+                          ...prev,
+                          parentId: undefined,
+                        }));
+                      }}
+                    >
+                      {parentEmployee.map((parent) => (
+                        <Option key={parent.id} value={parent.id}>
+                          {parent.lastName} {parent.firstName}
+                        </Option>
+                      ))}
+                    </Select>
+                  </div>
+                )}
               </div>
               <div className="flex items-center justify-between mt-6">
                 <span className="text-sm italic font-medium text-gray-500">
