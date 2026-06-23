@@ -48,10 +48,6 @@ html, body {
   height: 100% !important;
 }
 
-.ant-layout-content {
-  height: 100% !important;
-}
-
 .ant-mentions-dropdown-menu-item-active,
 .ant-mentions-menu-item-active,
 .ant-mentions-dropdown-menu-item:hover {

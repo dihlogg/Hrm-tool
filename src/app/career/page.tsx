@@ -13,6 +13,7 @@ import {
   JobFilters,
 } from "@/hooks/ats/jobs/JobFiltersDto";
 import { useJobTitles } from "@/hooks/employees/job-titles/useJobTitles";
+import { useAuthContext } from "@/contexts/authContext";
 
 dayjs.extend(relativeTime);
 
@@ -23,6 +24,11 @@ export default function JobListPage() {
   const pageSize = 5;
   const [sortBy, setSortBy] = useState<string>("createDate");
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("DESC");
+
+  const { userRoles } = useAuthContext();
+  const isSuperAdmin = Array.isArray(userRoles) && userRoles.includes("Super Admin");
+  const isAdmin = Array.isArray(userRoles) && userRoles.includes("Admin");
+  const isAtLeastAdmin = isSuperAdmin || isAdmin;
 
   // Filters state
   const [filters, setFilters] = useState<JobFilters>(getInitialJobFilters());
@@ -80,16 +86,18 @@ export default function JobListPage() {
               Architect Your{" "}
               <span className="text-blue-500">Next Career Move.</span>
             </h1>
-            <Link href="/career/add-job">
-              <Button
-                type="primary"
-                shape="round"
-                size="middle"
-                className="font-medium"
-              >
-                + Post a Job
-              </Button>
-            </Link>
+            {isAtLeastAdmin && (
+              <Link href="/career/add-job">
+                <Button
+                  type="primary"
+                  shape="round"
+                  size="middle"
+                  className="font-medium"
+                >
+                  + Post a Job
+                </Button>
+              </Link>
+            )}
           </div>
           <p className="max-w-2xl text-sm leading-relaxed text-gray-500 md:text-base">
             A curated workspace for the world&apos;s most ambitious digital

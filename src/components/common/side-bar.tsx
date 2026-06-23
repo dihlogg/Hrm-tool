@@ -41,7 +41,8 @@ const SidebarComponent = () => {
       theme="light"
       collapsible={true}
       breakpoint="md"
-      className="shadow-lg"
+      collapsedWidth={0}
+      className="shadow-lg z-50 absolute md:relative"
       width={240}
       style={{ height: "100vh" }}
     >

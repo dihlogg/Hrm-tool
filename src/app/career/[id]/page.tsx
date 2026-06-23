@@ -16,6 +16,7 @@ import { useGetJobById } from "@/hooks/ats/jobs/useGetJobById";
 import { EmploymentType } from "@/hooks/ats/jobs/JobDto";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { useAuthContext } from "@/contexts/authContext";
 
 dayjs.extend(relativeTime);
 
@@ -24,6 +25,11 @@ export default function JobDetailsPage() {
   const router = useRouter();
   const id = params?.id as string;
   const { job, loading, error } = useGetJobById(id);
+  const { userRoles } = useAuthContext();
+
+  const isSuperAdmin = Array.isArray(userRoles) && userRoles.includes("Super Admin");
+  const isAdmin = Array.isArray(userRoles) && userRoles.includes("Admin");
+  const isAtLeastAdmin = isSuperAdmin || isAdmin;
 
   if (loading) {
     return (
@@ -160,12 +166,14 @@ export default function JobDetailsPage() {
               >
                 Apply Now <ArrowRightOutlined />
               </Button>
-              <Button
-                onClick={() => router.push(`/career/${id}/candidates`)}
-                className="!rounded-full !h-10 px-4 sm:!px-6 font-semibold"
-              >
-                View Candidates
-              </Button>
+              {isAtLeastAdmin && (
+                <Button
+                  onClick={() => router.push(`/career/${id}/candidates`)}
+                  className="!rounded-full !h-10 px-4 sm:!px-6 font-semibold"
+                >
+                  View Candidates
+                </Button>
+              )}
             </div>
           </div>
         </header>
