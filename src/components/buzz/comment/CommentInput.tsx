@@ -95,6 +95,18 @@ export const CommentInput = ({
                 handleSubmit();
               }
             }
+
+            if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+              setTimeout(() => {
+                const activeItem = document.querySelector(
+                  ".ant-mentions-dropdown [class*='-menu-item-active'], .ant-mentions-dropdown [class*='-item-selected']",
+                );
+                activeItem?.scrollIntoView({
+                  block: "nearest",
+                  behavior: "auto",
+                });
+              }, 10);
+            }
           }}
           placeholder={placeholder}
           autoSize={{ minRows: 1, maxRows: 4 }}

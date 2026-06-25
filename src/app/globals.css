@@ -48,9 +48,15 @@ html, body {
   height: 100% !important;
 }
 
-.ant-mentions-dropdown-menu-item-active,
-.ant-mentions-menu-item-active,
-.ant-mentions-dropdown-menu-item:hover {
+.ant-mentions-dropdown .ant-mentions-dropdown-menu-item-active,
+.ant-mentions-dropdown .ant-mentions-dropdown-menu-item-selected,
+.ant-mentions-dropdown .ant-mentions-dropdown-menu-item:has(.ant-mentions-dropdown-menu-item-active),
+.ant-mentions-dropdown .ant-mentions-dropdown-menu-item:hover {
   background-color: #e5e7eb !important;
   font-weight: 600 !important; 
+}
+
+.ant-mentions-dropdown .ant-mentions-dropdown-menu-item {
+  border-radius: 8px;
+  margin: 2px 4px;
 }

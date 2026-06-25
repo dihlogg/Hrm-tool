@@ -345,7 +345,7 @@ export default function BuzzPage() {
                   if (e.key === "ArrowUp" || e.key === "ArrowDown") {
                     setTimeout(() => {
                       const activeItem = document.querySelector(
-                        '[class*="-menu-item-active"]',
+                        ".ant-mentions-dropdown [class*='-menu-item-active'], .ant-mentions-dropdown [class*='-item-selected']",
                       );
                       if (activeItem) {
                         activeItem.scrollIntoView({
